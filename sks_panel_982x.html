@@ -7,7 +7,6 @@
     <link rel="icon" type="image/png" href="semsira.png">
     <style>
         :root {
-            /* Changed from Orange to Cyber Yellow */
             --accent: #f1c40f; 
             --accent-hover: #f39c12;
             --bg: #0a0a0a;
@@ -20,7 +19,7 @@
             --color-bullying: #f44336;
             --color-contraband: #e91e63;
             --color-drugs: #9c27b0;
-            --color-others: #9e9e9e;
+            --color-others: #00d2ff;
         }
 
         body { 
@@ -42,7 +41,6 @@
             border-bottom: 2px solid #222;
         }
         .nav-brand { display: flex; align-items: center; }
-        /* Glow filter adjusted to Yellow */
         .nav-brand img { height: 45px; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
         .nav-brand h1 { font-size: 20px; color: var(--accent); margin: 0; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; }
 
@@ -97,7 +95,7 @@
         .tag-drugs { border-left-color: var(--color-drugs); color: var(--color-drugs); }
         .tag-others { border-left-color: var(--color-others); color: var(--color-others); }
 
-        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; }
+        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; transition: 0.2s; }
         .remove-single:hover { color: #ff4d4d; }
 
         .count-badge {
@@ -106,7 +104,7 @@
         }
 
         .warning-row td { background: #2d1616 !important; border-color: #4d2626 !important; }
-        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; }
+        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; border-radius: 6px; }
         .delete-btn:hover { background: #ff4d4d; color: white; }
 
         .footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 11px; letter-spacing: 1px; }
@@ -233,12 +231,24 @@
             const data = docData.data();
             const id = docData.id;
             
-            let offencesHtml = data.offences.map(o => `
-                <span class="offence-tag ${getTagClass(o)}">
-                    ${o} 
-                    <span class="remove-single" onclick="deleteSingle('${id}', '${o}')">×</span>
-                </span>
-            `).join("");
+            // LOGIC: Count occurrences of each offence
+            const countsMap = {};
+            data.offences.forEach(o => {
+                countsMap[o] = (countsMap[o] || 0) + 1;
+            });
+
+            // LOGIC: Generate Tags with xN label
+            let offencesHtml = Object.keys(countsMap).map(offenceName => {
+                const count = countsMap[offenceName];
+                const displayLabel = count > 1 ? `${offenceName} <b style="color:white; margin-left:4px; font-size:11px;">x${count}</b>` : offenceName;
+                
+                return `
+                    <span class="offence-tag ${getTagClass(offenceName)}">
+                        ${displayLabel} 
+                        <span class="remove-single" onclick="deleteSingle('${id}', '${offenceName}')" title="Remove one record">×</span>
+                    </span>
+                `;
+            }).join("");
 
             const warningRow = data.counts >= 3 ? "warning-row" : "";
 
@@ -258,7 +268,7 @@
     });
 
     window.deleteSingle = async (id, offence) => {
-        if(confirm(`Remove specific record: ${offence}?`)) {
+        if(confirm(`Remove one instance of: ${offence}?`)) {
             await updateDoc(doc(db, "students", id), {
                 offences: arrayRemove(offence),
                 counts: increment(-1)
