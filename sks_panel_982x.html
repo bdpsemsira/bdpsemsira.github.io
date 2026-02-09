@@ -12,32 +12,40 @@
             --bg: #0a0a0a;
             --card: #181818;
             --text: #ffffff;
-            /* 主界面颜色 */
+            /* 标签颜色 */
             --tag-late: #f1c40f;
             --tag-skip: #e67e22;
             --tag-bad: #e74c3c;
             --tag-contra: #9b59b6;
             --tag-drug: #8e44ad;
+            --tag-other: #3498db;
         }
 
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+        
+        /* 14. 右上角分两行显示 */
         .navbar { background: #000; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; }
         .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; }
-        .admin-name { color: var(--accent); font-weight: bold; border: 1px solid #333; padding: 2px 8px; border-radius: 4px; }
+        .status-box { text-align: right; line-height: 1.4; }
+        .status-row { font-size: 11px; color: #666; font-weight: bold; }
+        .status-val { color: var(--accent); margin-left: 5px; }
 
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
         .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; }
         
-        .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        /* 2. 搜索框长度一致 (100%) */
+        .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
         input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; }
-        
         #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         th { color: #666; padding: 10px; text-align: left; font-size: 11px; }
-        td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
+        td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; transition: 0.3s; }
 
-        /* 标签样式 */
+        /* 13. 超过3个错误高亮资料 */
+        .highlight-row td { background: #2c0a0a !important; border-color: #5a1010 !important; }
+
+        /* 4 & 5. 分组颜色与标签合并 */
         .offence-tag { 
             display: inline-block; padding: 4px 8px; margin: 3px; border-radius: 4px; 
             font-size: 10px; font-weight: bold; cursor: pointer; border-left: 3px solid #555; background: #222;
@@ -47,38 +55,32 @@
         .tag-bad { border-left-color: var(--tag-bad); color: var(--tag-bad); }
         .tag-contra { border-left-color: var(--tag-contra); color: var(--tag-contra); }
         .tag-drug { border-left-color: var(--tag-drug); color: var(--tag-drug); }
+        .tag-other { border-left-color: var(--tag-other); color: var(--tag-other); }
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
+        
         button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 10px; }
+        .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px; border-radius: 8px; margin-top: 10px; }
         .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 40px; padding: 20px; border-top: 1px solid #222; }
 
-        /* --- 导出模板 (核心修复) --- */
-        #reportExportTemplate { 
-            position: absolute; left: -9999px; width: 1000px; 
-            background: #ffffff !important; color: #000000 !important; padding: 50px; 
-        }
-        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff !important; }
-        .rpt-table th, .rpt-table td { 
-            border: 1px solid #000 !important; padding: 12px; text-align: center; 
-            background: #fff !important; color: #000 !important; font-size: 14px;
-        }
-        /* 导出颜色 */
-        .c-late { color: #b7950b !important; font-weight: bold; }
-        .c-skip { color: #d35400 !important; font-weight: bold; }
-        .c-bad { color: #c0392b !important; font-weight: bold; }
-        .c-contra { color: #8e44ad !important; font-weight: bold; }
-        .c-drug { color: #6c3483 !important; font-weight: bold; }
-        
-        .sig-box { margin-top: 50px; display: flex; justify-content: flex-end; }
+        /* 12. 报告白色背景和签名框 */
+        #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px; }
+        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .rpt-table th, .rpt-table td { border: 1px solid #000 !important; padding: 12px; text-align: center; color: #000 !important; font-size: 14px; background: #fff !important; }
+        .sig-box { margin-top: 60px; display: flex; justify-content: flex-end; }
         .sig-line { border-top: 2px solid #000; width: 250px; text-align: center; padding-top: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div class="nav-brand"><h1>SEMSIRA BDP SYSTEM</h1></div>
-    <div>OPERATOR: <span class="admin-name" id="displayAdmin">...</span></div>
+    <div class="nav-brand"><h1>SEMSIRA BDP</h1></div>
+    <div class="status-box">
+        <div class="status-row">OPERATOR: <span class="status-val" id="displayAdmin">...</span></div>
+        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">CONNECTED</span></div>
+    </div>
 </div>
 
 <div class="container">
@@ -86,7 +88,7 @@
         <h3>1. LOG ENTRY</h3>
         <div class="input-group">
             <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
-            <input type="text" id="stuClass" placeholder="CLASS">
+            <input type="text" id="stuClass" placeholder="CLASS (E.G. 6A)">
             <select id="violation">
                 <option value="" disabled selected>OFFENCE TYPE</option>
                 <option value="Late">LATE</option>
@@ -103,11 +105,16 @@
 
     <div class="card" style="background:transparent; border:none; padding:0;">
         <h3>2. RECORDS</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class...">
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class to filter...">
         <table>
-            <thead><tr><th width="25%">Identity</th><th width="45%">History (Click to view time)</th><th width="15%" style="text-align:center">Total</th><th width="15%">Action</th></tr></thead>
+            <thead><tr><th width="25%">Identity</th><th width="45%">History (Click Tag for Detail)</th><th width="15%" style="text-align:center">Total</th><th width="15%">Action</th></tr></thead>
             <tbody id="recordBody"></tbody>
         </table>
+        <div class="pagination">
+            <button onclick="changePage(-1)" id="prevBtn">PREV</button>
+            <span id="pageDisplay" style="font-size:12px; color:#666;">PAGE 1</span>
+            <button onclick="changePage(1)" id="nextBtn">NEXT</button>
+        </div>
     </div>
 
     <div class="action-bar">
@@ -151,6 +158,9 @@
     document.getElementById('reportDate').valueAsDate = new Date();
 
     let allData = [];
+    let currentPage = 1;
+    const pageSize = 15;
+
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
@@ -162,31 +172,55 @@
         if(type.includes("Bullying") || type.includes("Discrimination")) return "tag-bad";
         if(type === "Contraband") return "tag-contra";
         if(type.includes("Drugs")) return "tag-drug";
-        return "";
+        return "tag-other";
     }
 
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
+        const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+        const start = (currentPage - 1) * pageSize;
+        const items = filtered.slice(start, start + pageSize);
+
+        document.getElementById('pageDisplay').innerText = `PAGE ${currentPage} OF ${totalPages}`;
+        
         let html = "";
-        filtered.forEach(s => {
-            html += `<tr>
+        items.forEach(s => {
+            // 13. 高亮超过3次错误的学生
+            const highlightClass = s.counts >= 3 ? "highlight-row" : "";
+            
+            // 5. 合并显示 LATEx2 逻辑
+            const groupedOffences = s.offences.reduce((acc, curr) => {
+                acc[curr.type] = acc[curr.type] || [];
+                acc[curr.type].push(curr);
+                return acc;
+            }, {});
+
+            let tagHtml = "";
+            for (const [type, list] of Object.entries(groupedOffences)) {
+                const countText = list.length > 1 ? `x${list.length}` : "";
+                const details = list.map(i => `[${i.time}] By: ${i.by}`).join("\\n");
+                tagHtml += `<span class="offence-tag ${getTagClass(type)}" onclick="alert('${type} DETAILS:\\n\\n${details}')">${type}${countText}</span>`;
+            }
+
+            html += `<tr class="${highlightClass}">
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
-                <td>${s.offences.map(o => `<span class="offence-tag ${getTagClass(o.type)}" onclick="alert('Record Details:\\n\\nType: ${o.type}\\nTime: ${o.time}\\nBy: ${o.by}')">${o.type}</span>`).join('')}</td>
+                <td>${tagHtml}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
                 <td><button class="delete-btn" onclick="purge('${s.id}')">Purge</button></td>
             </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html;
+        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records</td></tr>';
     }
 
-    window.handleSearch = render;
+    window.handleSearch = () => { currentPage = 1; render(); };
+    window.changePage = (n) => { currentPage += n; render(); };
 
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
-        if(!name || !cls || !type) return alert("Fill all fields");
+        if(!name || !cls || !type) return alert("Fill all!");
 
         const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
@@ -212,16 +246,10 @@
             stu.offences.forEach(off => {
                 if (off.time.includes(target)) {
                     found = true;
-                    let c = "c-bad";
-                    if(off.type === "Late") c = "c-late";
-                    else if(off.type === "Skipping Class") c = "c-skip";
-                    else if(off.type === "Contraband") c = "c-contra";
-                    else if(off.type.includes("Drugs")) c = "c-drug";
-
                     tbody.innerHTML += `<tr>
                         <td style="text-align:left; font-weight:bold;">${stu.name}</td>
                         <td>${stu.class}</td>
-                        <td class="${c}">${off.type.toUpperCase()}</td>
+                        <td>${off.type.toUpperCase()}</td>
                         <td>${off.time.split(', ')[1]}</td>
                         <td>${off.by}</td>
                     </tr>`;
@@ -235,7 +263,7 @@
 
         html2canvas(document.getElementById('reportExportTemplate'), { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `BDP_Report_${target}.png`;
+            link.download = `Report_${target}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
