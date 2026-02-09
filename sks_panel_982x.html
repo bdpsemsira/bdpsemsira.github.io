@@ -24,20 +24,13 @@
 
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; 
-            background-color: var(--bg); 
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            margin: 0; background-color: var(--bg); color: var(--text);
+            display: flex; flex-direction: column; min-height: 100vh;
         }
 
         .navbar {
-            background-color: #000;
-            padding: 15px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background-color: #000; padding: 15px 40px;
+            display: flex; align-items: center; justify-content: space-between;
             border-bottom: 2px solid #222;
         }
         .nav-brand { display: flex; align-items: center; }
@@ -47,11 +40,8 @@
         .container { max-width: 1150px; margin: 30px auto; padding: 0 20px; flex: 1; }
 
         .card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border: 1px solid #222;
+            background: var(--card); padding: 25px; border-radius: 16px;
+            margin-bottom: 25px; border: 1px solid #222;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
@@ -84,9 +74,8 @@
         
         .offence-tag {
             display: inline-flex; align-items: center; 
-            background: #252525; padding: 5px 12px;
-            margin: 4px; border-radius: 6px; font-size: 13px; font-weight: 600;
-            border-left: 3px solid var(--accent);
+            background: #252525; padding: 5px 12px; margin: 4px; border-radius: 6px; 
+            font-size: 13px; font-weight: 600; border-left: 3px solid var(--accent);
         }
         .tag-late { border-left-color: var(--color-late); color: var(--color-late); }
         .tag-skipping { border-left-color: var(--color-skipping); color: var(--color-skipping); }
@@ -95,7 +84,7 @@
         .tag-drugs { border-left-color: var(--color-drugs); color: var(--color-drugs); }
         .tag-others { border-left-color: var(--color-others); color: var(--color-others); }
 
-        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; transition: 0.2s; }
+        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; }
         .remove-single:hover { color: #ff4d4d; }
 
         .count-badge {
@@ -164,11 +153,11 @@
     </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.0 | SECURED NODE 982x<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.1 | PRECISION NODE<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
@@ -203,13 +192,13 @@
         }
 
         try {
-            const q = query(colRef, where("name", "==", name));
+            // NEW LOGIC: Query by BOTH name and class to avoid duplicate name conflicts
+            const q = query(colRef, where("name", "==", name), where("class", "==", className));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
                 const studentDoc = querySnapshot.docs[0];
                 const existingData = studentDoc.data();
-                // FIX: Manual array push instead of arrayUnion to allow duplicates
                 const newOffences = [...existingData.offences, offence];
 
                 await updateDoc(doc(db, "students", studentDoc.id), {
@@ -235,13 +224,11 @@
             const data = docData.data();
             const id = docData.id;
             
-            // Logic: Count occurrences
             const countsMap = {};
             data.offences.forEach(o => {
                 countsMap[o] = (countsMap[o] || 0) + 1;
             });
 
-            // Logic: Render combined tags (xN)
             let offencesHtml = Object.keys(countsMap).map(offenceName => {
                 const count = countsMap[offenceName];
                 const displayLabel = count > 1 ? `${offenceName} <b style="color:white; margin-left:4px; font-size:11px;">x${count}</b>` : offenceName;
@@ -273,27 +260,21 @@
 
     window.deleteSingle = async (id, offence) => {
         if(confirm(`Remove one instance of: ${offence}?`)) {
-            // Logic: Fetch current data, find index of ONE instance, remove it
-            const q = query(colRef);
-            const querySnapshot = await getDocs(q);
-            const studentDoc = snapshot.docs.find(d => d.id === id); // Use id from click
-            
-            // For simplicity in the client-side, we fetch and update manually
-            import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(async (fs) => {
-                const dRef = fs.doc(db, "students", id);
-                const docSnap = await fs.getDoc(dRef);
+            try {
+                const dRef = doc(db, "students", id);
+                const docSnap = await getDoc(dRef);
                 if (docSnap.exists()) {
                     let list = docSnap.data().offences;
                     const index = list.indexOf(offence);
                     if (index > -1) {
                         list.splice(index, 1);
-                        await fs.updateDoc(dRef, {
+                        await updateDoc(dRef, {
                             offences: list,
-                            counts: fs.increment(-1)
+                            counts: increment(-1)
                         });
                     }
                 }
-            });
+            } catch (e) { alert("Error deleting: " + e.message); }
         }
     };
 
