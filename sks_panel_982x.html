@@ -30,6 +30,7 @@
             display: flex; flex-direction: column; min-height: 100vh;
         }
 
+        /* 导航栏 */
         .navbar {
             background-color: #000; padding: 15px 40px;
             display: flex; align-items: center; justify-content: space-between;
@@ -57,7 +58,6 @@
             background: var(--input-bg); border: 1px solid #333; color: white; 
             padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; transition: 0.3s;
         }
-        input:focus, select:focus { outline: none; border-color: var(--accent); }
         
         button { 
             background: var(--accent); color: black; padding: 12px 24px; border: none; 
@@ -71,6 +71,7 @@
             background: #000; padding: 15px 20px; border-radius: 12px; color: white;
         }
 
+        /* 表格样式 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 11px; text-transform: uppercase; }
         td { background: #1a1a1a; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
@@ -80,54 +81,45 @@
         .offence-tag {
             display: inline-flex; align-items: center; 
             background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
-            font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
-            border-left: 4px solid #555;
+            font-size: 12px; font-weight: 600; cursor: pointer; border-left: 4px solid #555;
         }
-        .tag-late { border-left-color: var(--color-late) !important; color: var(--color-late); }
-        .tag-skipping { border-left-color: var(--color-skipping) !important; color: var(--color-skipping); }
-        .tag-bullying { border-left-color: var(--color-bullying) !important; color: var(--color-bullying); }
-        .tag-discrimination { border-left-color: var(--color-discrimination) !important; color: var(--color-discrimination); }
-        .tag-contraband { border-left-color: var(--color-contraband) !important; color: var(--color-contraband); }
-        .tag-drugs { border-left-color: var(--color-drugs) !important; color: var(--color-drugs); }
-        .tag-others { border-left-color: var(--color-others) !important; color: var(--color-others); }
+        .tag-late { border-left-color: var(--color-late) !important; }
+        .tag-skipping { border-left-color: var(--color-skipping) !important; }
+        .tag-bullying { border-left-color: var(--color-bullying) !important; }
+        .tag-discrimination { border-left-color: var(--color-discrimination) !important; }
+        .tag-contraband { border-left-color: var(--color-contraband) !important; }
+        .tag-drugs { border-left-color: var(--color-drugs) !important; }
+        .tag-others { border-left-color: var(--color-others) !important; }
 
         .time-hint { display: block; font-size: 9px; color: #888; margin-top: 2px; font-weight: normal; }
         .remove-single { margin-left: 10px; color: #666; font-size: 16px; }
-        .remove-single:hover { color: #ff4d4d; }
-
-        .count-badge {
-            background: rgba(241, 196, 15, 0.1); color: var(--accent);
-            padding: 6px 14px; border-radius: 8px; border: 1px solid var(--accent); font-weight: 800;
-        }
-
-        .warning-row td { background: #2d1616 !important; border-color: #4d2626 !important; }
-        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; border-radius: 6px; }
 
         .pagination-bar {
             display: flex; justify-content: space-between; align-items: center;
-            margin-top: 25px; padding: 15px; background: #111; border-radius: 12px; border: 1px solid #222;
+            margin-top: 25px; padding: 15px; background: #111; border-radius: 12px;
         }
-        .page-info { color: var(--text-dim); font-size: 13px; font-weight: bold; letter-spacing: 1px; }
 
-        /* 底部功能栏 */
+        /* 底部动作条 */
         .action-bar {
             display: flex; justify-content: flex-end; align-items: center;
             gap: 15px; margin-top: 50px; padding: 20px; border-top: 1px solid #222;
         }
         .report-btn { background: #27ae60; color: white; }
-        .report-btn:hover { background: #2ecc71; }
-        .date-picker { max-width: 200px; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; }
-        .master-btn { background: #1a0000; color: #ff0000; border: 1px solid #440000; font-size: 10px; padding: 10px 20px; cursor: pointer; }
+        .date-picker { padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; }
+        .master-btn { background: #1a0000; color: #ff0000; border: 1px solid #440000; font-size: 10px; padding: 10px 20px; }
 
-        /* 隐藏的导出模板样式 */
+        /* --- 导出报告专用样式 (白底黑字) --- */
         #reportExportTemplate {
             position: absolute; left: -9999px; top: 0;
-            width: 800px; background: white; color: black; padding: 40px;
+            width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px;
         }
-        .report-header { text-align: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
-        .report-table { width: 100%; border-collapse: collapse; }
-        .report-table th, .report-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .report-table th { background: #f2f2f2; }
+        .report-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+        .report-header h1 { color: #000 !important; margin: 0; }
+        .report-table { width: 100%; border-collapse: collapse; background: #fff !important; }
+        .report-table th, .report-table td { 
+            border: 1px solid #000 !important; padding: 12px; text-align: left; color: #000 !important; 
+        }
+        .report-table th { background: #f2f2f2 !important; }
 
         .footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 11px; }
     </style>
@@ -135,7 +127,7 @@
 <body oncontextmenu="return false">
 
 <script>
-    // 关键权限检查：如果 sessionStorage 没数据，直接踢走
+    // 权限与身份验证
     const currentAdmin = sessionStorage.getItem('admin_name');
     if (sessionStorage.getItem('access_granted') !== 'true' || !currentAdmin) { 
         window.location.replace('index.html'); 
@@ -145,16 +137,16 @@
 <div class="navbar">
     <div class="nav-brand">
         <img src="semsira.png" alt="SEMSIRA">
-        <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
+        <h1>SEMSIRA BDP MANAGEMENT</h1>
     </div>
     <div class="admin-tag">
-        OPERATOR <span class="admin-name" id="displayAdmin">OFFLINE</span>
+        OPERATOR <span class="admin-name" id="displayAdmin">VALIDATING...</span>
     </div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3>1. LOG ENTRY (AUTO-TIMESTAMP)</h3>
+        <h3>1. LOG ENTRY</h3>
         <div class="input-group">
             <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
             <input type="text" id="stuClass" placeholder="CLASS (E.G. 5T1)">
@@ -174,13 +166,13 @@
 
     <div class="card" style="background: transparent; border: none; padding: 0;">
         <h3>2. DISCIPLINARY RECORDS</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="SEARCH BY NAME OR CLASS IDENTITY...">
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="SEARCH BY NAME OR CLASS...">
 
         <table>
             <thead>
                 <tr>
-                    <th width="22%">Student Identity</th>
-                    <th width="48%">History</th>
+                    <th width="22%">Identity</th>
+                    <th width="48%">Offence History</th>
                     <th width="15%" style="text-align:center">Total</th>
                     <th width="15%">Action</th>
                 </tr>
@@ -196,19 +188,19 @@
     </div>
 
     <div class="action-bar">
-        <span style="font-size: 12px; color: #666;">REPORT DATE:</span>
+        <span style="font-size: 12px; color: #666;">SELECT DATE:</span>
         <input type="date" id="reportDate" class="date-picker">
-        <button class="report-btn" onclick="downloadReport()">Download PNG</button>
-        <div style="width: 50px;"></div>
+        <button class="report-btn" onclick="downloadReport()">Download PNG Report</button>
+        <div style="width: 40px;"></div>
         <button class="master-btn" onclick="masterSystemReset()">ANNUAL RESET</button>
     </div>
 </div>
 
 <div id="reportExportTemplate">
     <div class="report-header">
-        <h1 style="margin:0">SEMSIRA BDP DISCIPLINE REPORT</h1>
-        <p id="reportTitleDate" style="font-weight: bold;"></p>
-        <p style="font-size: 14px;">Operator: <span id="reportGeneratedBy"></span></p>
+        <h1>SEMSIRA BDP DISCIPLINE REPORT</h1>
+        <p id="rptDate" style="font-weight: bold; margin: 10px 0;"></p>
+        <p>Generated by: <span id="rptAdmin"></span></p>
     </div>
     <table class="report-table">
         <thead>
@@ -217,20 +209,20 @@
                 <th>Class</th>
                 <th>Offence</th>
                 <th>Time</th>
-                <th>By</th>
+                <th>Recorder</th>
             </tr>
         </thead>
         <tbody id="reportTbody"></tbody>
     </table>
+    <p style="margin-top: 20px; text-align: right; font-size: 12px;">Official SEMSIRA Document</p>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.9 | REPORTING ENABLED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v4.0 | &copy; 2026 SEMSIRA</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, getDoc, increment, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 【重要：请填入你的完整 Firebase 配置】
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
         authDomain: "bdpsemsira-5c274.firebaseapp.com",
@@ -244,7 +236,7 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    // 更新界面显示的管理员名字
+    // 初始化界面
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
 
@@ -259,13 +251,8 @@
         if (offence.includes("Bullying")) return "tag-bullying";
         if (offence.includes("Discrimination")) return "tag-discrimination";
         if (offence.includes("Contraband")) return "tag-contraband";
-        if (offence.includes("Severe") || offence.includes("Drugs")) return "tag-drugs";
+        if (offence.includes("Severe")) return "tag-drugs";
         return "tag-others";
-    }
-
-    function getCurrentTime() {
-        const now = new Date();
-        return now.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
     onSnapshot(colRef, (snapshot) => {
@@ -285,7 +272,6 @@
 
     function renderTable() {
         const totalPages = Math.ceil(filteredStudents.length / pageSize) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
         const start = (currentPage - 1) * pageSize;
         const pageData = filteredStudents.slice(start, start + pageSize);
 
@@ -304,11 +290,11 @@
 
             let offencesHtml = Object.keys(groups).map(type => {
                 const items = groups[type];
-                const infoStr = items.map((it, i) => `${i+1}. ${it.time} (By: ${it.by || 'System'})`).join('|'); 
+                const info = items.map((it, i) => `${i+1}. ${it.time} (By: ${it.by || 'N/A'})`).join('|'); 
                 return `
-                    <span class="offence-tag ${getTagClass(type)}" onclick="viewHistory('${data.name}', '${type}', '${infoStr}')">
+                    <span class="offence-tag ${getTagClass(type)}" onclick="viewHistory('${data.name}', '${type}', '${info}')">
                         <div style="display:flex; flex-direction:column">
-                            <span>${type} ${items.length > 1 ? `<b style="color:white;margin-left:4px">x${items.length}</b>`:''}</span>
+                            <span>${type} ${items.length > 1 ? `<b>x${items.length}</b>`:''}</span>
                             <span class="time-hint">By: ${items[items.length-1].by || 'N/A'}</span>
                         </div>
                         <span class="remove-single" onclick="event.stopPropagation(); deleteSingle('${data.id}', '${type}')">×</span>
@@ -316,91 +302,95 @@
                 `;
             }).join("");
 
-            html += `
-                <tr class="${data.counts >= 3 ? 'warning-row' : ''}">
-                    <td><div style="font-weight:800; color:white;">${data.name}</div><div style="color:var(--accent); font-size:11px;">CLASS: ${data.class}</div></td>
-                    <td>${offencesHtml}</td>
-                    <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
-                    <td><button class="delete-btn" onclick="purgeStudent('${data.id}')">Purge All</button></td>
-                </tr>
-            `;
+            html += `<tr>
+                <td><b>${data.name}</b><br><small style="color:var(--accent)">${data.class}</small></td>
+                <td>${offencesHtml}</td>
+                <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
+                <td><button class="delete-btn" onclick="purgeStudent('${data.id}')">Purge</button></td>
+            </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">NO RECORDS</td></tr>';
+        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records</td></tr>';
     }
 
-    window.viewHistory = (name, type, infoStr) => {
-        alert(`Student: ${name}\nOffence: ${type}\n\nLog:\n${infoStr.split('|').join('\n')}`);
-    };
+    window.viewHistory = (name, type, info) => { alert(`Student: ${name}\nOffence: ${type}\n\nLog:\n${info.split('|').join('\n')}`); };
 
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const className = document.getElementById('stuClass').value.trim().toUpperCase();
-        const offenceType = document.getElementById('violation').value;
-        if (!name || !className || !offenceType) return alert("Missing fields");
+        const type = document.getElementById('violation').value;
+        if (!name || !className || !type) return alert("Fill all fields");
 
         const q = query(colRef, where("name", "==", name), where("class", "==", className));
         const qs = await getDocs(q);
-        const entryObj = { type: offenceType, time: getCurrentTime(), by: currentAdmin };
+        const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
 
         if (!qs.empty) {
-            const dRef = doc(db, "students", qs.docs[0].id);
-            await updateDoc(dRef, { offences: [...qs.docs[0].data().offences, entryObj], counts: increment(1) });
+            await updateDoc(doc(db, "students", qs.docs[0].id), { 
+                offences: [...qs.docs[0].data().offences, log], 
+                counts: increment(1) 
+            });
         } else {
-            await addDoc(colRef, { name, class: className, offences: [entryObj], counts: 1 });
+            await addDoc(colRef, { name, class: className, offences: [log], counts: 1 });
         }
         document.getElementById('stuName').value = "";
     };
 
     window.downloadReport = async () => {
-        const targetDate = document.getElementById('reportDate').value;
-        if (!targetDate) return alert("Select a date!");
-        const parts = targetDate.split('-');
-        const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        const dateInput = document.getElementById('reportDate').value;
+        if (!dateInput) return alert("Select Date");
+        const [y, m, d] = dateInput.split('-');
+        const targetDate = `${d}/${m}/${y}`;
 
-        const reportTbody = document.getElementById('reportTbody');
-        reportTbody.innerHTML = "";
-        let found = false;
+        const tbody = document.getElementById('reportTbody');
+        tbody.innerHTML = "";
+        let count = 0;
 
         allStudents.forEach(stu => {
             stu.offences.forEach(off => {
-                if (off.time && off.time.startsWith(formattedDate)) {
-                    found = true;
-                    reportTbody.innerHTML += `<tr><td>${stu.name}</td><td>${stu.class}</td><td>${off.type}</td><td>${off.time.split(', ')[1]}</td><td>${off.by || 'N/A'}</td></tr>`;
+                if (off.time && off.time.includes(targetDate)) {
+                    count++;
+                    tbody.innerHTML += `<tr>
+                        <td>${stu.name}</td>
+                        <td>${stu.class}</td>
+                        <td>${off.type}</td>
+                        <td>${off.time.split(', ')[1]}</td>
+                        <td>${off.by || 'N/A'}</td>
+                    </tr>`;
                 }
             });
         });
 
-        if (!found) return alert("No records for this date!");
+        if (count === 0) return alert("No records found for this date.");
 
-        document.getElementById('reportTitleDate').innerText = "DATE: " + formattedDate;
-        document.getElementById('reportGeneratedBy').innerText = currentAdmin;
+        document.getElementById('rptDate').innerText = "REPORT DATE: " + targetDate;
+        document.getElementById('rptAdmin').innerText = currentAdmin;
 
         const template = document.getElementById('reportExportTemplate');
-        html2canvas(template).then(canvas => {
+        html2canvas(template, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `Report_${formattedDate.replace(/\//g,'-')}.png`;
-            link.href = canvas.toDataURL();
+            link.download = `BDP_Report_${targetDate.replace(/\//g,'-')}.png`;
+            link.href = canvas.toDataURL("image/png");
             link.click();
         });
     };
 
-    window.deleteSingle = async (id, typeName) => {
-        if(!confirm(`Remove one ${typeName}?`)) return;
+    window.deleteSingle = async (id, type) => {
+        if(!confirm(`Remove one ${type}?`)) return;
         const dRef = doc(db, "students", id);
         const snap = await getDoc(dRef);
         let list = snap.data().offences;
         for (let i = list.length - 1; i >= 0; i--) {
-            if (list[i].type === typeName) { list.splice(i, 1); break; }
+            if (list[i].type === type) { list.splice(i, 1); break; }
         }
         await updateDoc(dRef, { offences: list, counts: increment(-1) });
     };
 
     window.purgeStudent = async (id) => {
-        if(confirm("Delete permanently?")) await deleteDoc(doc(db, "students", id));
+        if(confirm("Delete student permanently?")) await deleteDoc(doc(db, "students", id));
     };
 
     window.masterSystemReset = async () => {
-        if (confirm("DELETE EVERYTHING?") && prompt("Type 'RESET2026':") === "RESET2026") {
+        if (confirm("DELETE ALL?") && prompt("Type 'RESET2026':") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
