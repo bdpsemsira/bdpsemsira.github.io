@@ -15,76 +15,59 @@
             --input-bg: #0f0f0f;
             --text: #ffffff;
             --text-dim: #666;
-            --color-late: #b7950b;
-            --color-skipping: #d35400;
-            --color-bullying: #c0392b;
-            --color-drugs: #8e44ad;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
         .navbar { background: #000; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; }
         .nav-brand { display: flex; align-items: center; }
         .nav-brand img { height: 40px; margin-right: 15px; }
-        .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px;}
-        
+        .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .admin-name { color: var(--accent); font-weight: bold; border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 5px; font-size: 12px; }
+
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; flex: 1; }
         .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; }
         h3 { color: var(--accent); font-size: 12px; text-transform: uppercase; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px; }
         
-        /* 录入框对齐 */
-        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        input, select { background: var(--input-bg); border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; min-width: 140px; box-sizing: border-box; }
+        .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        input, select { background: var(--input-bg); border: 1px solid #333; color: white; padding: 14px; border-radius: 8px; flex: 1; min-width: 160px; outline: none; }
         
-        /* 核心修复：搜索框 100% 宽度对齐表格 */
-        #searchBox { 
-            width: 100%; 
-            box-sizing: border-box; 
-            margin-bottom: 15px; 
-            font-size: 15px; 
-            border: 1px solid #333; 
-            background: #000; 
-            padding: 15px 20px; 
-            border-radius: 12px; 
-            color: white;
-            outline: none;
-            transition: 0.3s;
-        }
+        #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; font-size: 15px; border: 1px solid #333; background: #000; padding: 15px 20px; border-radius: 12px; color: white; outline: none; }
         #searchBox:focus { border-color: var(--accent); }
 
-        /* 表格对齐 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
-        th { color: var(--text-dim); padding: 10px 15px; text-align: left; font-size: 11px; text-transform: uppercase;}
-        td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        td:first-child { border-radius: 10px 0 0 10px; border-left: 1px solid #282828; }
-        td:last-child { border-radius: 0 10px 10px 0; border-right: 1px solid #282828; }
+        th { color: var(--text-dim); padding: 10px 15px; text-align: left; font-size: 11px; }
+        td { background: #1a1a1a; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
+        td:first-child { border-radius: 12px 0 0 12px; }
+        td:last-child { border-radius: 0 12px 12px 0; }
 
-        .offence-tag { display: inline-block; background: #252525; padding: 4px 10px; margin: 2px; border-radius: 4px; font-size: 10px; border-left: 3px solid #555; }
-        .count-badge { color: var(--accent); font-weight: bold; font-size: 16px; }
-
-        .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: #111; border-radius: 10px; font-size: 12px; }
-        .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #222; }
+        .offence-tag { display: inline-block; background: #252525; padding: 5px 10px; margin: 3px; border-radius: 5px; font-size: 11px; border-left: 3px solid #555; }
+        .count-badge { color: var(--accent); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--accent); font-weight: 800; }
         
-        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        button { background: var(--accent); color: black; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 10px; }
         .report-btn { background: #27ae60; color: white; }
-        .master-btn { background: #1a0000; color: #ff4d4d; border: 1px solid #442222; }
+        .master-btn { background: #1a0000; color: #ff4d4d; border: 1px solid #442222; font-size: 10px; }
 
-        /* 导出模板 */
-        #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #fff !important; color: #000 !important; padding: 50px; }
-        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .rpt-table th, .rpt-table td { border: 1px solid #000 !important; padding: 12px; text-align: center; background: #fff !important; color: #000 !important; }
+        .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 50px; padding: 20px; border-top: 1px solid #222; }
+
+        /* 导出模板样式 */
+        #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #fff !important; color: #000 !important; padding: 50px; box-sizing: border-box; }
+        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; margin-top: 20px; }
+        .rpt-table th, .rpt-table td { border: 1px solid #000 !important; padding: 12px; text-align: center; color: #000 !important; font-size: 15px; }
+        
+        /* 导出颜色类 */
         .c-late { color: #b7950b !important; font-weight: bold; }
         .c-skip { color: #d35400 !important; font-weight: bold; }
         .c-bad { color: #c0392b !important; font-weight: bold; }
+        .c-contraband { color: #9b59b6 !important; font-weight: bold; }
+        .c-drug { color: #8e44ad !important; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div class="nav-brand">
-        <img src="semsira.png" alt="Logo">
-        <h1>SEMSIRA BDP MANAGEMENT</h1>
-    </div>
-    <div class="admin-tag">OPERATOR <span class="admin-name" id="displayAdmin">...</span></div>
+    <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
+    <div id="adminTag">OPERATOR: <span class="admin-name" id="displayAdmin">...</span></div>
 </div>
 
 <div class="container">
@@ -94,10 +77,12 @@
             <input type="text" id="stuName" placeholder="FULL NAME">
             <input type="text" id="stuClass" placeholder="CLASS">
             <select id="violation">
-                <option value="" disabled selected>OFFENCE</option>
+                <option value="" disabled selected>OFFENCE TYPE</option>
                 <option value="Late">LATE</option>
                 <option value="Skipping Class">SKIPPING CLASS</option>
                 <option value="Bullying">BULLYING</option>
+                <option value="Discrimination">DISCRIMINATION</option>
+                <option value="Contraband">CONTRABAND</option>
                 <option value="Severe Misconduct/Drugs">DRUGS/SEVERE</option>
                 <option value="Others">OTHERS</option>
             </select>
@@ -106,43 +91,35 @@
     </div>
 
     <div class="card" style="background: transparent; border: none; padding: 0;">
-        <h3>2. DISCIPLINARY RECORDS</h3>
+        <h3>2. RECORDS</h3>
         <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class...">
         <table>
             <thead>
-                <tr>
-                    <th width="25%">Student</th>
-                    <th width="45%">History</th>
-                    <th width="15%" style="text-align:center">Total</th>
-                    <th width="15%">Action</th>
-                </tr>
+                <tr><th width="25%">Identity</th><th width="45%">History</th><th width="15%" style="text-align:center">Total</th><th width="15%">Action</th></tr>
             </thead>
             <tbody id="recordBody"></tbody>
         </table>
-        <div class="pagination-bar">
-            <button onclick="changePage(-1)" id="prevBtn">PREV</button>
-            <span id="pageDisplay">PAGE 1</span>
-            <button onclick="changePage(1)" id="nextBtn">NEXT</button>
+        <div style="display:flex; justify-content:space-between; padding:15px; background:#111; border-radius:12px;">
+            <button onclick="changePage(-1)" id="prevBtn" style="padding:5px 15px; font-size:10px;">PREV</button>
+            <span id="pageDisplay" style="font-size:12px; color:#666;">PAGE 1</span>
+            <button onclick="changePage(1)" id="nextBtn" style="padding:5px 15px; font-size:10px;">NEXT</button>
         </div>
     </div>
 
     <div class="action-bar">
-        <input type="date" id="reportDate" style="background:#111; color:white; border:1px solid #333; padding:8px; border-radius:5px;">
-        <button class="report-btn" onclick="downloadReport()">Download Report</button>
+        <input type="date" id="reportDate" style="background:#111; color:white; border:1px solid #444; padding:10px; border-radius:6px;">
+        <button class="report-btn" onclick="downloadReport()">Download PNG Report</button>
         <button class="master-btn" onclick="masterSystemReset()">Annual Reset</button>
     </div>
 </div>
 
 <div id="reportExportTemplate">
-    <h1 style="text-align:center;">SEMSIRA BDP DISCIPLINE REPORT</h1>
+    <h1 style="text-align:center; border-bottom: 4px double #000; padding-bottom:10px;">SEMSIRA BDP DISCIPLINE REPORT</h1>
     <div style="display:flex; justify-content:space-between; margin: 20px 0; font-weight:bold;">
-        <span id="rptDateSpan"></span>
-        <span id="rptAdminSpan"></span>
+        <span id="rptDateSpan"></span><span id="rptAdminSpan"></span>
     </div>
     <table class="rpt-table">
-        <thead>
-            <tr><th>Name</th><th>Class</th><th>Offence</th><th>Time</th><th>Recorder</th></tr>
-        </thead>
+        <thead><tr><th>Name</th><th>Class</th><th>Offence</th><th>Time</th><th>Recorder</th></tr></thead>
         <tbody id="reportTbody"></tbody>
     </table>
 </div>
@@ -164,7 +141,7 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    const currentAdmin = sessionStorage.getItem('admin_name') || "N/A";
+    const currentAdmin = sessionStorage.getItem('admin_name') || "OFFLINE";
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
 
@@ -181,8 +158,7 @@
     window.handleSearch = () => {
         const term = document.getElementById('searchBox').value.toUpperCase();
         filteredData = allData.filter(s => s.name.includes(term) || s.class.includes(term));
-        currentPage = 1;
-        render();
+        currentPage = 1; render();
     };
 
     window.changePage = (n) => { currentPage += n; render(); };
@@ -191,10 +167,7 @@
         const total = Math.ceil(filteredData.length / pageSize) || 1;
         const start = (currentPage - 1) * pageSize;
         const pageItems = filteredData.slice(start, start + pageSize);
-
         document.getElementById('pageDisplay').innerText = `PAGE ${currentPage} OF ${total}`;
-        document.getElementById('prevBtn').disabled = currentPage === 1;
-        document.getElementById('nextBtn').disabled = currentPage === total;
 
         let html = "";
         pageItems.forEach(s => {
@@ -202,7 +175,7 @@
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${s.offences.map(o => `<span class="offence-tag">${o.type}</span>`).join('')}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
-                <td><button style="background:#222; color:#555; padding:5px 10px; font-size:9px;" onclick="purge('${s.id}')">Purge</button></td>
+                <td><button class="delete-btn" onclick="purge('${s.id}')">Purge</button></td>
             </tr>`;
         });
         document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records</td></tr>';
@@ -212,17 +185,14 @@
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
-        if(!name || !cls || !type) return alert("Fill all fields");
+        if(!name || !cls || !type) return alert("Fill all!");
 
         const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
 
         if(!qs.empty) {
-            await updateDoc(doc(db, "students", qs.docs[0].id), { 
-                offences: [...qs.docs[0].data().offences, log], 
-                counts: increment(1) 
-            });
+            await updateDoc(doc(db, "students", qs.docs[0].id), { offences: [...qs.docs[0].data().offences, log], counts: increment(1) });
         } else {
             await addDoc(colRef, { name, class: cls, offences: [log], counts: 1 });
         }
@@ -235,21 +205,43 @@
         const target = `${d}/${m}/${y}`;
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
-        let count = 0;
+        
+        let reportMap = new Map(); // 用于合并同一个人同一天的多次错误
 
         allData.forEach(stu => {
             stu.offences.forEach(off => {
                 if (off.time.includes(target)) {
-                    count++;
-                    let cName = off.type.includes("Late") ? "c-late" : (off.type.includes("Skip") ? "c-skip" : "c-bad");
-                    tbody.innerHTML += `<tr><td>${stu.name}</td><td>${stu.class}</td><td class="${cName}">${off.type}</td><td>${off.time.split(', ')[1]}</td><td>${off.by}</td></tr>`;
+                    const key = `${stu.name}_${stu.class}_${off.type}`;
+                    if(reportMap.has(key)) {
+                        let existing = reportMap.get(key);
+                        existing.count += 1;
+                    } else {
+                        reportMap.set(key, { name: stu.name, class: stu.class, type: off.type, time: off.time.split(', ')[1], by: off.by, count: 1 });
+                    }
                 }
             });
         });
 
-        if(count === 0) return alert("No cases.");
+        if(reportMap.size === 0) return alert("No cases.");
+        
+        reportMap.forEach(item => {
+            let cName = "c-bad";
+            if(item.type.includes("Late")) cName = "c-late";
+            else if(item.type.includes("Skip")) cName = "c-skip";
+            else if(item.type.includes("Contraband")) cName = "c-contraband";
+            else if(item.type.includes("Severe")) cName = "c-drug";
+
+            tbody.innerHTML += `<tr>
+                <td style="text-align:left; font-weight:bold;">${item.name}</td>
+                <td>${item.class}</td>
+                <td class="${cName}">${item.type} ${item.count > 1 ? 'x'+item.count : ''}</td>
+                <td>${item.time}</td>
+                <td>${item.by}</td>
+            </tr>`;
+        });
+
         document.getElementById('rptDateSpan').innerText = "DATE: " + target;
-        document.getElementById('rptAdminSpan').innerText = "BY: " + currentAdmin;
+        document.getElementById('rptAdminSpan').innerText = "OPERATOR: " + currentAdmin;
         
         html2canvas(document.getElementById('reportExportTemplate'), { backgroundColor: "#fff", scale: 2 }).then(canvas => {
             const link = document.createElement('a');
@@ -260,14 +252,13 @@
     };
 
     window.purge = async (id) => { if(confirm("Delete student?")) await deleteDoc(doc(db, "students", id)); };
-
     window.masterSystemReset = async () => {
-        if(confirm("DELETE ALL DATA?") && prompt("Type 'RESET2026':") === "RESET2026") {
+        if(confirm("WIPE ALL DATA?") && prompt("Code:") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            alert("Reset Successful");
+            alert("Cleared");
         }
     };
 </script>
