@@ -14,6 +14,7 @@
             --input-bg: #0f0f0f;
             --text: #ffffff;
             --text-dim: #666;
+            /* 颜色分组定义 */
             --color-late: #ffeb3b;
             --color-skipping: #ff9800;
             --color-bullying: #f44336;
@@ -71,14 +72,22 @@
         td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
         
-        /* Tag Styling */
+        /* 错误标签基础样式 */
         .offence-tag {
             display: inline-flex; align-items: center; 
             background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
-            font-size: 12px; font-weight: 600; border-left: 3px solid var(--accent);
-            cursor: pointer; transition: 0.2s;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            border-left: 4px solid #555; /* 默认灰色 */
         }
         .offence-tag:hover { background: #333; transform: scale(1.02); }
+
+        /* 补回来的分组颜色逻辑 */
+        .tag-late { border-left-color: var(--color-late) !important; color: var(--color-late); }
+        .tag-skipping { border-left-color: var(--color-skipping) !important; color: var(--color-skipping); }
+        .tag-bullying { border-left-color: var(--color-bullying) !important; color: var(--color-bullying); }
+        .tag-contraband { border-left-color: var(--color-contraband) !important; color: var(--color-contraband); }
+        .tag-drugs { border-left-color: var(--color-drugs) !important; color: var(--color-drugs); }
+        .tag-others { border-left-color: var(--color-others) !important; color: var(--color-others); }
 
         .time-hint { display: block; font-size: 9px; color: #888; margin-top: 2px; font-weight: normal; }
 
@@ -113,7 +122,7 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.3</span></div>
+    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.4</span></div>
 </div>
 
 <div class="container">
@@ -154,7 +163,7 @@
     </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.3 | TIMESTAMP ENABLED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.4 | COLOR GROUPS REPAIRED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -173,6 +182,7 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
+    // 映射颜色 Class
     function getTagClass(offence) {
         if (offence.includes("Late")) return "tag-late";
         if (offence.includes("Skipping")) return "tag-skipping";
@@ -187,7 +197,6 @@
         return now.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
-    // New Function: View all timestamps for a specific category
     window.viewHistory = (name, type, timesStr) => {
         const times = timesStr.split('|');
         let list = times.map((t, i) => `${i+1}. ${t}`).join('\n');
@@ -243,9 +252,9 @@
                 const times = groups[type];
                 const count = times.length;
                 const latestTime = times[times.length - 1];
-                const allTimesStr = times.join('|'); // For passing to function
+                const allTimesStr = times.join('|'); 
                 
-                const displayLabel = count > 1 ? `${type} <b style="color:var(--accent);">x${count}</b>` : type;
+                const displayLabel = count > 1 ? `${type} <b style="color:white; margin-left:4px;">x${count}</b>` : type;
                 
                 return `
                     <span class="offence-tag ${getTagClass(type)}" 
