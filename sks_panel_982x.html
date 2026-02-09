@@ -3,112 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Panel | SEMSIRA BDP</title>
+    <title>BDP Panel | SEMSIRA</title>
     <link rel="icon" type="image/png" href="semsira.png">
     <style>
         :root {
-            --accent: #e67e22;
-            --accent-hover: #d35400;
-            --bg: #0a0a0a;
-            --card: #181818;
-            --input-bg: #0f0f0f;
+            /* Futuristic Orange Palette */
+            --accent: #ff8000; 
+            --accent-glow: rgba(255, 128, 0, 0.4);
+            --bg: #050505;
+            --card: #0f1014;
+            --input-bg: #16181d;
             --text: #ffffff;
-            --text-dim: #666;
-            --color-late: #ffeb3b;
-            --color-skipping: #ff9800;
-            --color-bullying: #f44336;
-            --color-contraband: #e91e63;
-            --color-drugs: #9c27b0;
-            --color-others: #9e9e9e;
+            --text-dim: #70757a;
+            
+            /* Status Colors */
+            --color-late: #f7d716;
+            --color-skipping: #ff8000;
+            --color-bullying: #ff3131;
+            --color-contraband: #ff00ff;
+            --color-drugs: #bc13fe;
+            --color-others: #00d2ff;
         }
 
         body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
             margin: 0; 
             background-color: var(--bg); 
             color: var(--text);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            display: flex; flex-direction: column; min-height: 100vh;
+            letter-spacing: -0.01em;
         }
 
+        /* Sci-Fi Navbar */
         .navbar {
-            background-color: #000;
-            padding: 15px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid #222;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 18px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #222;
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
         }
         .nav-brand { display: flex; align-items: center; }
-        .nav-brand img { height: 45px; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.3)); }
-        /* Updated Title Below */
-        .nav-brand h1 { font-size: 20px; color: var(--accent); margin: 0; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; }
+        .nav-brand img { height: 48px; margin-right: 18px; filter: drop-shadow(0 0 8px var(--accent-glow)); }
+        .nav-brand h1 { 
+            font-size: 18px; color: var(--accent); margin: 0; 
+            letter-spacing: 2px; font-weight: 900; text-transform: uppercase;
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
 
-        .container { max-width: 1150px; margin: 30px auto; padding: 0 20px; flex: 1; }
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; flex: 1; }
 
+        /* Tech Cards */
         .card {
             background: var(--card);
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 25px;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 30px;
             border: 1px solid #222;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
         }
         
-        h3 { color: var(--accent); margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px;}
-
-        .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
-        input, select { 
-            background: var(--input-bg); border: 1px solid #333; color: white; 
-            padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; transition: 0.3s;
-            box-sizing: border-box;
+        h3 { 
+            color: var(--text-dim); margin-top: 0; font-size: 12px; 
+            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px;
         }
-        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(230, 126, 34, 0.1); }
+
+        /* Inputs & Buttons */
+        .input-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        input, select { 
+            background: var(--input-bg); border: 1px solid #2d3039; color: white; 
+            padding: 15px; border-radius: 6px; flex: 1; min-width: 180px; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        input:focus, select:focus { 
+            outline: none; border-color: var(--accent); 
+            background: #1c1f26; box-shadow: 0 0 15px rgba(255, 128, 0, 0.1); 
+        }
         
         button { 
-            background: var(--accent); color: white; padding: 12px 24px; border: none; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s;
+            background: var(--accent); color: #000; padding: 15px 30px; border: none; 
+            border-radius: 6px; cursor: pointer; font-weight: 800; 
+            text-transform: uppercase; transition: all 0.3s;
+            box-shadow: 0 0 20px var(--accent-glow);
         }
-        button:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        button:hover { background: #ff9500; transform: scale(1.02); box-shadow: 0 0 30px var(--accent-glow); }
 
         #searchBox { 
-            width: 100%; margin-bottom: 25px; font-size: 16px; border: 1px solid #333;
-            background: #000; padding: 15px 20px; border-radius: 12px; color: white;
+            width: 100%; margin-bottom: 30px; font-size: 16px; border: 1px solid #222;
+            background: #0a0a0a; padding: 18px 25px; border-radius: 8px; color: var(--accent);
+            border-left: 4px solid var(--accent);
         }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
-        td { background: #1a1a1a; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
-        td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
-        td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
+        /* Modern Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { color: var(--text-dim); padding: 15px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        td { background: transparent; padding: 20px 10px; border-bottom: 1px solid #1a1a1a; }
         
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        /* Dynamic Tags with Glow */
         .offence-tag {
             display: inline-flex; align-items: center; 
-            background: #252525; padding: 5px 12px;
-            margin: 4px; border-radius: 6px; font-size: 13px; font-weight: 600;
-            border-left: 3px solid var(--accent);
+            background: rgba(255, 255, 255, 0.03); padding: 6px 12px;
+            margin: 4px; border-radius: 4px; font-size: 12px; font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .tag-late { border-left-color: var(--color-late); color: var(--color-late); }
-        .tag-skipping { border-left-color: var(--color-skipping); color: var(--color-skipping); }
-        .tag-bullying { border-left-color: var(--color-bullying); color: var(--color-bullying); }
-        .tag-contraband { border-left-color: var(--color-contraband); color: var(--color-contraband); }
-        .tag-drugs { border-left-color: var(--color-drugs); color: var(--color-drugs); }
-        .tag-others { border-left-color: var(--color-others); color: var(--color-others); }
+        .tag-late { border-color: var(--color-late); color: var(--color-late); box-shadow: inset 0 0 5px rgba(247, 215, 22, 0.1); }
+        .tag-skipping { border-color: var(--color-skipping); color: var(--color-skipping); }
+        .tag-bullying { border-color: var(--color-bullying); color: var(--color-bullying); }
+        .tag-contraband { border-color: var(--color-contraband); color: var(--color-contraband); }
+        .tag-drugs { border-color: var(--color-drugs); color: var(--color-drugs); }
+        .tag-others { border-color: var(--color-others); color: var(--color-others); }
 
-        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; }
-        .remove-single:hover { color: #ff4d4d; }
+        .remove-single { margin-left: 10px; cursor: pointer; opacity: 0.5; font-size: 18px; }
+        .remove-single:hover { opacity: 1; color: #ff3131; }
 
         .count-badge {
-            background: rgba(230, 126, 34, 0.1); color: var(--accent);
-            padding: 6px 14px; border-radius: 8px; border: 1px solid var(--accent); font-weight: 800;
+            display: inline-block; padding: 5px 15px; border-radius: 4px;
+            background: rgba(255, 128, 0, 0.1); border: 1px solid var(--accent);
+            color: var(--accent); font-weight: 900; font-family: monospace;
         }
 
-        .warning-row td { background: #2d1616 !important; border-color: #4d2626 !important; }
-        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; }
-        .delete-btn:hover { background: #ff4d4d; color: white; }
+        .warning-row td { background: rgba(255, 49, 49, 0.05) !important; }
+        .delete-btn { 
+            background: transparent; color: #555; border: 1px solid #333; 
+            padding: 8px 12px; font-size: 10px; box-shadow: none;
+        }
+        .delete-btn:hover { background: #ff3131; color: white; border-color: #ff3131; box-shadow: 0 0 15px rgba(255, 49, 49, 0.3); }
 
-        .footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 11px; letter-spacing: 1px; }
+        .footer { text-align: center; padding: 40px; color: #333; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body oncontextmenu="return false">
@@ -124,17 +152,17 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: #e67e22;">ENCRYPTED</span></div>
+    <div style="font-size: 9px; color: var(--text-dim); letter-spacing: 1px;">DATABASE VERSION: 3.0.4A</div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3>1. DATA SYNTHESIS / NEW ENTRY</h3>
+        <h3>System.input_record()</h3>
         <div class="input-group">
-            <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
-            <input type="text" id="stuClass" placeholder="CLASS (E.G. 5T1)">
+            <input type="text" id="stuName" placeholder="NAME">
+            <input type="text" id="stuClass" placeholder="CLASS">
             <select id="violation">
-                <option value="" disabled selected>SELECT OFFENCE TYPE</option>
+                <option value="" disabled selected>TYPE_OF_OFFENCE</option>
                 <option value="Late">LATE</option>
                 <option value="Skipping Class">SKIPPING CLASS</option>
                 <option value="Bullying">BULLYING</option>
@@ -142,30 +170,28 @@
                 <option value="Severe Misconduct/Drugs">SEVERE MISCONDUCT / DRUGS</option>
                 <option value="Others">OTHERS</option>
             </select>
-            <button onclick="submitRecord()">Commit Entry</button>
+            <button onclick="submitRecord()">Commit_Data</button>
         </div>
     </div>
 
-    <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-        <h3>2. ANALYTICS & RECORD LOG</h3>
-        <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="SEARCH BY NAME OR CLASS IDENTITY...">
+    <h3>Database.query_all()</h3>
+    <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="SCANNING DATABASE FOR RECORDS...">
 
-        <table>
-            <thead>
-                <tr>
-                    <th width="25%">Student Identity</th>
-                    <th width="45%">History of Offences</th>
-                    <th width="15%" style="text-align:center">Counter</th>
-                    <th width="15%">Action</th>
-                </tr>
-            </thead>
-            <tbody id="recordBody">
-            </tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th width="25%">Student_ID</th>
+                <th width="45%">Offence_Logs</th>
+                <th width="15%" style="text-align:center">Counter</th>
+                <th width="15%">Execution</th>
+            </tr>
+        </thead>
+        <tbody id="recordBody">
+        </tbody>
+    </table>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.0 | SECURED NODE 982x<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">Cloud Synthesis Engine // Secured by Zijun // 2026</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -198,10 +224,7 @@
         const className = document.getElementById('stuClass').value.trim().toUpperCase();
         const offence = document.getElementById('violation').value;
 
-        if (!name || !className || !offence) {
-            alert("All fields are mandatory.");
-            return;
-        }
+        if (!name || !className || !offence) return alert("Missing Parameters");
 
         try {
             const q = query(colRef, where("name", "==", name));
@@ -215,15 +238,12 @@
                 });
             } else {
                 await addDoc(colRef, {
-                    name: name,
-                    class: className,
-                    offences: [offence],
-                    counts: 1
+                    name: name, class: className, offences: [offence], counts: 1
                 });
             }
             document.getElementById('stuName').value = "";
             document.getElementById('violation').selectedIndex = 0;
-        } catch (e) { alert("Error: " + e.message); }
+        } catch (e) { console.error(e); }
     };
 
     onSnapshot(colRef, (snapshot) => {
@@ -231,25 +251,21 @@
         snapshot.docs.forEach(docData => {
             const data = docData.data();
             const id = docData.id;
-            
             let offencesHtml = data.offences.map(o => `
                 <span class="offence-tag ${getTagClass(o)}">
-                    ${o} 
-                    <span class="remove-single" onclick="deleteSingle('${id}', '${o}')">×</span>
+                    ${o} <span class="remove-single" onclick="deleteSingle('${id}', '${o}')">×</span>
                 </span>
             `).join("");
 
-            const warningRow = data.counts >= 3 ? "warning-row" : "";
-
             html += `
-                <tr class="${warningRow}">
+                <tr class="${data.counts >= 3 ? 'warning-row' : ''}">
                     <td>
-                        <div style="font-weight:800; color:white; font-size:16px;">${data.name}</div>
-                        <div style="color:var(--accent); font-size:11px; margin-top:4px; letter-spacing:1px;">CLASS: ${data.class}</div>
+                        <div style="font-weight:900; color:#fff; font-size:15px; letter-spacing:1px">${data.name}</div>
+                        <div style="color:var(--text-dim); font-size:10px; margin-top:4px;">UNIT: ${data.class}</div>
                     </td>
                     <td>${offencesHtml}</td>
                     <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
-                    <td><button class="delete-btn" onclick="purgeStudent('${id}')">Purge All</button></td>
+                    <td><button class="delete-btn" onclick="purgeStudent('${id}')">Purge</button></td>
                 </tr>
             `;
         });
@@ -257,7 +273,7 @@
     });
 
     window.deleteSingle = async (id, offence) => {
-        if(confirm(`Remove specific record: ${offence}?`)) {
+        if(confirm(`Remove entry: ${offence}?`)) {
             await updateDoc(doc(db, "students", id), {
                 offences: arrayRemove(offence),
                 counts: increment(-1)
@@ -266,7 +282,7 @@
     };
 
     window.purgeStudent = async (id) => {
-        if(confirm("PERMANENTLY PURGE ENTIRE IDENTITY AND ALL LOGS?")) {
+        if(confirm("DANGER: PURGE DATA?")) {
             await deleteDoc(doc(db, "students", id));
         }
     };
@@ -274,9 +290,7 @@
     window.filterRecords = () => {
         const term = document.getElementById('searchBox').value.toLowerCase();
         const rows = document.querySelectorAll('#recordBody tr');
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(term) ? "" : "none";
-        });
+        rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? "" : "none"; });
     };
 </script>
 </body>
