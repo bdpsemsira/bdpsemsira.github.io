@@ -37,6 +37,7 @@
             letter-spacing: 1px; margin-top: 10px;
         }
         button:hover { background: #d35400; transform: translateY(-2px); }
+        button:disabled { background: #444; cursor: not-allowed; }
         #status-msg { margin-top: 20px; font-size: 12px; min-height: 18px; font-weight: bold; }
         .error { color: #ff4d4d; }
         .loading { color: #ff8c00; }
@@ -52,40 +53,53 @@
     <input type="password" id="passkey" placeholder="ACCESS KEY" onkeypress="if(event.key==='Enter') verify()">
     <button id="loginBtn" onclick="verify()">Initialize</button>
     <div id="status-msg"></div>
-    <div class="footer">CLOUD SYNTHESIS ENGINE v3.0<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+    <div class="footer">CLOUD SYNTHESIS ENGINE v3.5<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 </div>
 
 <script>
+    // 配置信息（请确保这些与你的 GitHub 仓库一致）
     const REPO_OWNER = "bdpsemsira"; 
     const REPO_NAME = "bdpsemsira.github.io"; 
     const KEY_FILE_PATH = "keys.txt"; 
     const TARGET_PAGE = 'sks_panel_982x.html'; 
 
-    // 禁止 F12
+    // 禁止 F12 调试
     document.onkeydown = function(e) {
         if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74))) return false;
     };
 
     async function verify() {
-        const input = document.getElementById('passkey').value.trim();
+        const inputRaw = document.getElementById('passkey').value.trim();
+        const inputUpper = inputRaw.toUpperCase(); // 转为大写用于匹配 keys.txt
         const msg = document.getElementById('status-msg');
         const btn = document.getElementById('loginBtn');
 
-        if (!input) { showMsg("KEY REQUIRED", "error"); return; }
+        if (!inputRaw) { showMsg("KEY REQUIRED", "error"); return; }
 
         btn.disabled = true;
         showMsg("AUTHENTICATING...", "loading");
 
         try {
+            // 从 GitHub 读取 keys.txt，并加上时间戳防止缓存
             const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${new Date().getTime()}`;
             const response = await fetch(rawUrl);
+            
+            if (!response.ok) throw new Error("Key database offline");
+            
             const data = await response.text();
-            const validKeys = data.split(/\r?\n/).map(k => k.trim()).filter(k => k !== "");
+            // 处理文件：分割行、去空格、统一转大写
+            const validKeys = data.split(/\r?\n/).map(k => k.trim().toUpperCase()).filter(k => k !== "");
 
-            if (validKeys.includes(input)) {
+            if (validKeys.includes(inputUpper)) {
                 showMsg("SUCCESS. REDIRECTING...", "loading");
-                sessionStorage.setItem('access_granted', 'true'); // 存入简单标记
-                setTimeout(() => { window.location.replace(TARGET_PAGE); }, 800);
+                
+                // 核心：存储授权状态和当前管理员名字
+                sessionStorage.setItem('access_granted', 'true');
+                sessionStorage.setItem('admin_name', inputUpper); 
+
+                setTimeout(() => { 
+                    window.location.replace(TARGET_PAGE); 
+                }, 800);
             } else {
                 showMsg("INVALID KEY", "error");
                 btn.disabled = false;
@@ -93,6 +107,7 @@
             }
         } catch (err) {
             showMsg("CONNECTION ERROR", "error");
+            console.error(err);
             btn.disabled = false;
         }
     }
