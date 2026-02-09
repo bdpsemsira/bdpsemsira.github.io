@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Panel | SEMSIRA</title>
+    <link rel="icon" type="image/png" href="semsira.png">
+    <style>
+        :root {
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --bg: #0a0a0a;
+            --card: #181818;
+            --input-bg: #0f0f0f;
+            --text: #ffffff;
+            --text-dim: #666;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background-color: var(--bg); 
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar Header */
+        .navbar {
+            background-color: #000;
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #222;
+        }
+        .nav-brand { display: flex; align-items: center; }
+        .nav-brand img { height: 45px; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.3)); }
+        .nav-brand h1 { font-size: 20px; color: var(--accent); margin: 0; letter-spacing: 2px; font-weight: 800; }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; flex: 1; }
+
+        /* Dashboard Section Card */
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        h3 { color: var(--accent); margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; }
+
+        /* Form Controls */
+        .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px; }
+        input { 
+            background: var(--input-bg); border: 1px solid #333; color: white; 
+            padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(230, 126, 34, 0.1); }
+        
+        button { 
+            background: var(--accent); color: white; padding: 12px 24px; border: none; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s;
+        }
+        button:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+        /* Search Bar Specific */
+        #searchBox { 
+            width: 100%; margin-bottom: 20px; font-size: 16px; border: 1px solid #333;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center;
+            background-color: #000; padding-left: 45px;
+        }
+
+        /* Table Design */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { background: #1f1f1f; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
+        td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
+        td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
+        
+        /* Offence Tags */
+        .offence-tag {
+            display: inline-block; background: #2a2a2a; color: #ddd; padding: 4px 10px;
+            margin: 3px; border-radius: 6px; font-size: 13px; border-left: 2px solid var(--accent);
+        }
+
+        .count-badge {
+            background: rgba(230, 126, 34, 0.1); color: var(--accent);
+            padding: 6px 12px; border-radius: 8px; border: 1px solid var(--accent); font-weight: bold;
+        }
+
+        .warning-row td { background: #2d1616 !important; border-color: #4d2626 !important; }
+        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 6px 12px; font-size: 11px; }
+        .delete-btn:hover { background: #ff4d4d; color: white; }
+
+        .footer { text-align: center; padding: 20px; color: var(--text-dim); font-size: 11px; letter-spacing: 1px; }
+    </style>
+</head>
+<body oncontextmenu="return false">
+
+<script>
+    // 安全检查：如果未授权，重定向回登录页面
+    if (sessionStorage.getItem('access_granted') !== 'true') {
+        window.location.replace('index.html'); // 假设你的登录页是 index.html
+    }
+</script>
+
+<div class="navbar">
+    <div class="nav-brand">
+        <img src="semsira.png" alt="Logo">
+        <h1>SEMSIRA CENTRAL HUB</h1>
+    </div>
+    <div style="font-size: 10px; color: #444;">SYSTEM STATUS: <span style="color: #00ff00;">ONLINE</span></div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h3>1. DATA SYNTHESIS / NEW ENTRY</h3>
+        <div class="input-group">
+            <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
+            <input type="text" id="stuClass" placeholder="CLASS">
+            <input type="text" id="violation" placeholder="OFFENCE DESCRIPTION">
+            <button onclick="submitRecord()">Commit Data</button>
+        </div>
+    </div>
+
+    <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+        <h3>2. ANALYTICS & DATABASE</h3>
+        <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="SEARCH BY NAME OR CLASS IDENTITY...">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Identity</th>
+                    <th>Offence Log</th>
+                    <th style="text-align:center">Counter</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="recordBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.0 | SECURED NODE 982x</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
+        authDomain: "bdpsemsira-5c274.firebaseapp.com",
+        projectId: "bdpsemsira-5c274",
+        storageBucket: "bdpsemsira-5c274.firebasestorage.app",
+        messagingSenderId: "176946808975",
+        appId: "1:176946808975:web:ef7447a11bb57fe71b88fa"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const colRef = collection(db, "students");
+
+    window.submitRecord = async () => {
+        const name = document.getElementById('stuName').value.trim().toUpperCase();
+        const className = document.getElementById('stuClass').value.trim().toUpperCase();
+        const offence = document.getElementById('violation').value.trim();
+
+        if (!name || !className || !offence) return;
+
+        const q = query(colRef, where("name", "==", name));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const studentDoc = querySnapshot.docs[0];
+            await updateDoc(doc(db, "students", studentDoc.id), {
+                offences: arrayUnion(offence),
+                counts: increment(1)
+            });
+        } else {
+            await addDoc(colRef, {
+                name: name,
+                class: className,
+                offences: [offence],
+                counts: 1
+            });
+        }
+        document.getElementById('stuName').value = "";
+        document.getElementById('violation').value = "";
+    };
+
+    onSnapshot(colRef, (snapshot) => {
+        let html = "";
+        snapshot.docs.forEach(docData => {
+            const data = docData.data();
+            const id = docData.id;
+            let offencesHtml = data.offences.map(o => `<span class="offence-tag">${o}</span>`).join("");
+            const warningClass = data.counts >= 3 ? "warning-row" : "";
+
+            html += `
+                <tr class="${warningClass}">
+                    <td>
+                        <div style="font-weight:800; color:white">${data.name}</div>
+                        <div style="color:var(--accent); font-size:11px; margin-top:4px">${data.class}</div>
+                    </td>
+                    <td>${offencesHtml}</td>
+                    <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
+                    <td><button class="delete-btn" onclick="deleteRecord('${id}')">Purge</button></td>
+                </tr>
+            `;
+        });
+        document.getElementById('recordBody').innerHTML = html;
+    });
+
+    window.deleteRecord = async (id) => {
+        if(confirm("PERMANENTLY PURGE THIS DATA?")) {
+            await deleteDoc(doc(db, "students", id));
+        }
+    };
+
+    window.filterRecords = () => {
+        const term = document.getElementById('searchBox').value.toLowerCase();
+        const rows = document.querySelectorAll('#recordBody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(term) ? "" : "none";
+        });
+    };
+</script>
+</body>
+</html>
