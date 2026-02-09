@@ -71,23 +71,22 @@
         td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
         
+        /* Tag Styling */
         .offence-tag {
             display: inline-flex; align-items: center; 
             background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
             font-size: 12px; font-weight: 600; border-left: 3px solid var(--accent);
-            cursor: help; position: relative;
+            cursor: pointer; transition: 0.2s;
         }
-        .tag-late { border-left-color: var(--color-late); color: var(--color-late); }
-        .tag-skipping { border-left-color: var(--color-skipping); color: var(--color-skipping); }
-        .tag-bullying { border-left-color: var(--color-bullying); color: var(--color-bullying); }
-        .tag-contraband { border-left-color: var(--color-contraband); color: var(--color-contraband); }
-        .tag-drugs { border-left-color: var(--color-drugs); color: var(--color-drugs); }
-        .tag-others { border-left-color: var(--color-others); color: var(--color-others); }
+        .offence-tag:hover { background: #333; transform: scale(1.02); }
 
         .time-hint { display: block; font-size: 9px; color: #888; margin-top: 2px; font-weight: normal; }
 
-        .remove-single { margin-left: 8px; cursor: pointer; color: #666; font-size: 16px; }
-        .remove-single:hover { color: #ff4d4d; }
+        .remove-single { 
+            margin-left: 10px; padding: 2px 5px; border-radius: 4px;
+            cursor: pointer; color: #666; font-size: 16px; 
+        }
+        .remove-single:hover { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
 
         .count-badge {
             background: rgba(241, 196, 15, 0.1); color: var(--accent);
@@ -114,12 +113,12 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">TIME-STAMPED NODE</span></div>
+    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.3</span></div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3>1. LOG ENTRY (AUTO-TIMESTAMP)</h3>
+        <h3>1. DATA ENTRY</h3>
         <div class="input-group">
             <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
             <input type="text" id="stuClass" placeholder="CLASS (E.G. 5T1)">
@@ -137,15 +136,15 @@
     </div>
 
     <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-        <h3>2. ANALYTICS & HISTORY</h3>
+        <h3>2. RECORD LOG (CLICK TAG TO VIEW ALL TIMES)</h3>
         <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="SEARCH BY NAME OR CLASS IDENTITY...">
 
         <table>
             <thead>
                 <tr>
                     <th width="22%">Student Identity</th>
-                    <th width="48%">History of Offences (Latest Time Shown)</th>
-                    <th width="15%" style="text-align:center">Total</th>
+                    <th width="48%">History of Offences</th>
+                    <th width="15%" style="text-align:center">Counter</th>
                     <th width="15%">Action</th>
                 </tr>
             </thead>
@@ -155,7 +154,7 @@
     </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.2 | TIMESTAMP ENABLED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.3 | TIMESTAMP ENABLED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -183,10 +182,16 @@
         return "tag-others";
     }
 
-    // Helper to get current time string
     function getCurrentTime() {
         const now = new Date();
         return now.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    // New Function: View all timestamps for a specific category
+    window.viewHistory = (name, type, timesStr) => {
+        const times = timesStr.split('|');
+        let list = times.map((t, i) => `${i+1}. ${t}`).join('\n');
+        alert(`Student: ${name}\nOffence: ${type}\n\nFull Record History:\n${list}`);
     }
 
     window.submitRecord = async () => {
@@ -199,10 +204,7 @@
             return;
         }
 
-        const offenceObject = {
-            type: offenceType,
-            time: getCurrentTime()
-        };
+        const offenceObject = { type: offenceType, time: getCurrentTime() };
 
         try {
             const q = query(colRef, where("name", "==", name), where("class", "==", className));
@@ -210,21 +212,13 @@
 
             if (!querySnapshot.empty) {
                 const studentDoc = querySnapshot.docs[0];
-                const existingData = studentDoc.data();
-                // Store complex objects instead of strings
-                const newOffences = [...existingData.offences, offenceObject];
-
+                const newOffences = [...studentDoc.data().offences, offenceObject];
                 await updateDoc(doc(db, "students", studentDoc.id), {
                     offences: newOffences,
                     counts: increment(1)
                 });
             } else {
-                await addDoc(colRef, {
-                    name: name,
-                    class: className,
-                    offences: [offenceObject],
-                    counts: 1
-                });
+                await addDoc(colRef, { name, class: className, offences: [offenceObject], counts: 1 });
             }
             document.getElementById('stuName').value = "";
             document.getElementById('violation').selectedIndex = 0;
@@ -236,11 +230,10 @@
         snapshot.docs.forEach(docData => {
             const data = docData.data();
             const id = docData.id;
-            
-            // Logic: Group by type and track times
             const groups = {};
+            
             data.offences.forEach(obj => {
-                const type = typeof obj === 'string' ? obj : obj.type; // Back-compatibility
+                const type = typeof obj === 'string' ? obj : obj.type;
                 const time = typeof obj === 'string' ? "N/A" : obj.time;
                 if (!groups[type]) groups[type] = [];
                 groups[type].push(time);
@@ -250,17 +243,18 @@
                 const times = groups[type];
                 const count = times.length;
                 const latestTime = times[times.length - 1];
-                const timeTooltip = times.join('\n'); // Shows all times on hover
+                const allTimesStr = times.join('|'); // For passing to function
                 
-                const displayLabel = count > 1 ? `${type} <b style="color:white; margin-left:4px;">x${count}</b>` : type;
+                const displayLabel = count > 1 ? `${type} <b style="color:var(--accent);">x${count}</b>` : type;
                 
                 return `
-                    <span class="offence-tag ${getTagClass(type)}" title="Recorded Times:\n${timeTooltip}">
+                    <span class="offence-tag ${getTagClass(type)}" 
+                          onclick="viewHistory('${data.name}', '${type}', '${allTimesStr}')">
                         <div style="display:flex; flex-direction:column">
                             <span>${displayLabel}</span>
-                            <span class="time-hint">${latestTime}</span>
+                            <span class="time-hint">Last: ${latestTime}</span>
                         </div>
-                        <span class="remove-single" onclick="deleteSingle('${id}', '${type}')">×</span>
+                        <span class="remove-single" onclick="event.stopPropagation(); deleteSingle('${id}', '${type}')">×</span>
                     </span>
                 `;
             }).join("");
@@ -271,7 +265,7 @@
                 <tr class="${warningRow}">
                     <td>
                         <div style="font-weight:800; color:white; font-size:16px;">${data.name}</div>
-                        <div style="color:var(--accent); font-size:11px; margin-top:4px; letter-spacing:1px;">CLASS: ${data.class}</div>
+                        <div style="color:var(--accent); font-size:11px; margin-top:4px;">CLASS: ${data.class}</div>
                     </td>
                     <td>${offencesHtml}</td>
                     <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
@@ -289,39 +283,28 @@
                 const docSnap = await getDoc(dRef);
                 if (docSnap.exists()) {
                     let list = docSnap.data().offences;
-                    // Find index of the last recorded instance of this type
                     let index = -1;
                     for (let i = list.length - 1; i >= 0; i--) {
-                        const item = list[i];
-                        const itemType = typeof item === 'string' ? item : item.type;
-                        if (itemType === typeName) {
-                            index = i;
-                            break;
+                        if ((typeof list[i] === 'string' ? list[i] : list[i].type) === typeName) {
+                            index = i; break;
                         }
                     }
-
                     if (index > -1) {
                         list.splice(index, 1);
-                        await updateDoc(dRef, {
-                            offences: list,
-                            counts: increment(-1)
-                        });
+                        await updateDoc(dRef, { offences: list, counts: increment(-1) });
                     }
                 }
-            } catch (e) { alert("Error deleting: " + e.message); }
+            } catch (e) { alert("Error: " + e.message); }
         }
     };
 
     window.purgeStudent = async (id) => {
-        if(confirm("PERMANENTLY PURGE ENTIRE IDENTITY AND ALL LOGS?")) {
-            await deleteDoc(doc(db, "students", id));
-        }
+        if(confirm("PERMANENTLY PURGE ENTIRE IDENTITY?")) await deleteDoc(doc(db, "students", id));
     };
 
     window.filterRecords = () => {
         const term = document.getElementById('searchBox').value.toLowerCase();
-        const rows = document.querySelectorAll('#recordBody tr');
-        rows.forEach(row => {
+        document.querySelectorAll('#recordBody tr').forEach(row => {
             row.style.display = row.innerText.toLowerCase().includes(term) ? "" : "none";
         });
     };
