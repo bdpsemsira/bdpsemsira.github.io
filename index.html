@@ -3,80 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEMSIRA Discipline System</title>
-    
+    <title>SEMSIRA Discipline Hub</title>
     <link rel="icon" type="image/png" href="semsira.png">
-
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f0f2f5; }
-        
-        /* Navigation / Header */
+        :root {
+            --primary-orange: #ff8c00;
+            --dark-bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-light: #e0e0e0;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background-color: var(--dark-bg); 
+            color: var(--text-light);
+        }
+
+        /* Header */
         .navbar {
-            background-color: white;
-            padding: 10px 30px;
+            background-color: #000;
+            padding: 15px 40px;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-orange);
         }
-        .navbar img {
-            height: 50px; /* Adjust size of logo */
-            margin-right: 15px;
-        }
-        .navbar h1 {
-            font-size: 20px;
-            color: #1a73e8;
-            margin: 0;
-        }
+        .navbar img { height: 60px; margin-right: 20px; }
+        .navbar h1 { font-size: 24px; color: var(--primary-orange); margin: 0; letter-spacing: 1px; }
 
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+
+        /* Input Card */
+        .input-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .input-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        input { 
+            background: #3d3d3d; 
+            border: 1px solid #555; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 6px; 
+            flex: 1; 
+            min-width: 180px;
+        }
+        input:focus { outline: 2px solid var(--primary-orange); border-color: transparent; }
         
-        /* Form Styling */
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; flex: 1; min-width: 200px; }
-        button { padding: 10px 20px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #1557b0; }
+        button.btn-add { 
+            background-color: var(--primary-orange); 
+            color: black; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        button.btn-add:hover { background-color: #ffa500; transform: translateY(-2px); }
 
         /* Search Bar */
-        #searchBox { width: 100%; margin-bottom: 20px; padding: 12px; border: 2px solid #e8f0fe; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        #searchBox { 
+            width: 100%; 
+            margin-bottom: 25px; 
+            padding: 15px; 
+            font-size: 18px; 
+            background: #000; 
+            border: 2px solid var(--primary-orange); 
+            color: var(--primary-orange);
+        }
 
-        /* Table */
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; }
-        th { background-color: #f8f9fa; color: #5f6368; font-size: 13px; }
+        /* Table Design */
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
+        th { background-color: #000; color: var(--primary-orange); padding: 18px; text-align: left; }
+        td { padding: 18px; border-bottom: 1px solid #444; vertical-align: top; }
         
-        /* Auto-Counter Highlight */
-        .warning-row { background-color: #fff5f5 !important; color: #d93025; font-weight: bold; }
-        .badge { padding: 4px 8px; border-radius: 4px; background: #e8f0fe; color: #1967d2; }
-        .warning-row .badge { background: #d93025; color: white; }
+        /* Offence List Styling */
+        .offence-tag {
+            display: block;
+            background: #444;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            border-left: 3px solid var(--primary-orange);
+        }
 
-        .delete-btn { background-color: #ea4335; font-size: 12px; border-radius: 4px; }
+        .count-badge {
+            background: var(--primary-orange);
+            color: black;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .warning-row { border-left: 5px solid #ff4444; }
+        .delete-btn { background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
     <img src="semsira.png" alt="SEMSIRA Logo">
-    <h1>SEMSIRA Student Discipline Dashboard</h1>
+    <h1>SEMSIRA STUDENT DISCIPLINE HUB</h1>
 </div>
 
 <div class="container">
-    <div class="input-group">
-        <input type="text" id="stuName" placeholder="Student Full Name">
-        <input type="text" id="stuClass" placeholder="Class (e.g., 3S1)">
-        <input type="text" id="violation" placeholder="Offence Description">
-        <button onclick="submitRecord()">Key-in Record</button>
+    <div class="input-card">
+        <h3 style="margin-top:0; color:var(--primary-orange)">Record New Entry</h3>
+        <div class="input-group">
+            <input type="text" id="stuName" placeholder="Student Full Name">
+            <input type="text" id="stuClass" placeholder="Class (e.g. 5T1)">
+            <input type="text" id="violation" placeholder="Offence Detail">
+            <button class="btn-add" onclick="submitRecord()">Log Record</button>
+        </div>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="🔍 Search records by name or class...">
+    <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="🔍 Type Student Name or Class to search...">
 
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Last Offence</th>
-                <th>Total Counts</th>
+                <th>Student Info</th>
+                <th>History of Offences</th>
+                <th style="text-align:center">Total</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -87,45 +140,44 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Your Firebase Configuration (Keep this private)
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
         authDomain: "bdpsemsira-5c274.firebaseapp.com",
         projectId: "bdpsemsira-5c274",
         storageBucket: "bdpsemsira-5c274.firebasestorage.app",
         messagingSenderId: "176946808975",
-        appId: "1:176946808975:web:ef7447a11bb57fe71b88fa",
-        measurementId: "G-NS4NJPK1EB"
+        appId: "1:176946808975:web:ef7447a11bb57fe71b88fa"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    // --- SUBMIT RECORD ---
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim();
         const className = document.getElementById('stuClass').value.trim();
         const offence = document.getElementById('violation').value.trim();
 
-        if (!name || !className) return alert("Please fill in both Name and Class");
+        if (!name || !className || !offence) return alert("Please fill all fields");
 
         const q = query(colRef, where("name", "==", name));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
+            // 已存在：追加错误到列表，增加计数
             const studentDoc = querySnapshot.docs[0];
             await updateDoc(doc(db, "students", studentDoc.id), {
-                offence: offence,
+                offences: arrayUnion(offence),
                 counts: increment(1)
             });
         } else {
+            // 新学生：创建包含 offences 数组的文档
             await addDoc(colRef, {
                 name: name,
                 class: className,
-                offence: offence,
+                offences: [offence],
                 counts: 1
             });
         }
@@ -133,35 +185,37 @@
         document.getElementById('violation').value = "";
     };
 
-    // --- LIVE DISPLAY ---
     onSnapshot(colRef, (snapshot) => {
-        let rows = "";
+        let html = "";
         snapshot.docs.forEach(docData => {
             const data = docData.data();
             const id = docData.id;
-            const rowStyle = data.counts >= 3 ? "warning-row" : "";
             
-            rows += `
-                <tr class="${rowStyle}">
-                    <td>${data.name}</td>
-                    <td>${data.class}</td>
-                    <td>${data.offence}</td>
-                    <td><span class="badge">${data.counts}</span></td>
+            // 生成所有错误的列表 HTML
+            let offencesListHtml = data.offences.map(o => `<span class="offence-tag">${o}</span>`).join("");
+            const warningClass = data.counts >= 3 ? "warning-row" : "";
+
+            html += `
+                <tr class="${warningClass}">
+                    <td>
+                        <div style="font-weight:bold; font-size:18px">${data.name}</div>
+                        <div style="color:var(--primary-orange); font-size:14px">${data.class}</div>
+                    </td>
+                    <td>${offencesListHtml}</td>
+                    <td style="text-align:center"><span class="count-badge">${data.counts}</span></td>
                     <td><button class="delete-btn" onclick="deleteRecord('${id}')">Delete</button></td>
                 </tr>
             `;
         });
-        document.getElementById('recordBody').innerHTML = rows;
+        document.getElementById('recordBody').innerHTML = html;
     });
 
-    // --- DELETE ---
     window.deleteRecord = async (id) => {
-        if(confirm("Delete this student's data permanently?")) {
+        if(confirm("Confirm to remove this student?")) {
             await deleteDoc(doc(db, "students", id));
         }
     };
 
-    // --- SEARCH ---
     window.filterRecords = () => {
         const term = document.getElementById('searchBox').value.toLowerCase();
         const rows = document.querySelectorAll('#recordBody tr');
@@ -170,6 +224,5 @@
         });
     };
 </script>
-
 </body>
 </html>
