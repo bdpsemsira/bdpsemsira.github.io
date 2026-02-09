@@ -18,6 +18,7 @@
             --color-late: #ffeb3b;
             --color-skipping: #ff9800;
             --color-bullying: #f44336;
+            --color-discrimination: #ff5252; /* 歧视专属：鲜红色 */
             --color-contraband: #e91e63;
             --color-drugs: #9c27b0;
             --color-others: #00d2ff;
@@ -72,19 +73,19 @@
         td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
         
-        /* 错误标签基础样式 */
         .offence-tag {
             display: inline-flex; align-items: center; 
             background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
             font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
-            border-left: 4px solid #555; /* 默认灰色 */
+            border-left: 4px solid #555;
         }
         .offence-tag:hover { background: #333; transform: scale(1.02); }
 
-        /* 补回来的分组颜色逻辑 */
+        /* 分组颜色 */
         .tag-late { border-left-color: var(--color-late) !important; color: var(--color-late); }
         .tag-skipping { border-left-color: var(--color-skipping) !important; color: var(--color-skipping); }
         .tag-bullying { border-left-color: var(--color-bullying) !important; color: var(--color-bullying); }
+        .tag-discrimination { border-left-color: var(--color-discrimination) !important; color: var(--color-discrimination); }
         .tag-contraband { border-left-color: var(--color-contraband) !important; color: var(--color-contraband); }
         .tag-drugs { border-left-color: var(--color-drugs) !important; color: var(--color-drugs); }
         .tag-others { border-left-color: var(--color-others) !important; color: var(--color-others); }
@@ -122,7 +123,7 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.4</span></div>
+    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.5</span></div>
 </div>
 
 <div class="container">
@@ -136,7 +137,7 @@
                 <option value="Late">LATE</option>
                 <option value="Skipping Class">SKIPPING CLASS</option>
                 <option value="Bullying">BULLYING</option>
-                <option value="Contraband">CONTRABAND</option>
+                <option value="Discrimination">DISCRIMINATION</option> <option value="Contraband">CONTRABAND</option>
                 <option value="Severe Misconduct/Drugs">SEVERE MISCONDUCT / DRUGS</option>
                 <option value="Others">OTHERS</option>
             </select>
@@ -163,7 +164,7 @@
     </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.4 | COLOR GROUPS REPAIRED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.5 | DISCRIMINATION OPTION ADDED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -182,11 +183,11 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    // 映射颜色 Class
     function getTagClass(offence) {
         if (offence.includes("Late")) return "tag-late";
         if (offence.includes("Skipping")) return "tag-skipping";
         if (offence.includes("Bullying")) return "tag-bullying";
+        if (offence.includes("Discrimination")) return "tag-discrimination";
         if (offence.includes("Contraband")) return "tag-contraband";
         if (offence.includes("Severe") || offence.includes("Drugs")) return "tag-drugs";
         return "tag-others";
