@@ -30,96 +30,83 @@
             display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        /* 导航栏 */
-        .navbar {
-            background-color: #000; padding: 15px 40px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 2px solid #222;
-        }
+        /* 主界面样式 */
+        .navbar { background-color: #000; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; }
         .nav-brand { display: flex; align-items: center; }
-        .nav-brand img { height: 45px; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
+        .nav-brand img { height: 45px; margin-right: 15px; }
         .nav-brand h1 { font-size: 20px; color: var(--accent); margin: 0; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; }
-
-        .admin-tag { font-size: 10px; color: #444; text-align: right; }
+        .admin-tag { font-size: 10px; color: #444; }
         .admin-name { color: var(--accent); font-weight: bold; border: 1px solid #333; padding: 2px 8px; border-radius: 4px; margin-left: 5px; }
-
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; flex: 1; }
-
-        .card {
-            background: var(--card); padding: 25px; border-radius: 16px;
-            margin-bottom: 25px; border: 1px solid #222;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        h3 { color: var(--accent); margin-top: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px;}
-
+        .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h3 { color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px;}
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
-        input, select { 
-            background: var(--input-bg); border: 1px solid #333; color: white; 
-            padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; transition: 0.3s;
-        }
-        
-        button { 
-            background: var(--accent); color: black; padding: 12px 24px; border: none; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s;
-        }
+        input, select { background: var(--input-bg); border: 1px solid #333; color: white; padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; }
+        button { background: var(--accent); color: black; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
         button:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-2px); }
-        button:disabled { background: #333; color: #666; cursor: not-allowed; }
+        #searchBox { width: 100%; margin-bottom: 25px; font-size: 16px; border: 1px solid #333; background: #000; padding: 15px 20px; border-radius: 12px; color: white; }
 
-        #searchBox { 
-            width: 100%; margin-bottom: 25px; font-size: 16px; border: 1px solid #333;
-            background: #000; padding: 15px 20px; border-radius: 12px; color: white;
-        }
-
-        /* 表格样式 */
+        /* 主表格 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 11px; text-transform: uppercase; }
+        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 11px; }
         td { background: #1a1a1a; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
-        td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
-        td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
-        
-        .offence-tag {
-            display: inline-flex; align-items: center; 
-            background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
-            font-size: 12px; font-weight: 600; cursor: pointer; border-left: 4px solid #555;
-        }
-        .tag-late { border-left-color: var(--color-late) !important; }
-        .tag-skipping { border-left-color: var(--color-skipping) !important; }
-        .tag-bullying { border-left-color: var(--color-bullying) !important; }
-        .tag-discrimination { border-left-color: var(--color-discrimination) !important; }
-        .tag-contraband { border-left-color: var(--color-contraband) !important; }
-        .tag-drugs { border-left-color: var(--color-drugs) !important; }
-        .tag-others { border-left-color: var(--color-others) !important; }
+        .offence-tag { display: inline-flex; align-items: center; background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; font-size: 12px; font-weight: 600; border-left: 4px solid #555; cursor: pointer; }
+        .count-badge { background: rgba(241, 196, 15, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--accent); font-weight: 800; }
+        .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; border-radius: 6px; }
 
-        .time-hint { display: block; font-size: 9px; color: #888; margin-top: 2px; font-weight: normal; }
-        .remove-single { margin-left: 10px; color: #666; font-size: 16px; }
-
-        .pagination-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-top: 25px; padding: 15px; background: #111; border-radius: 12px;
-        }
-
-        /* 底部动作条 */
-        .action-bar {
-            display: flex; justify-content: flex-end; align-items: center;
-            gap: 15px; margin-top: 50px; padding: 20px; border-top: 1px solid #222;
-        }
+        .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding: 15px; background: #111; border-radius: 12px; }
+        .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 50px; padding: 20px; border-top: 1px solid #222; }
         .report-btn { background: #27ae60; color: white; }
         .date-picker { padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; }
         .master-btn { background: #1a0000; color: #ff0000; border: 1px solid #440000; font-size: 10px; padding: 10px 20px; }
 
-        /* --- 导出报告专用样式 (白底黑字) --- */
+        /* ==========================================================
+           【导出模板美化修复 - 强制白底黑字】
+           ========================================================== */
         #reportExportTemplate {
             position: absolute; left: -9999px; top: 0;
-            width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px;
+            width: 1000px; 
+            background-color: #ffffff !important; 
+            color: #000000 !important; 
+            padding: 60px;
+            box-sizing: border-box;
         }
-        .report-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
-        .report-header h1 { color: #000 !important; margin: 0; }
-        .report-table { width: 100%; border-collapse: collapse; background: #fff !important; }
-        .report-table th, .report-table td { 
-            border: 1px solid #000 !important; padding: 12px; text-align: left; color: #000 !important; 
+        .rpt-header { text-align: center; margin-bottom: 30px; border-bottom: 4px double #000; padding-bottom: 20px; }
+        .rpt-header h1 { margin: 0; font-size: 32px; color: #000 !important; font-weight: bold; }
+        .rpt-info { display: flex; justify-content: space-between; margin-top: 20px; font-weight: bold; font-size: 16px; color: #000 !important; }
+
+        .rpt-table { 
+            width: 100%; 
+            border-collapse: collapse !important; 
+            margin-top: 20px;
+            background-color: #ffffff !important;
         }
-        .report-table th { background: #f2f2f2 !important; }
+        .rpt-table th { 
+            background-color: #f2f2f2 !important; 
+            color: #000 !important;
+            border: 2px solid #000 !important; 
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .rpt-table td { 
+            background-color: #ffffff !important; /* 强制名字框为白色 */
+            border: 1px solid #000 !important; 
+            padding: 15px;
+            color: #000 !important;
+            font-size: 15px;
+            text-align: center;
+        }
+        /* 第一列学生名字样式 */
+        .rpt-table td:first-child { 
+            text-align: left; 
+            font-weight: bold; 
+            padding-left: 20px; 
+        }
+
+        .rpt-footer { margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000 !important; }
+        .rpt-sign { border-top: 2px solid #000; width: 220px; text-align: center; margin-top: 60px; padding-top: 5px; color: #000 !important; }
 
         .footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 11px; }
     </style>
@@ -127,7 +114,6 @@
 <body oncontextmenu="return false">
 
 <script>
-    // 权限与身份验证
     const currentAdmin = sessionStorage.getItem('admin_name');
     if (sessionStorage.getItem('access_granted') !== 'true' || !currentAdmin) { 
         window.location.replace('index.html'); 
@@ -139,9 +125,7 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BDP MANAGEMENT</h1>
     </div>
-    <div class="admin-tag">
-        OPERATOR <span class="admin-name" id="displayAdmin">VALIDATING...</span>
-    </div>
+    <div class="admin-tag">OPERATOR <span class="admin-name" id="displayAdmin">OFFLINE</span></div>
 </div>
 
 <div class="container">
@@ -149,7 +133,7 @@
         <h3>1. LOG ENTRY</h3>
         <div class="input-group">
             <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
-            <input type="text" id="stuClass" placeholder="CLASS (E.G. 5T1)">
+            <input type="text" id="stuClass" placeholder="CLASS (E.G. 6A)">
             <select id="violation">
                 <option value="" disabled selected>SELECT OFFENCE TYPE</option>
                 <option value="Late">LATE</option>
@@ -167,19 +151,17 @@
     <div class="card" style="background: transparent; border: none; padding: 0;">
         <h3>2. DISCIPLINARY RECORDS</h3>
         <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="SEARCH BY NAME OR CLASS...">
-
         <table>
             <thead>
                 <tr>
-                    <th width="22%">Identity</th>
-                    <th width="48%">Offence History</th>
+                    <th width="25%">Identity</th>
+                    <th width="45%">Offence History</th>
                     <th width="15%" style="text-align:center">Total</th>
                     <th width="15%">Action</th>
                 </tr>
             </thead>
             <tbody id="recordBody"></tbody>
         </table>
-
         <div class="pagination-bar">
             <button id="prevBtn" onclick="changePage(-1)">PREVIOUS</button>
             <div class="page-info" id="pageDisplay">Page 1 of 1</div>
@@ -188,7 +170,7 @@
     </div>
 
     <div class="action-bar">
-        <span style="font-size: 12px; color: #666;">SELECT DATE:</span>
+        <span style="font-size: 12px; color: #666;">REPORT DATE:</span>
         <input type="date" id="reportDate" class="date-picker">
         <button class="report-btn" onclick="downloadReport()">Download PNG Report</button>
         <div style="width: 40px;"></div>
@@ -197,27 +179,35 @@
 </div>
 
 <div id="reportExportTemplate">
-    <div class="report-header">
+    <div class="rpt-header">
         <h1>SEMSIRA BDP DISCIPLINE REPORT</h1>
-        <p id="rptDate" style="font-weight: bold; margin: 10px 0;"></p>
-        <p>Generated by: <span id="rptAdmin"></span></p>
+        <div class="rpt-info">
+            <span id="rptDateSpan">DATE: --/--/----</span>
+            <span id="rptAdminSpan">OPERATOR: ----</span>
+        </div>
     </div>
-    <table class="report-table">
+    <table class="rpt-table">
         <thead>
             <tr>
-                <th>Student Name</th>
-                <th>Class</th>
-                <th>Offence</th>
-                <th>Time</th>
-                <th>Recorder</th>
+                <th width="30%">Student Name</th>
+                <th width="15%">Class</th>
+                <th width="20%">Offence</th>
+                <th width="15%">Time</th>
+                <th width="20%">Recorder</th>
             </tr>
         </thead>
         <tbody id="reportTbody"></tbody>
     </table>
-    <p style="margin-top: 20px; text-align: right; font-size: 12px;">Official SEMSIRA Document</p>
+    <div class="rpt-footer">
+        <div>Total cases on this date: <span id="rptTotalCase">0</span></div>
+        <div style="text-align: right;">
+            <p>Official SEMSIRA BDP Document</p>
+            <div class="rpt-sign">Authorized Signature</div>
+        </div>
+    </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v4.0 | &copy; 2026 SEMSIRA</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v4.3 | &copy; 2026 SEMSIRA</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -236,7 +226,6 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    // 初始化界面
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
 
@@ -262,9 +251,7 @@
 
     window.handleSearch = () => {
         const term = document.getElementById('searchBox').value.toLowerCase();
-        filteredStudents = allStudents.filter(s => 
-            s.name.toLowerCase().includes(term) || s.class.toLowerCase().includes(term)
-        );
+        filteredStudents = allStudents.filter(s => s.name.toLowerCase().includes(term) || s.class.toLowerCase().includes(term));
         currentPage = 1; renderTable();
     };
 
@@ -272,9 +259,7 @@
 
     function renderTable() {
         const totalPages = Math.ceil(filteredStudents.length / pageSize) || 1;
-        const start = (currentPage - 1) * pageSize;
-        const pageData = filteredStudents.slice(start, start + pageSize);
-
+        const pageData = filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === totalPages);
         document.getElementById('pageDisplay').innerText = `PAGE ${currentPage} OF ${totalPages}`;
@@ -283,23 +268,20 @@
         pageData.forEach(data => {
             const groups = {};
             data.offences.forEach(obj => {
-                const type = obj.type || "Unknown";
-                if (!groups[type]) groups[type] = [];
-                groups[type].push(obj);
+                if (!groups[obj.type]) groups[obj.type] = [];
+                groups[obj.type].push(obj);
             });
 
             let offencesHtml = Object.keys(groups).map(type => {
                 const items = groups[type];
                 const info = items.map((it, i) => `${i+1}. ${it.time} (By: ${it.by || 'N/A'})`).join('|'); 
-                return `
-                    <span class="offence-tag ${getTagClass(type)}" onclick="viewHistory('${data.name}', '${type}', '${info}')">
-                        <div style="display:flex; flex-direction:column">
-                            <span>${type} ${items.length > 1 ? `<b>x${items.length}</b>`:''}</span>
-                            <span class="time-hint">By: ${items[items.length-1].by || 'N/A'}</span>
-                        </div>
-                        <span class="remove-single" onclick="event.stopPropagation(); deleteSingle('${data.id}', '${type}')">×</span>
-                    </span>
-                `;
+                return `<span class="offence-tag ${getTagClass(type)}" onclick="viewHistory('${data.name}', '${type}', '${info}')">
+                    <div style="display:flex; flex-direction:column">
+                        <span>${type} ${items.length > 1 ? `<b>x${items.length}</b>`:''}</span>
+                        <span class="time-hint">By: ${items[items.length-1].by || 'N/A'}</span>
+                    </div>
+                    <span class="remove-single" onclick="event.stopPropagation(); deleteSingle('${data.id}', '${type}')">×</span>
+                </span>`;
             }).join("");
 
             html += `<tr>
@@ -309,28 +291,21 @@
                 <td><button class="delete-btn" onclick="purgeStudent('${data.id}')">Purge</button></td>
             </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records</td></tr>';
+        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records Found</td></tr>';
     }
-
-    window.viewHistory = (name, type, info) => { alert(`Student: ${name}\nOffence: ${type}\n\nLog:\n${info.split('|').join('\n')}`); };
 
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
-        const className = document.getElementById('stuClass').value.trim().toUpperCase();
+        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
-        if (!name || !className || !type) return alert("Fill all fields");
-
-        const q = query(colRef, where("name", "==", name), where("class", "==", className));
+        if (!name || !cls || !type) return alert("Fill all fields");
+        const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
         const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
-
         if (!qs.empty) {
-            await updateDoc(doc(db, "students", qs.docs[0].id), { 
-                offences: [...qs.docs[0].data().offences, log], 
-                counts: increment(1) 
-            });
+            await updateDoc(doc(db, "students", qs.docs[0].id), { offences: [...qs.docs[0].data().offences, log], counts: increment(1) });
         } else {
-            await addDoc(colRef, { name, class: className, offences: [log], counts: 1 });
+            await addDoc(colRef, { name, class: cls, offences: [log], counts: 1 });
         }
         document.getElementById('stuName').value = "";
     };
@@ -360,13 +335,19 @@
             });
         });
 
-        if (count === 0) return alert("No records found for this date.");
+        if (count === 0) return alert("No records for this date.");
 
-        document.getElementById('rptDate').innerText = "REPORT DATE: " + targetDate;
-        document.getElementById('rptAdmin').innerText = currentAdmin;
+        document.getElementById('rptDateSpan').innerText = "DATE: " + targetDate;
+        document.getElementById('rptAdminSpan').innerText = "OPERATOR: " + currentAdmin;
+        document.getElementById('rptTotalCase').innerText = count;
 
         const template = document.getElementById('reportExportTemplate');
-        html2canvas(template, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
+        // 关键：在导出前确保它被正确渲染
+        html2canvas(template, { 
+            backgroundColor: "#ffffff", 
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
             const link = document.createElement('a');
             link.download = `BDP_Report_${targetDate.replace(/\//g,'-')}.png`;
             link.href = canvas.toDataURL("image/png");
@@ -374,23 +355,17 @@
         });
     };
 
+    window.viewHistory = (n, t, i) => alert(`Student: ${n}\nOffence: ${t}\n\nLog:\n${i.split('|').join('\n')}`);
     window.deleteSingle = async (id, type) => {
         if(!confirm(`Remove one ${type}?`)) return;
-        const dRef = doc(db, "students", id);
-        const snap = await getDoc(dRef);
+        const snap = await getDoc(doc(db, "students", id));
         let list = snap.data().offences;
-        for (let i = list.length - 1; i >= 0; i--) {
-            if (list[i].type === type) { list.splice(i, 1); break; }
-        }
-        await updateDoc(dRef, { offences: list, counts: increment(-1) });
+        for (let i = list.length - 1; i >= 0; i--) { if (list[i].type === type) { list.splice(i, 1); break; } }
+        await updateDoc(doc(db, "students", id), { offences: list, counts: increment(-1) });
     };
-
-    window.purgeStudent = async (id) => {
-        if(confirm("Delete student permanently?")) await deleteDoc(doc(db, "students", id));
-    };
-
+    window.purgeStudent = async (id) => { if(confirm("Delete student?")) await deleteDoc(doc(db, "students", id)); };
     window.masterSystemReset = async () => {
-        if (confirm("DELETE ALL?") && prompt("Type 'RESET2026':") === "RESET2026") {
+        if (confirm("RESET?") && prompt("Type 'RESET2026':") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
