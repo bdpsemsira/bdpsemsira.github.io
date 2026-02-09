@@ -1,0 +1,25 @@
+<div id="add-student">
+    <input type="text" id="stuName" placeholder="学生姓名">
+    <input type="text" id="stuClass" placeholder="班级">
+    <input type="text" id="reason" placeholder="违规原因">
+    <button onclick="addData()">录入系统</button>
+</div>
+
+<hr>
+
+<div>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="按姓名或班级搜索...">
+</div>
+
+<table border="1" id="recordTable">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>班级</th>
+            <th>违规原因</th>
+            <th>犯错总次数</th> <th>操作</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        </tbody>
+</table>
