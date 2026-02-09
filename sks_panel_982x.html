@@ -14,11 +14,10 @@
             --input-bg: #0f0f0f;
             --text: #ffffff;
             --text-dim: #666;
-            /* 颜色分组定义 */
             --color-late: #ffeb3b;
             --color-skipping: #ff9800;
             --color-bullying: #f44336;
-            --color-discrimination: #ff5252; /* 歧视专属：鲜红色 */
+            --color-discrimination: #ff5252;
             --color-contraband: #e91e63;
             --color-drugs: #9c27b0;
             --color-others: #00d2ff;
@@ -81,7 +80,7 @@
         }
         .offence-tag:hover { background: #333; transform: scale(1.02); }
 
-        /* 分组颜色 */
+        /* Color Groups */
         .tag-late { border-left-color: var(--color-late) !important; color: var(--color-late); }
         .tag-skipping { border-left-color: var(--color-skipping) !important; color: var(--color-skipping); }
         .tag-bullying { border-left-color: var(--color-bullying) !important; color: var(--color-bullying); }
@@ -107,6 +106,12 @@
         .delete-btn { background: #331111; color: #ff4d4d; border: 1px solid #442222; padding: 8px 16px; font-size: 11px; border-radius: 6px; }
         .delete-btn:hover { background: #ff4d4d; color: white; }
 
+        /* Master Reset Button Styling */
+        .master-reset-container { text-align: right; padding-top: 50px; opacity: 0.3; transition: 0.3s; }
+        .master-reset-container:hover { opacity: 1; }
+        .master-btn { background: #1a0000; color: #ff0000; border: 1px solid #440000; font-size: 10px; padding: 10px 20px; letter-spacing: 1px; }
+        .master-btn:hover { background: #ff0000; color: white; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+
         .footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 11px; letter-spacing: 1px; }
     </style>
 </head>
@@ -123,7 +128,7 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">STAMP-ANALYSIS v3.5</span></div>
+    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">FULL SYSTEM v3.6</span></div>
 </div>
 
 <div class="container">
@@ -137,7 +142,8 @@
                 <option value="Late">LATE</option>
                 <option value="Skipping Class">SKIPPING CLASS</option>
                 <option value="Bullying">BULLYING</option>
-                <option value="Discrimination">DISCRIMINATION</option> <option value="Contraband">CONTRABAND</option>
+                <option value="Discrimination">DISCRIMINATION</option>
+                <option value="Contraband">CONTRABAND</option>
                 <option value="Severe Misconduct/Drugs">SEVERE MISCONDUCT / DRUGS</option>
                 <option value="Others">OTHERS</option>
             </select>
@@ -162,13 +168,18 @@
             </tbody>
         </table>
     </div>
+
+    <div class="master-reset-container">
+        <button class="master-btn" onclick="masterSystemReset()">ANNUAL SYSTEM RESET</button>
+        <p style="font-size: 9px; color: #444; margin-top: 5px;">*Danger Zone: Clears entire database for new academic year.</p>
+    </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.5 | DISCRIMINATION OPTION ADDED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.6 | PRECISION DATA MANAGEMENT<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, getDoc, increment, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
@@ -310,6 +321,33 @@
 
     window.purgeStudent = async (id) => {
         if(confirm("PERMANENTLY PURGE ENTIRE IDENTITY?")) await deleteDoc(doc(db, "students", id));
+    };
+
+    // MASTER RESET FUNCTION
+    window.masterSystemReset = async () => {
+        const step1 = confirm("WARNING: This will delete ALL student records in the database. Are you absolutely sure?");
+        if (!step1) return;
+
+        const step2 = confirm("FINAL WARNING: This action cannot be undone. All disciplinary history will be lost. Proceed?");
+        if (!step2) return;
+
+        const verify = prompt("To confirm, please type 'RESET2026' below:");
+        if (verify === "RESET2026") {
+            try {
+                const querySnapshot = await getDocs(colRef);
+                // Use a batch to delete everything efficiently
+                import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(async (fs) => {
+                    const batch = fs.writeBatch(db);
+                    querySnapshot.forEach((d) => {
+                        batch.delete(d.ref);
+                    });
+                    await batch.commit();
+                    alert("System Reset Successful. Database is now empty.");
+                });
+            } catch (e) { alert("Reset Error: " + e.message); }
+        } else {
+            alert("Verification failed. Reset aborted.");
+        }
     };
 
     window.filterRecords = () => {
