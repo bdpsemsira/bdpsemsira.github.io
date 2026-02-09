@@ -12,7 +12,7 @@
             --bg: #0a0a0a;
             --card: #181818;
             --text: #ffffff;
-            /* 标签颜色 */
+            /* 错误类型颜色定义 */
             --tag-late: #f1c40f;
             --tag-skip: #e67e22;
             --tag-bad: #e74c3c;
@@ -23,11 +23,15 @@
 
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
         
-        /* 14. 右上角分两行显示 */
+        /* 14. 右上角分两行显示 & Logo 居左添加 */
         .navbar { background: #000; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; }
-        .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; }
+        
+        .nav-brand { display: flex; align-items: center; }
+        .nav-brand img { height: 45px; width: auto; margin-right: 15px; object-fit: contain; }
+        .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
         .status-box { text-align: right; line-height: 1.4; }
-        .status-row { font-size: 11px; color: #666; font-weight: bold; }
+        .status-row { font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; }
         .status-val { color: var(--accent); margin-left: 5px; }
 
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
@@ -36,16 +40,19 @@
         /* 2. 搜索框长度一致 (100%) */
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
         input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; }
-        #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; }
+        
+        #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; transition: 0.3s; }
+        #searchBox:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(241,196,15,0.1); }
 
+        /* 表格样式 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
-        th { color: #666; padding: 10px; text-align: left; font-size: 11px; }
+        th { color: #666; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; }
         td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; transition: 0.3s; }
 
-        /* 13. 超过3个错误高亮资料 */
+        /* 13. 超过3个错误高亮资料 (暗红警告) */
         .highlight-row td { background: #2c0a0a !important; border-color: #5a1010 !important; }
 
-        /* 4 & 5. 分组颜色与标签合并 */
+        /* 4 & 5. 每个错误的分组颜色与 LATEx2 逻辑 */
         .offence-tag { 
             display: inline-block; padding: 4px 8px; margin: 3px; border-radius: 4px; 
             font-size: 10px; font-weight: bold; cursor: pointer; border-left: 3px solid #555; background: #222;
@@ -59,15 +66,18 @@
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
         
-        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
         
         .pagination { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px; border-radius: 8px; margin-top: 10px; }
         .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 40px; padding: 20px; border-top: 1px solid #222; }
 
-        /* 12. 报告白色背景和签名框 */
+        /* 12. 报告白色背景和签名框 (PNG 导出专用) */
         #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px; }
-        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
+        .rpt-header img { height: 60px; margin-right: 20px; }
+        .rpt-table { width: 100%; border-collapse: collapse; }
         .rpt-table th, .rpt-table td { border: 1px solid #000 !important; padding: 12px; text-align: center; color: #000 !important; font-size: 14px; background: #fff !important; }
         .sig-box { margin-top: 60px; display: flex; justify-content: flex-end; }
         .sig-line { border-top: 2px solid #000; width: 250px; text-align: center; padding-top: 5px; font-weight: bold; }
@@ -76,10 +86,13 @@
 <body>
 
 <div class="navbar">
-    <div class="nav-brand"><h1>SEMSIRA BDP</h1></div>
+    <div class="nav-brand">
+        <img src="semsira.png" alt="Logo">
+        <h1>SEMSIRA BDP</h1>
+    </div>
     <div class="status-box">
         <div class="status-row">OPERATOR: <span class="status-val" id="displayAdmin">...</span></div>
-        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">CONNECTED</span></div>
+        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">SYSTEM ONLINE</span></div>
     </div>
 </div>
 
@@ -94,7 +107,7 @@
                 <option value="Late">LATE</option>
                 <option value="Skipping Class">SKIPPING CLASS</option>
                 <option value="Bullying">BULLYING</option>
-                <option value="Discrimination">DISCRIMINATION</option>
+                <option value="Discrimination">DISCRIMINATION (歧视)</option>
                 <option value="Contraband">CONTRABAND</option>
                 <option value="Severe Misconduct/Drugs">DRUGS/SEVERE</option>
                 <option value="Others">OTHERS</option>
@@ -104,20 +117,21 @@
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
-        <h3>2. RECORDS</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class to filter...">
+        <h3>2. DISCIPLINARY RECORDS</h3>
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class to filter records...">
         <table>
             <thead><tr><th width="25%">Identity</th><th width="45%">History (Click Tag for Detail)</th><th width="15%" style="text-align:center">Total</th><th width="15%">Action</th></tr></thead>
             <tbody id="recordBody"></tbody>
         </table>
         <div class="pagination">
-            <button onclick="changePage(-1)" id="prevBtn">PREV</button>
+            <button onclick="changePage(-1)" id="prevBtn">PREVIOUS</button>
             <span id="pageDisplay" style="font-size:12px; color:#666;">PAGE 1</span>
             <button onclick="changePage(1)" id="nextBtn">NEXT</button>
         </div>
     </div>
 
     <div class="action-bar">
+        <span style="font-size: 11px; color: #555;">REPORT DATE:</span>
         <input type="date" id="reportDate" style="background:#111; color:white; border:1px solid #444; padding:8px; border-radius:6px;">
         <button onclick="downloadReport()" style="background:#27ae60; color:white;">DOWNLOAD PNG REPORT</button>
         <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">ANNUAL RESET</button>
@@ -125,9 +139,13 @@
 </div>
 
 <div id="reportExportTemplate">
-    <h1 style="text-align:center; border-bottom: 4px double #000; padding-bottom:10px;">SEMSIRA BDP DISCIPLINE REPORT</h1>
+    <div class="rpt-header">
+        <img src="semsira.png" alt="Logo">
+        <h1 style="margin: 0;">SEMSIRA BDP DISCIPLINE REPORT</h1>
+    </div>
     <div style="display:flex; justify-content:space-between; margin: 20px 0; font-weight:bold;">
-        <span id="rptDateSpan"></span><span id="rptAdminSpan"></span>
+        <span id="rptDateSpan">DATE: --/--/----</span>
+        <span id="rptAdminSpan">OPERATOR: --</span>
     </div>
     <table class="rpt-table">
         <thead><tr><th>Student Name</th><th>Class</th><th>Offence</th><th>Time</th><th>Recorder</th></tr></thead>
@@ -186,7 +204,7 @@
         
         let html = "";
         items.forEach(s => {
-            // 13. 高亮超过3次错误的学生
+            // 13. 超过3个错误高亮资料
             const highlightClass = s.counts >= 3 ? "highlight-row" : "";
             
             // 5. 合并显示 LATEx2 逻辑
@@ -207,20 +225,21 @@
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${tagHtml}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
-                <td><button class="delete-btn" onclick="purge('${s.id}')">Purge</button></td>
+                <td><button class="delete-btn" onclick="purge('${s.id}')">Purge Student</button></td>
             </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records</td></tr>';
+        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records Found.</td></tr>';
     }
 
     window.handleSearch = () => { currentPage = 1; render(); };
     window.changePage = (n) => { currentPage += n; render(); };
 
+    // 1. 通过名字和班级记录 (避免重名)
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
-        if(!name || !cls || !type) return alert("Fill all!");
+        if(!name || !cls || !type) return alert("Fill all fields!");
 
         const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
@@ -263,20 +282,22 @@
 
         html2canvas(document.getElementById('reportExportTemplate'), { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `Report_${target}.png`;
+            link.download = `BDP_Report_${target}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
     };
 
-    window.purge = async (id) => { if(confirm("Delete student?")) await deleteDoc(doc(db, "students", id)); };
+    window.purge = async (id) => { if(confirm("Permanently delete this student record?")) await deleteDoc(doc(db, "students", id)); };
+    
+    // 8. Annual Reset
     window.masterReset = async () => {
-        if(confirm("WIPE ALL?") && prompt("Code:") === "RESET2026") {
+        if(confirm("DANGER: WIPE ENTIRE DATABASE?") && prompt("Type 'RESET2026' to confirm:") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            alert("Reset Done");
+            alert("Database Cleared Successfully.");
         }
     };
 </script>
