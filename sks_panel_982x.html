@@ -168,7 +168,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
@@ -208,8 +208,12 @@
 
             if (!querySnapshot.empty) {
                 const studentDoc = querySnapshot.docs[0];
+                const existingData = studentDoc.data();
+                // FIX: Manual array push instead of arrayUnion to allow duplicates
+                const newOffences = [...existingData.offences, offence];
+
                 await updateDoc(doc(db, "students", studentDoc.id), {
-                    offences: arrayUnion(offence),
+                    offences: newOffences,
                     counts: increment(1)
                 });
             } else {
@@ -231,13 +235,13 @@
             const data = docData.data();
             const id = docData.id;
             
-            // LOGIC: Count occurrences of each offence
+            // Logic: Count occurrences
             const countsMap = {};
             data.offences.forEach(o => {
                 countsMap[o] = (countsMap[o] || 0) + 1;
             });
 
-            // LOGIC: Generate Tags with xN label
+            // Logic: Render combined tags (xN)
             let offencesHtml = Object.keys(countsMap).map(offenceName => {
                 const count = countsMap[offenceName];
                 const displayLabel = count > 1 ? `${offenceName} <b style="color:white; margin-left:4px; font-size:11px;">x${count}</b>` : offenceName;
@@ -245,7 +249,7 @@
                 return `
                     <span class="offence-tag ${getTagClass(offenceName)}">
                         ${displayLabel} 
-                        <span class="remove-single" onclick="deleteSingle('${id}', '${offenceName}')" title="Remove one record">×</span>
+                        <span class="remove-single" onclick="deleteSingle('${id}', '${offenceName}')" title="Remove one instance">×</span>
                     </span>
                 `;
             }).join("");
@@ -269,9 +273,26 @@
 
     window.deleteSingle = async (id, offence) => {
         if(confirm(`Remove one instance of: ${offence}?`)) {
-            await updateDoc(doc(db, "students", id), {
-                offences: arrayRemove(offence),
-                counts: increment(-1)
+            // Logic: Fetch current data, find index of ONE instance, remove it
+            const q = query(colRef);
+            const querySnapshot = await getDocs(q);
+            const studentDoc = snapshot.docs.find(d => d.id === id); // Use id from click
+            
+            // For simplicity in the client-side, we fetch and update manually
+            import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(async (fs) => {
+                const dRef = fs.doc(db, "students", id);
+                const docSnap = await fs.getDoc(dRef);
+                if (docSnap.exists()) {
+                    let list = docSnap.data().offences;
+                    const index = list.indexOf(offence);
+                    if (index > -1) {
+                        list.splice(index, 1);
+                        await fs.updateDoc(dRef, {
+                            offences: list,
+                            counts: fs.increment(-1)
+                        });
+                    }
+                }
             });
         }
     };
