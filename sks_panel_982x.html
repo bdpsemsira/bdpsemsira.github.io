@@ -37,7 +37,7 @@
         .nav-brand img { height: 45px; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
         .nav-brand h1 { font-size: 20px; color: var(--accent); margin: 0; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; }
 
-        .container { max-width: 1150px; margin: 30px auto; padding: 0 20px; flex: 1; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; flex: 1; }
 
         .card {
             background: var(--card); padding: 25px; border-radius: 16px;
@@ -45,13 +45,12 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        h3 { color: var(--accent); margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px;}
+        h3 { color: var(--accent); margin-top: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 20px;}
 
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; }
         input, select { 
             background: var(--input-bg); border: 1px solid #333; color: white; 
             padding: 14px; border-radius: 8px; flex: 1; min-width: 150px; transition: 0.3s;
-            box-sizing: border-box;
         }
         input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(241, 196, 15, 0.1); }
         
@@ -67,15 +66,16 @@
         }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        th { color: var(--text-dim); padding: 15px; text-align: left; font-size: 11px; text-transform: uppercase; }
         td { background: #1a1a1a; padding: 18px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
         td:first-child { border-left: 1px solid #282828; border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid #282828; border-radius: 0 12px 12px 0; }
         
         .offence-tag {
             display: inline-flex; align-items: center; 
-            background: #252525; padding: 5px 12px; margin: 4px; border-radius: 6px; 
-            font-size: 13px; font-weight: 600; border-left: 3px solid var(--accent);
+            background: #252525; padding: 6px 12px; margin: 4px; border-radius: 6px; 
+            font-size: 12px; font-weight: 600; border-left: 3px solid var(--accent);
+            cursor: help; position: relative;
         }
         .tag-late { border-left-color: var(--color-late); color: var(--color-late); }
         .tag-skipping { border-left-color: var(--color-skipping); color: var(--color-skipping); }
@@ -84,7 +84,9 @@
         .tag-drugs { border-left-color: var(--color-drugs); color: var(--color-drugs); }
         .tag-others { border-left-color: var(--color-others); color: var(--color-others); }
 
-        .remove-single { margin-left: 10px; cursor: pointer; color: #666; font-size: 16px; }
+        .time-hint { display: block; font-size: 9px; color: #888; margin-top: 2px; font-weight: normal; }
+
+        .remove-single { margin-left: 8px; cursor: pointer; color: #666; font-size: 16px; }
         .remove-single:hover { color: #ff4d4d; }
 
         .count-badge {
@@ -112,12 +114,12 @@
         <img src="semsira.png" alt="SEMSIRA">
         <h1>SEMSIRA BADAN DISIPLIN PELAJAR</h1>
     </div>
-    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">ENCRYPTED</span></div>
+    <div style="font-size: 10px; color: #444;">SECURITY: <span style="color: var(--accent);">TIME-STAMPED NODE</span></div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3>1. DATA SYNTHESIS / NEW ENTRY</h3>
+        <h3>1. LOG ENTRY (AUTO-TIMESTAMP)</h3>
         <div class="input-group">
             <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
             <input type="text" id="stuClass" placeholder="CLASS (E.G. 5T1)">
@@ -135,15 +137,15 @@
     </div>
 
     <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-        <h3>2. ANALYTICS & RECORD LOG</h3>
+        <h3>2. ANALYTICS & HISTORY</h3>
         <input type="text" id="searchBox" onkeyup="filterRecords()" placeholder="SEARCH BY NAME OR CLASS IDENTITY...">
 
         <table>
             <thead>
                 <tr>
-                    <th width="25%">Student Identity</th>
-                    <th width="45%">History of Offences</th>
-                    <th width="15%" style="text-align:center">Counter</th>
+                    <th width="22%">Student Identity</th>
+                    <th width="48%">History of Offences (Latest Time Shown)</th>
+                    <th width="15%" style="text-align:center">Total</th>
                     <th width="15%">Action</th>
                 </tr>
             </thead>
@@ -153,7 +155,7 @@
     </div>
 </div>
 
-<div class="footer">CLOUD SYNTHESIS ENGINE v3.1 | PRECISION NODE<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+<div class="footer">CLOUD SYNTHESIS ENGINE v3.2 | TIMESTAMP ENABLED<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -181,25 +183,36 @@
         return "tag-others";
     }
 
+    // Helper to get current time string
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const className = document.getElementById('stuClass').value.trim().toUpperCase();
-        const offence = document.getElementById('violation').value;
+        const offenceType = document.getElementById('violation').value;
 
-        if (!name || !className || !offence) {
+        if (!name || !className || !offenceType) {
             alert("All fields are mandatory.");
             return;
         }
 
+        const offenceObject = {
+            type: offenceType,
+            time: getCurrentTime()
+        };
+
         try {
-            // NEW LOGIC: Query by BOTH name and class to avoid duplicate name conflicts
             const q = query(colRef, where("name", "==", name), where("class", "==", className));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
                 const studentDoc = querySnapshot.docs[0];
                 const existingData = studentDoc.data();
-                const newOffences = [...existingData.offences, offence];
+                // Store complex objects instead of strings
+                const newOffences = [...existingData.offences, offenceObject];
 
                 await updateDoc(doc(db, "students", studentDoc.id), {
                     offences: newOffences,
@@ -209,7 +222,7 @@
                 await addDoc(colRef, {
                     name: name,
                     class: className,
-                    offences: [offence],
+                    offences: [offenceObject],
                     counts: 1
                 });
             }
@@ -224,19 +237,30 @@
             const data = docData.data();
             const id = docData.id;
             
-            const countsMap = {};
-            data.offences.forEach(o => {
-                countsMap[o] = (countsMap[o] || 0) + 1;
+            // Logic: Group by type and track times
+            const groups = {};
+            data.offences.forEach(obj => {
+                const type = typeof obj === 'string' ? obj : obj.type; // Back-compatibility
+                const time = typeof obj === 'string' ? "N/A" : obj.time;
+                if (!groups[type]) groups[type] = [];
+                groups[type].push(time);
             });
 
-            let offencesHtml = Object.keys(countsMap).map(offenceName => {
-                const count = countsMap[offenceName];
-                const displayLabel = count > 1 ? `${offenceName} <b style="color:white; margin-left:4px; font-size:11px;">x${count}</b>` : offenceName;
+            let offencesHtml = Object.keys(groups).map(type => {
+                const times = groups[type];
+                const count = times.length;
+                const latestTime = times[times.length - 1];
+                const timeTooltip = times.join('\n'); // Shows all times on hover
+                
+                const displayLabel = count > 1 ? `${type} <b style="color:white; margin-left:4px;">x${count}</b>` : type;
                 
                 return `
-                    <span class="offence-tag ${getTagClass(offenceName)}">
-                        ${displayLabel} 
-                        <span class="remove-single" onclick="deleteSingle('${id}', '${offenceName}')" title="Remove one instance">×</span>
+                    <span class="offence-tag ${getTagClass(type)}" title="Recorded Times:\n${timeTooltip}">
+                        <div style="display:flex; flex-direction:column">
+                            <span>${displayLabel}</span>
+                            <span class="time-hint">${latestTime}</span>
+                        </div>
+                        <span class="remove-single" onclick="deleteSingle('${id}', '${type}')">×</span>
                     </span>
                 `;
             }).join("");
@@ -258,14 +282,24 @@
         document.getElementById('recordBody').innerHTML = html;
     });
 
-    window.deleteSingle = async (id, offence) => {
-        if(confirm(`Remove one instance of: ${offence}?`)) {
+    window.deleteSingle = async (id, typeName) => {
+        if(confirm(`Remove one instance of: ${typeName}?`)) {
             try {
                 const dRef = doc(db, "students", id);
                 const docSnap = await getDoc(dRef);
                 if (docSnap.exists()) {
                     let list = docSnap.data().offences;
-                    const index = list.indexOf(offence);
+                    // Find index of the last recorded instance of this type
+                    let index = -1;
+                    for (let i = list.length - 1; i >= 0; i--) {
+                        const item = list[i];
+                        const itemType = typeof item === 'string' ? item : item.type;
+                        if (itemType === typeName) {
+                            index = i;
+                            break;
+                        }
+                    }
+
                     if (index > -1) {
                         list.splice(index, 1);
                         await updateDoc(dRef, {
