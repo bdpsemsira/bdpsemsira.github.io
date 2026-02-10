@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal Rasmi BDP SEMSIRA</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6f9; }
+    header { background:linear-gradient(135deg,#004080,#0066cc); color:white; padding:70px 20px; text-align:center; }
+    header h1 { font-weight:700; font-size:2.6rem; }
+    header p { letter-spacing:1px; opacity:0.9; }
+
+    section { padding:70px 20px; }
+    .section-title { font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:40px; text-align:center; color:#004080; }
+
+    .card { border:none; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:transform 0.3s; height:100%; }
+    .card:hover { transform:translateY(-6px); }
+    .mpp-member img { width:130px; height:130px; object-fit:cover; margin:20px auto 10px; }
+    .btn-main { background:#004080; color:white; font-weight:600; padding:12px 26px; border-radius:30px; text-decoration:none; }
+    .btn-main:hover { background:#0066cc; color:white; }
+    footer { background:#004080; color:white; padding:25px 10px; text-align:center; font-size:0.9rem; }
+
+    .flip { display:inline-block; background:#004080; color:white; padding:15px; margin:6px; font-size:1.8rem; font-weight:bold; border-radius:10px; min-width:70px; }
+    #backToTopBtn { position:fixed; bottom:30px; right:30px; background:#004080; color:white; border:none; border-radius:50%; padding:12px 16px; display:none; z-index:999; cursor:pointer; }
+    #backToTopBtn:hover { background:#0066cc; }
+
+    canvas { max-width:100%; margin: 20px 0; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background:#004080;">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">BDP SEMSIRA</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#members">Members</a></li>
+        <li class="nav-item"><a class="nav-link" href="#rules">Rules</a></li>
+        <li class="nav-item"><a class="nav-link" href="#mission">Mission</a></li>
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://adam007-bit.github.io/PORTAL-E-ADUAN-MPP/">Complaint</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<header id="home">
+  <h1>PORTAL RASMI BDP SEMSIRA</h1>
+  <p>BADAN DISIPLIN PELAJAR</p>
+</header>
+
+<!-- COUNTDOWN -->
+<section class="text-center">
+  <h2 class="section-title">📅 Countdown STPM</h2>
+  <div>
+    <span class="flip" id="days">00</span>
+    <span class="flip" id="hours">00</span>
+    <span class="flip" id="minutes">00</span>
+    <span class="flip" id="seconds">00</span>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section id="members">
+  <h2 class="section-title">AHLI JAWATANKUASA BDP</h2>
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-3">
+        <div class="card text-center p-3 mpp-member">
+          <img src="images/nur.png" class="rounded-circle">
+          <h5 class="fw-bold mt-2">NUR ZAKWAN</h5>
+          <p>Pengerusi</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center p-3 mpp-member">
+          <img src="images/1.png" class="rounded-circle">
+          <h5 class="fw-bold mt-2">MUHAMMAD NUR ZAKWAN</h5>
+          <p>Timbalan Pengerusi</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section id="rules" style="background:#ffffff;">
+  <h2 class="section-title">📘 Peraturan & Tatatertib</h2>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card p-4">
+          <h5 class="fw-bold text-warning">Kesalahan Ringan</h5>
+          <ul>
+            <li>Lewat hadir</li>
+            <li>Pakaian tidak kemas</li>
+            <li>Tidak membawa buku</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4">
+          <h5 class="fw-bold text-danger">Kesalahan Sederhana</h5>
+          <ul>
+            <li>Ponteng kelas</li>
+            <li>Bising</li>
+            <li>Tidak hormat guru</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4">
+          <h5 class="fw-bold text-dark">Kesalahan Berat</h5>
+          <ul>
+            <li>Buli</li>
+            <li>Merokok / Vape</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section id="mission">
+  <h2 class="section-title">🎯 Misi & Visi</h2>
+  <div class="container text-center">
+    <p>
+      ✔️ Memupuk disiplin dan integriti pelajar<br>
+      ✔️ Membantu penguatkuasaan peraturan<br>
+      ✔️ Melahirkan pelajar bertanggungjawab
+    </p>
+    <p class="mt-4 fw-semibold">
+      Melahirkan pelajar SEMSIRA yang berdisiplin, berakhlak mulia dan menjadi contoh teladan.
+    </p>
+    <a href="https://bdpsemsira.github.io/sks_panel_982x.html" class="btn-main mt-4 d-inline-block">
+      ➡️ Portal Isi Kesalahan
+    </a>
+  </div>
+</section>
+
+<!-- STATISTIK -->
+<section id="stats">
+  <h2 class="section-title">📊 Statistik Kes Disiplin</h2>
+  <div class="card p-4" style="max-width:900px;margin:auto;">
+    <canvas id="barChart"></canvas>
+    <canvas id="pieChart"></canvas>
+  </div>
+</section>
+
+<footer>
+  © 2026 Badan Disiplin Pelajar SEMSIRA<br>
+  Semua aduan adalah sulit dan dirahsiakan
+</footer>
+
+<button id="backToTopBtn">↑</button>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  AOS.init();
+
+  // Countdown
+  const eventDate = new Date("2026-01-13").getTime();
+  setInterval(()=>{
+    const now = new Date().getTime();
+    const d = eventDate - now;
+    document.getElementById("days").innerText = Math.floor(d/86400000);
+    document.getElementById("hours").innerText = Math.floor(d/3600000)%24;
+    document.getElementById("minutes").innerText = Math.floor(d/60000)%60;
+    document.getElementById("seconds").innerText = Math.floor(d/1000)%60;
+  },1000);
+
+  // Back to top
+  const btn=document.getElementById("backToTopBtn");
+  window.onscroll=()=>btn.style.display=window.scrollY>300?"block":"none";
+  btn.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+</script>
+
+<!-- Firebase Statistik -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDn8SLqrdo4f6IyD1nUSKmKkkHFcjem7uM",
+    authDomain: "bdp-semsira.firebaseapp.com",
+    projectId: "bdp-semsira",
+    storageBucket: "bdp-semsira.firebasestorage.app",
+    messagingSenderId: "784687342761",
+    appId: "1:784687342761:web:f1fe10571b4852c010f5b8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const barCtx = document.getElementById("barChart");
+  const pieCtx = document.getElementById("pieChart");
+  let barChart, pieChart;
+
+  onSnapshot(collection(db,"kesDisiplin"), snap=>{
+    const data = snap.docs.map(d=>d.data());
+    const kelasData = {};
+    const total = { Ringan:0, Sederhana:0, Berat:0 };
+
+    data.forEach(d=>{
+      if(!kelasData[d.kelas]) kelasData[d.kelas] = { Ringan:0, Sederhana:0, Berat:0 };
+      kelasData[d.kelas][d.kategori]++;
+      total[d.kategori]++;
+    });
+
+    const labels = Object.keys(kelasData);
+
+    if(barChart) barChart.destroy();
+    barChart = new Chart(barCtx,{
+      type:'bar',
+      data:{
+        labels,
+        datasets:[
+          { label:'Ringan', data:labels.map(l=>kelasData[l].Ringan) },
+          { label:'Sederhana', data:labels.map(l=>kelasData[l].Sederhana) },
+          { label:'Berat', data:labels.map(l=>kelasData[l].Berat) }
+        ]
+      },
+      options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
+    });
+
+    if(pieChart) pieChart.destroy();
+    pieChart = new Chart(pieCtx,{
+      type:'pie',
+      data:{
+        labels:['Ringan','Sederhana','Berat'],
+        datasets:[{ data:[total.Ringan,total.Sederhana,total.Berat] }]
+      }
+    });
+  });
+</script>
+</body>
+</html>
