@@ -23,13 +23,18 @@
         .login-card:hover { border-color: #e67e22; }
         .logo { width: 110px; height: 110px; margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(230, 126, 34, 0.4)); }
         h2 { margin: 0 0 8px 0; font-size: 26px; color: #ff8c00; font-weight: 800; letter-spacing: 1px; }
-        p { font-size: 13px; color: #666; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 1px; }
+        p { font-size: 13px; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* 账号密码框样式 */
+        .input-group { margin-bottom: 15px; }
         input {
             width: 100%; padding: 16px; border-radius: 10px; border: 1px solid #333;
             background: #0f0f0f; color: white; box-sizing: border-box;
             font-size: 16px; text-align: center; transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
         input:focus { outline: none; border-color: #e67e22; box-shadow: 0 0 15px rgba(230, 126, 34, 0.2); }
+        
         button {
             width: 100%; padding: 16px; background: #e67e22; border: none;
             color: white; font-weight: bold; font-size: 15px; border-radius: 10px;
@@ -38,6 +43,7 @@
         }
         button:hover { background: #d35400; transform: translateY(-2px); }
         button:disabled { background: #444; cursor: not-allowed; }
+        
         #status-msg { margin-top: 20px; font-size: 12px; min-height: 18px; font-weight: bold; }
         .error { color: #ff4d4d; }
         .loading { color: #ff8c00; }
@@ -50,14 +56,19 @@
     <img src="semsira.png" alt="Logo" class="logo">
     <h2>DASHBOARD</h2>
     <p>Secure Access Point</p>
-    <input type="password" id="passkey" placeholder="ACCESS KEY" onkeypress="if(event.key==='Enter') verify()">
+    
+    <div class="input-group">
+        <input type="text" id="username" placeholder="USERNAME" onkeypress="if(event.key==='Enter') verify()">
+        <input type="password" id="passkey" placeholder="PASSWORD" onkeypress="if(event.key==='Enter') verify()">
+    </div>
+
     <button id="loginBtn" onclick="verify()">Initialize</button>
     <div id="status-msg"></div>
-    <div class="footer">CLOUD SYNTHESIS ENGINE v3.5<br>&copy; 2026 SEMSIRA | ZIJUN</div>
+    <div class="footer">CLOUD SYNTHESIS ENGINE v3.6<br>&copy; 2026 SEMSIRA | ZIJUN</div>
 </div>
 
 <script>
-    // 配置信息（请确保这些与你的 GitHub 仓库一致）
+    // 配置信息
     const REPO_OWNER = "bdpsemsira"; 
     const REPO_NAME = "bdpsemsira.github.io"; 
     const KEY_FILE_PATH = "keys.txt"; 
@@ -69,39 +80,55 @@
     };
 
     async function verify() {
-        const inputRaw = document.getElementById('passkey').value.trim();
-        const inputUpper = inputRaw.toUpperCase(); // 转为大写用于匹配 keys.txt
+        const userVal = document.getElementById('username').value.trim().toUpperCase();
+        const passVal = document.getElementById('passkey').value.trim();
         const msg = document.getElementById('status-msg');
         const btn = document.getElementById('loginBtn');
 
-        if (!inputRaw) { showMsg("KEY REQUIRED", "error"); return; }
+        if (!userVal || !passVal) { 
+            showMsg("CREDENTIALS REQUIRED", "error"); 
+            return; 
+        }
 
         btn.disabled = true;
         showMsg("AUTHENTICATING...", "loading");
 
         try {
-            // 从 GitHub 读取 keys.txt，并加上时间戳防止缓存
+            // 获取 GitHub 上的 keys.txt
             const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${new Date().getTime()}`;
             const response = await fetch(rawUrl);
             
             if (!response.ok) throw new Error("Key database offline");
             
             const data = await response.text();
-            // 处理文件：分割行、去空格、统一转大写
-            const validKeys = data.split(/\r?\n/).map(k => k.trim().toUpperCase()).filter(k => k !== "");
+            
+            // 解析 keys.txt (支持 账号:密码 格式)
+            const lines = data.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+            
+            let isMatched = false;
+            let authenticatedUser = "";
 
-            if (validKeys.includes(inputUpper)) {
+            for (let line of lines) {
+                // 将每行分割为 [账号, 密码]
+                const [u, p] = line.split(':');
+                if (u && p && u.toUpperCase() === userVal && p === passVal) {
+                    isMatched = true;
+                    authenticatedUser = u.toUpperCase();
+                    break;
+                }
+            }
+
+            if (isMatched) {
                 showMsg("SUCCESS. REDIRECTING...", "loading");
                 
-                // 核心：存储授权状态和当前管理员名字
                 sessionStorage.setItem('access_granted', 'true');
-                sessionStorage.setItem('admin_name', inputUpper); 
+                sessionStorage.setItem('admin_name', authenticatedUser); 
 
                 setTimeout(() => { 
                     window.location.replace(TARGET_PAGE); 
                 }, 800);
             } else {
-                showMsg("INVALID KEY", "error");
+                showMsg("INVALID USERNAME OR PASSWORD", "error");
                 btn.disabled = false;
                 document.getElementById('passkey').value = "";
             }
