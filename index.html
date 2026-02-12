@@ -12,36 +12,41 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
   <style>
-    body { font-family:'Poppins',sans-serif; background:#f4f6f9; }
-    header { background:linear-gradient(135deg,#004080,#0066cc); color:white; padding:70px 20px; text-align:center; }
-    header h1 { font-weight:700; font-size:2.6rem; }
-    header p { letter-spacing:1px; opacity:0.9; }
+    body { font-family:'Poppins',sans-serif; background:#f4f6f9; overflow-x: hidden; }
+    header { background:linear-gradient(135deg,#004080,#0066cc); color:white; padding:80px 20px; text-align:center; }
+    header h1 { font-weight:700; font-size:2.8rem; text-transform: uppercase; }
+    header p { letter-spacing:2px; opacity:0.9; font-weight: 600; }
 
-    section { padding:70px 20px; }
-    .section-title { font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:40px; text-align:center; color:#004080; }
+    section { padding:80px 20px; }
+    .section-title { font-family:'Playfair Display',serif; font-size:2.4rem; margin-bottom:50px; text-align:center; color:#004080; position: relative; }
+    .section-title::after { content:''; width: 80px; height: 3px; background: #ffcc00; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
 
-    .card { border:none; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:transform 0.3s; height:100%; }
-    .card:hover { transform:translateY(-6px); }
-    .mpp-member img { width:130px; height:130px; object-fit:cover; margin:20px auto 10px; }
+    .card { border:none; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:transform 0.3s; height:100%; background: white; }
+    .card:hover { transform:translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
     
-    .navbar-brand img { height: 40px; width: auto; margin-right: 10px; }
+    .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
     
-    .btn-main { background:#004080; color:white; font-weight:600; padding:12px 26px; border-radius:30px; text-decoration:none; }
-    .btn-main:hover { background:#0066cc; color:white; }
-    footer { background:#004080; color:white; padding:25px 10px; text-align:center; font-size:0.9rem; }
+    .btn-main { background:#004080; color:white; font-weight:600; padding:14px 30px; border-radius:30px; text-decoration:none; transition: 0.3s; }
+    .btn-main:hover { background:#0066cc; color:white; box-shadow: 0 4px 15px rgba(0,102,204,0.3); }
+    
+    footer { background:#004080; color:white; padding:30px 10px; text-align:center; font-size:0.9rem; }
+
+    /* Members Styling */
+    .mpp-member img { width:130px; height:130px; object-fit:cover; margin:20px auto 10px; border: 4px solid #f8f9fa; }
+    .biro-title { color:#004080; font-weight: 700; margin-top: 40px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+    
+    /* Offence List Styling */
+    .offence-list { list-style: none; padding-left: 0; }
+    .offence-list li { padding: 8px 0; border-bottom: 1px dotted #eee; font-size: 0.95rem; }
+    .offence-list li:last-child { border-bottom: none; }
+    .offence-list li::before { content: "•"; color: #004080; font-weight: bold; display: inline-block; width: 1.2em; }
 
     #backToTopBtn { position:fixed; bottom:30px; right:30px; background:#004080; color:white; border:none; border-radius:50%; padding:12px 16px; display:none; z-index:999; cursor:pointer; }
-    #backToTopBtn:hover { background:#0066cc; }
-
-    .offence-list { list-style: none; padding-left: 0; }
-    .offence-list li { padding: 5px 0; border-bottom: 1px solid #eee; }
-    .offence-list li:last-child { border-bottom: none; }
-    .offence-list li::before { content: "•"; color: #004080; font-weight: bold; display: inline-block; width: 1em; }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background:#004080;">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background:#004080; border-bottom: 3px solid #ffcc00;">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
       <img src="semsira.png" alt="Logo">
@@ -53,39 +58,110 @@
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#members">Members</a></li>
-        <li class="nav-item"><a class="nav-link" href="#rules">Rules</a></li>
-        <li class="nav-item"><a class="nav-link" href="#mission">Mission</a></li>
-        <li class="nav-item"><a class="nav-link" target="_blank" href="https://adam007-bit.github.io/PORTAL-E-ADUAN-MPP/">Complaint</a></li>
+        <li class="nav-item"><a class="nav-link" href="#members">AJK</a></li>
+        <li class="nav-item"><a class="nav-link" href="#rules">Peraturan</a></li>
+        <li class="nav-item"><a class="nav-link" href="#mission">Misi</a></li>
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://adam007-bit.github.io/PORTAL-E-ADUAN-MPP/">Aduan</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
 <header id="home">
-  <h1>PORTAL RASMI BDP SEMSIRA</h1>
-  <p>BADAN DISIPLIN PELAJAR</p>
+  <div data-aos="zoom-in">
+    <h1>PORTAL RASMI BDP SEMSIRA</h1>
+    <p>BADAN DISIPLIN PELAJAR • INTEGRITI & DISIPLIN</p>
+  </div>
 </header>
 
 <section id="members">
   <h2 class="section-title">AHLI JAWATANKUASA BDP</h2>
-  <div class="container">
-    <div class="row g-4 justify-content-center">
-      <div class="col-md-3" data-aos="fade-up">
-        <div class="card text-center p-3 mpp-member">
-          <img src="images/nur.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
-          <h5 class="fw-bold mt-2">NUR ZAKWAN</h5>
-          <p>Pengerusi</p>
-        </div>
-      </div>
-      <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
-        <div class="card text-center p-3 mpp-member">
-          <img src="images/1.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
+  <div class="container text-center">
+    
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-4" data-aos="fade-up">
+        <div class="card p-3 mpp-member" style="border-top: 5px solid #ffcc00;">
+          <img src="images/nurzakwan.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
           <h5 class="fw-bold mt-2">MUHAMMAD NUR ZAKWAN</h5>
-          <p>Timbalan Pengerusi</p>
+          <p class="text-primary fw-bold">Presiden</p>
         </div>
       </div>
     </div>
+
+    <div class="row g-4 justify-content-center mb-5">
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="card p-3 mpp-member">
+          <img src="images/farhaney.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
+          <h5 class="fw-bold mt-2">NIK NUR FARHANEY</h5>
+          <p class="text-secondary">Timb. Presiden 1</p>
+        </div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="card p-3 mpp-member">
+          <img src="images/mikhail.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
+          <h5 class="fw-bold mt-2">MUHAMMAD MIKHAIL RIZKY</h5>
+          <p class="text-secondary">Timb. Presiden 2</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 justify-content-center mb-5">
+      <div class="col-md-2" data-aos="fade-up">
+        <div class="card p-2 mpp-member">
+          <img src="images/rifqah.png" class="rounded-circle" style="width:100px; height:100px;">
+          <h6 class="fw-bold mt-2">NUR RIFQAH UMAIRAH</h6>
+          <small>Setiausaha</small>
+        </div>
+      </div>
+      <div class="col-md-2" data-aos="fade-up" data-aos-delay="100">
+        <div class="card p-2 mpp-member">
+          <img src="images/lee.png" class="rounded-circle" style="width:100px; height:100px;">
+          <h6 class="fw-bold mt-2">LEE ZHI HUI</h6>
+          <small>Pen. Setiausaha</small>
+        </div>
+      </div>
+      <div class="col-md-2" data-aos="fade-up" data-aos-delay="200">
+        <div class="card p-2 mpp-member">
+          <img src="images/tan.png" class="rounded-circle" style="width:100px; height:100px;">
+          <h6 class="fw-bold mt-2">TAN QIAN YU</h6>
+          <small>Bendahari</small>
+        </div>
+      </div>
+      <div class="col-md-2" data-aos="fade-up" data-aos-delay="300">
+        <div class="card p-2 mpp-member">
+          <img src="images/cik.png" class="rounded-circle" style="width:100px; height:100px;">
+          <h6 class="fw-bold mt-2">CIK ANIS FARISHA</h6>
+          <small>Pen. Bendahari</small>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/syed.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Syed Ashraff Ali</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/airil.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">M. Airil Wafie</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/qasdina.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Umairah Qasdina</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/syazrila.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">N. Syazrila Hafifah</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/syauqina.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Nur Syauqina</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/ruthriswary.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Ruthriswary</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/athirah.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">S. Amni Athirah</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/syazwan.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">M. Syazwan</small></div></div>
+    </div>
+
+    <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/suwan.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Suwannarid</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/kong.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Kong Zi Jun</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/norhafiz.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">M. Norhafiz</small></div></div>
+    </div>
+
+    <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/adam.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Adam Tijani Adam</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/faris.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Iman Faris</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="images/aiman.png" class="rounded-circle mx-auto" style="width:80px;height:80px;"><small class="fw-bold d-block mt-2">Farish Aiman</small></div></div>
+    </div>
+
   </div>
 </section>
 
@@ -95,34 +171,34 @@
     <div class="row g-4">
       <div class="col-md-4" data-aos="zoom-in">
         <div class="card p-4">
-          <h5 class="fw-bold text-warning">Disiplin Am</h5>
+          <h5 class="fw-bold text-warning mb-3">Disiplin Am</h5>
           <ul class="offence-list">
-            <li>Late (Lewat)</li>
+            <li>Late (Lewat Hadir)</li>
             <li>Skipping Class (Ponteng)</li>
-            <li>Contraband (Barangan Larangan)</li>
-            <li>Others (Lain-lain)</li>
+            <li>Contraband (Barang Larangan)</li>
+            <li>Others (Lain-lain Salah Laku)</li>
           </ul>
         </div>
       </div>
       <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
         <div class="card p-4">
-          <h5 class="fw-bold text-dark">Lalu Lintas (Traffic)</h5>
+          <h5 class="fw-bold text-dark mb-3">Lalu Lintas (Traffic)</h5>
           <ul class="offence-list">
             <li>Speeding (Memandu Laju)</li>
-            <li>Plate Number (No. Pendaftaran)</li>
-            <li>Road Tax (Cukai Jalan)</li>
-            <li>Driving License (Lesen Memandu)</li>
+            <li>Plate Number (No. Plat Luar Spek)</li>
+            <li>Road Tax (Cukai Jalan Tamat)</li>
+            <li>Driving License (Tiada Lesen)</li>
           </ul>
         </div>
       </div>
       <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
         <div class="card p-4">
-          <h5 class="fw-bold text-danger">Salah Laku Berat</h5>
+          <h5 class="fw-bold text-danger mb-3">Salah Laku Berat</h5>
           <ul class="offence-list">
-            <li>Bullying (Buli)</li>
+            <li>Bullying (Buli & Gangguan)</li>
             <li>Discrimination (Diskriminasi)</li>
-            <li>Drugs/Severe (Dadah/Tegar)</li>
-            <li>Misconduct (Salah Laku)</li>
+            <li>Drugs/Severe (Penyalahgunaan Dadah)</li>
+            <li>Misconduct (Salah Laku Tegar)</li>
           </ul>
         </div>
       </div>
@@ -133,23 +209,29 @@
 <section id="mission">
   <h2 class="section-title">🎯 Misi & Visi</h2>
   <div class="container text-center" data-aos="fade-up">
-    <p>
-      ✔️ Memupuk disiplin dan integriti pelajar<br>
-      ✔️ Membantu penguatkuasaan peraturan<br>
-      ✔️ Melahirkan pelajar bertanggungjawab
-    </p>
-    <p class="mt-4 fw-semibold">
-      Melahirkan pelajar SEMSIRA yang berdisiplin, berakhlak mulia dan menjadi contoh teladan.
-    </p>
-    <a href="https://bdpsemsira.github.io/login.html" class="btn-main mt-4 d-inline-block">
-      ➡️ Portal Isi Kesalahan
-    </a>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <p class="lead mb-4">
+          ✔️ Memupuk disiplin dan integriti pelajar melalui penguatkuasaan yang adil.<br>
+          ✔️ Membantu pihak sekolah dalam memastikan peraturan dipatuhi sepenuhnya.<br>
+          ✔️ Melahirkan pelajar yang bertanggungjawab terhadap diri dan komuniti.
+        </p>
+        <p class="mt-4 fw-bold h5" style="color:#004080;">
+          "Melahirkan pelajar SEMSIRA yang berdisiplin, berakhlak mulia dan menjadi contoh teladan kepada generasi akan datang."
+        </p>
+        <a href="https://bdpsemsira.github.io/login.html" class="btn-main mt-5 d-inline-block">
+          ➡️ Portal Isi Kesalahan (AJK Sahaja)
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
-  © 2026 Badan Disiplin Pelajar SEMSIRA<br>
-  Semua aduan adalah sulit dan dirahsiakan
+  <div class="container">
+    © 2026 Badan Disiplin Pelajar SEMSIRA<br>
+    <small>Sistem Pengurusan Disiplin Bersepadu. Semua aduan adalah sulit.</small>
+  </div>
 </footer>
 
 <button id="backToTopBtn">↑</button>
@@ -158,15 +240,29 @@
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
 <script>
+  // Initialize AOS
   AOS.init({
-    duration: 800,
-    once: true
+    duration: 1000,
+    once: true,
+    offset: 100
   });
 
-  // Back to top
+  // Back to top button logic
   const btn = document.getElementById("backToTopBtn");
-  window.onscroll = () => btn.style.display = window.scrollY > 300 ? "block" : "none";
+  window.onscroll = () => {
+    btn.style.display = window.scrollY > 400 ? "block" : "none";
+  };
   btn.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
 </script>
 
 </body>
