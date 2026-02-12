@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BDP Semsira | Official Blog</title>
+    
+    <link rel="icon" type="image/png" href="semsira.png">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 20, 0.6);
+            --accent-color: #ffffff;
+            --text-main: #f2f2f2;
+            --text-dim: #888888;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif;
+            margin: 0; padding: 0; 
+            color: var(--text-main); 
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1a1a1a 0%, #050505 80%);
+            background-attachment: fixed;
+        }
+
+        .main-container { max-width: 720px; margin: 0 auto; padding: 20px; }
+
+        /* 顶部导航：极简正式感 */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 30px 0; margin-bottom: 50px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { width: 30px; height: 30px; border-radius: 4px; cursor: pointer; filter: grayscale(1); transition: 0.3s; }
+        .logo:hover { filter: grayscale(0); }
+        h1 { margin: 0; font-size: 1.1rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* 搜索框：与整体风格统一 */
+        .search-wrapper { display: flex; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; transition: 0.3s; }
+        .search-wrapper:focus-within { border-color: #555; background: rgba(255,255,255,0.06); }
+        .search-input {
+            background: transparent; border: none; color: white;
+            padding: 6px; outline: none; width: 150px; font-size: 14px;
+        }
+
+        /* 文章卡片：现代卡片感 */
+        .post { 
+            background: var(--card-bg); padding: 40px; border-radius: 12px;
+            margin-bottom: 30px; border: 1px solid var(--border);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .post h2 { margin-top: 0; font-size: 1.7rem; font-weight: 600; line-height: 1.3; }
+        .post small { 
+            color: var(--text-dim); font-size: 0.8rem; display: block; 
+            margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .content { font-size: 1.05rem; line-height: 1.8; color: #ccc; }
+        .content img { 
+            max-width: 100%; border-radius: 8px; margin: 25px 0; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 交互条 */
+        .action-bar { display: flex; gap: 20px; margin-top: 35px; }
+        .btn-interact { 
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim); 
+            padding: 8px 16px; border-radius: 4px; cursor: pointer; 
+            font-size: 13px; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-interact:hover { border-color: #666; color: #fff; }
+        .like-btn.active { background: #fff; color: #000; border-color: #fff; }
+
+        #comment-section { margin-top: 30px; padding-top: 30px; border-top: 1px dashed var(--border); }
+
+        .hidden { display: none; }
+        
+        @media (max-width: 600px) {
+            .post { padding: 25px; }
+            .search-input { width: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header class="header">
+            <div class="header-left" onclick="location.reload()">
+                <img src="bblogo.png" alt="Logo" class="logo">
+                <h1>BDP Semsira</h1>
+            </div>
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="SEARCH...">
+            </div>
+        </header>
+
+        <div id="posts-container">
+            <div style="text-align: center; color: var(--text-dim); padding-top: 100px; font-size: 0.9rem;">LOADING REPOSITORY...</div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            GITHUB_USERNAME: 'bdpsemsira',
+            REPO_NAME: 'bdpsemsira.github.io',
+            CUSDIS_APP_ID: 'b4b009a4-de84-4d0d-9968-40fcb6be2883'
+        };
+
+        // 搜索过滤
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const kw = e.target.value.toLowerCase();
+            document.querySelectorAll('.post').forEach(p => {
+                p.classList.toggle('hidden', !p.innerText.toLowerCase().includes(kw));
+            });
+        });
+
+        async function fetchPosts() {
+            const url = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/issues?labels=post&state=open`;
+            const container = document.getElementById('posts-container');
+
+            try {
+                const res = await fetch(url);
+                const issues = await res.json();
+                
+                if (issues.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; color:#555;">No articles published yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                issues.forEach(issue => {
+                    const date = new Date(issue.created_at).toLocaleDateString('zh-CN', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+
+                    const postEl = document.createElement('article');
+                    postEl.className = 'post';
+                    
+                    let bodyHtml = marked.parse(issue.body || "");
+                    
+                    postEl.innerHTML = `
+                        <h2>${issue.title}</h2>
+                        <small>${date}</small>
+                        <div class="content">${bodyHtml}</div>
+                        <div class="action-bar">
+                            <button class="btn-interact like-btn" onclick="handleLike(this)">
+                                <span class="heart">LIKE</span>
+                            </button>
+                            <button class="btn-interact" onclick="toggleComments('${issue.id}')">
+                                DISCUSS
+                            </button>
+                        </div>
+                        <div id="comment-box-${issue.id}" class="hidden" id="comment-section">
+                            <div style="margin-top:25px;">
+                                <div id="cusdis_thread" 
+                                    data-host="https://cusdis.com" 
+                                    data-app-id="${CONFIG.CUSDIS_APP_ID}" 
+                                    data-page-id="${issue.id}" 
+                                    data-page-url="${window.location.href}#${issue.id}" 
+                                    data-page-title="${issue.title}">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(postEl);
+                });
+            } catch (err) {
+                container.innerHTML = '<div style="text-align:center;">Sync Error. Please check GitHub Settings.</div>';
+            }
+        }
+
+        function toggleComments(id) {
+            const el = document.getElementById(`comment-box-${id}`);
+            const isHidden = el.classList.contains('hidden');
+            el.classList.toggle('hidden');
+            if (!isHidden && window.renderCusdis) {
+                window.renderCusdis(el.querySelector('#cusdis_thread'));
+            }
+        }
+
+        function handleLike(btn) {
+            const isLiked = btn.classList.toggle('active');
+            btn.querySelector('.heart').innerText = isLiked ? 'LIKED' : 'LIKE';
+        }
+
+        fetchPosts();
+    </script>
+</body>
+</html>
