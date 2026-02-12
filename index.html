@@ -10,53 +10,67 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
     :root {
       --bg-dark: #0f111a;
       --card-dark: #1a1d2b;
       --accent: #ffcc00;
-      --text-main: #ffffff; /* 提高主文字亮度 */
-      --text-muted: #cccccc; /* 提高副文字亮度，确保可见度 */
+      --text-main: #ffffff;
+      --text-muted: #cccccc;
     }
 
     body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
     
+    /* Header */
     header { background: linear-gradient(135deg, #001a33, #003366); color: white; padding: 100px 20px; text-align: center; border-bottom: 2px solid var(--accent); }
     header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; }
     header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; }
 
+    /* Sections */
     section { padding: 80px 20px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 50px; text-align: center; color: white; position: relative; }
     .section-title::after { content: ''; width: 80px; height: 3px; background: var(--accent); position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
 
+    /* Cards */
     .card { border: 1px solid #2d324d; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s; height: 100%; background: var(--card-dark); color: var(--text-main); }
     .card:hover { transform: translateY(-8px); border-color: var(--accent); }
     
+    /* Navbar */
     .navbar { background: rgba(15, 17, 26, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); }
     .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
     
-    .btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 14px 30px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; }
-    .btn-main:hover { background: white; color: #000; transform: scale(1.05); }
+    /* Buttons */
+    .btn-main { background: var(--accent); color: #000 !important; font-weight: 700; padding: 12px 25px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; border: none; }
+    .btn-main:hover { background: white; transform: scale(1.05); }
     
-    footer { background: #080a12; color: #888; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
-
+    /* Members */
     .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
     .biro-title { color: var(--accent); font-weight: 700; margin-top: 60px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
-    .member-name { font-size: 0.95rem; font-weight: 600; color: white; }
+    .member-name { font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 2px; }
     .member-role { font-size: 0.8rem; color: var(--text-muted); }
 
-    .rule-list { list-style: none; padding: 0; text-align: left; }
+    /* Rules */
+    .rule-list { list-style: none; padding: 0; }
     .rule-list li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: flex-start; }
     .rule-list li::before { content: "⚡"; margin-right: 10px; color: var(--accent); }
 
+    /* Stats */
     .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
     #statsList b { color: var(--accent); }
 
-    /* Visi Kami 专属高亮文字 */
-    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    /* About Us & Map */
+    .about-info p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-muted); }
+    .about-info i { color: var(--accent); margin-right: 10px; width: 20px; text-align: center; }
+    .map-link { color: var(--accent); text-decoration: none; }
+    .map-link:hover { text-decoration: underline; }
 
-    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; }
+    /* Footer */
+    footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
+    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; }
+
+    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
   </style>
 </head>
 <body>
@@ -75,6 +89,7 @@
         <li class="nav-item"><a class="nav-link" href="#members">AJK</a></li>
         <li class="nav-item"><a class="nav-link" href="#rules">Peraturan</a></li>
         <li class="nav-item"><a class="nav-link" href="#stats">Statistik</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
         <li class="nav-item"><a class="nav-link fw-bold" style="color:var(--accent);" href="blog.html">Blog</a></li>
       </ul>
     </div>
@@ -101,37 +116,41 @@
       </div>
     </div>
     <div class="row g-4 justify-content-center mb-5">
-      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle"><h5 class="member-name">NIK NUR FARHANEY</h5><p class="member-role">Timbalan Presiden 1</p></div></div>
-      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle"><h5 class="member-name">MUHAMMAD MIKHAIL RIZKY</h5><p class="member-role">Timbalan Presiden 2</p></div></div>
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">NIK NUR FARHANEY</h5><p class="member-role">Timbalan Presiden 1</p></div></div>
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">MUHAMMAD MIKHAIL RIZKY</h5><p class="member-role">Timbalan Presiden 2</p></div></div>
     </div>
+
     <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto"><h6 class="member-name">NUR RIFQAH UMAIRAH</h6><small class="member-role">Setiausaha</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto"><h6 class="member-name">LEE ZHI HUI</h6><small class="member-role">Pen. Setiausaha</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto"><h6 class="member-name">TAN QIAN YU</h6><small class="member-role">Bendahari</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto"><h6 class="member-name">CIK ANIS FARISHA</h6><small class="member-role">Pen. Bendahari</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><h6 class="member-name">NUR RIFQAH UMAIRAH</h6><small class="member-role">Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><h6 class="member-name">LEE ZHI HUI</h6><small class="member-role">Pen. Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><h6 class="member-name">TAN QIAN YU</h6><small class="member-role">Bendahari</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><h6 class="member-name">CIK ANIS FARISHA</h6><small class="member-role">Pen. Bendahari</small></div></div>
     </div>
+
     <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
     <div class="row g-3 justify-content-center mb-5">
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto"><small class="member-name">Syed Ashraff Ali</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto"><small class="member-name">M. Airil Wafie</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto"><small class="member-name">Umairah Qasdina</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto"><small class="member-name">N. Syazrila Hafifah</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto"><small class="member-name">Nur Syauqina</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto"><small class="member-name">Ruthriswary</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto"><small class="member-name">S. Amni Athirah</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto"><small class="member-name">M. Syazwan</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Syed Ashraff Ali</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Airil Wafie</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Umairah Qasdina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">N. Syazrila Hafifah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Nur Syauqina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Ruthriswary</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">S. Amni Athirah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Syazwan</small></div></div>
     </div>
+
     <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
     <div class="row g-3 justify-content-center mb-5">
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto"><small class="member-name">Suwannarid</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto"><small class="member-name">Kong Zi Jun</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto"><small class="member-name">M. Norhafiz</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Suwannarid</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Kong Zi Jun</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Norhafiz</small></div></div>
     </div>
+
     <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
     <div class="row g-3 justify-content-center">
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto"><small class="member-name">Adam Tijani Adam</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
-        <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Adam Tijani Adam</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Iman Faris</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Farish Aiman</small></div></div>
     </div>
   </div>
 </section>
@@ -200,14 +219,47 @@
   <div class="container text-center" data-aos="fade-up">
     <h2 class="section-title">🎯 VISI KAMI</h2>
     <p class="lead mb-5 lead-highlight">Melahirkan modal insan yang mempunyai sahsiah terpuji, disiplin yang mantap, dan integriti yang tinggi demi mengharumkan nama SEMSIRA.</p>
-    <a href="https://bdpsemsira.github.io/login.html" class="btn-main">➡️ PORTAL PENGURUSAN AJK</a>
+    <a href="login.html" class="btn-main">➡️ PORTAL PENGURUSAN AJK</a>
+  </div>
+</section>
+
+<section id="about" style="background: #080a12;">
+  <h2 class="section-title">🏢 MENGENAI KAMI</h2>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-7" data-aos="fade-right">
+        <div class="card p-2" style="overflow: hidden; min-height: 400px;">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.380026214532!2d100.2241630113884!3d6.473456823737505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ca21271172a75%3A0x6b49048a1f81d85d!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1707412345678!5m2!1sen!2smy" 
+            width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
+          </iframe>
+        </div>
+      </div>
+      <div class="col-md-5" data-aos="fade-left">
+        <div class="card p-4">
+          <h5 class="fw-bold text-warning mb-4">Maklumat Hubungan</h5>
+          <div class="about-info">
+            <p><i class="fas fa-school"></i> <strong>SMK Syed Sirajuddin</strong></p>
+            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
+            <p><i class="fas fa-phone-alt"></i> 6049760161</p>
+            <p><i class="fas fa-fax"></i> 6049776604</p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
+            
+            <hr style="border-color: #333; margin: 20px 0;">
+            <a href="https://maps.app.goo.gl/hG2p5n87G2G7H3R66" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
+              <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="container">
     <p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p>
-    <small style="color:#666;">Sistem ini memantau disiplin secara telus dan berintegriti.</small>
+    <small style="color:#444;">Sistem ini memantau disiplin secara telus dan berintegriti.</small>
   </div>
 </footer>
 
@@ -273,9 +325,7 @@
               data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#1a1d2b', borderWidth: 2 }] },
               options: { 
                   responsive: true, maintainAspectRatio: false,
-                  plugins: { 
-                    legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } 
-                  }
+                  plugins: { legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } }
               }
           });
       }
