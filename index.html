@@ -23,50 +23,40 @@
 
     body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
     
-    /* Header */
     header { background: linear-gradient(135deg, #001a33, #003366); color: white; padding: 100px 20px; text-align: center; border-bottom: 2px solid var(--accent); }
     header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; }
     header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; }
 
-    /* Sections */
     section { padding: 80px 20px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 50px; text-align: center; color: white; position: relative; }
     .section-title::after { content: ''; width: 80px; height: 3px; background: var(--accent); position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
 
-    /* Cards */
     .card { border: 1px solid #2d324d; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s; height: 100%; background: var(--card-dark); color: var(--text-main); }
     .card:hover { transform: translateY(-8px); border-color: var(--accent); }
     
-    /* Navbar */
     .navbar { background: rgba(15, 17, 26, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); }
     .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
     
-    /* Buttons */
     .btn-main { background: var(--accent); color: #000 !important; font-weight: 700; padding: 12px 25px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; border: none; }
     .btn-main:hover { background: white; transform: scale(1.05); }
     
-    /* Members */
     .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
     .biro-title { color: var(--accent); font-weight: 700; margin-top: 60px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
     .member-name { font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 2px; }
     .member-role { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* Rules */
     .rule-list { list-style: none; padding: 0; }
     .rule-list li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: flex-start; }
     .rule-list li::before { content: "⚡"; margin-right: 10px; color: var(--accent); }
 
-    /* Stats */
     .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
     #statsList b { color: var(--accent); }
 
-    /* About Us & Map */
     .about-info p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-muted); }
     .about-info i { color: var(--accent); margin-right: 10px; width: 20px; text-align: center; }
     .map-link { color: var(--accent); text-decoration: none; }
     .map-link:hover { text-decoration: underline; }
 
-    /* Footer */
     footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
     .lead-highlight { color: #f0f0f0 !important; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
@@ -129,28 +119,28 @@
 
     <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
     <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Syed Ashraff Ali</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Airil Wafie</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Umairah Qasdina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">N. Syazrila Hafifah</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Nur Syauqina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Ruthriswary</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">S. Amni Athirah</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Syazwan</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto"><small class="member-name">Syed Ashraff Ali</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto"><small class="member-name">M. Airil Wafie</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto"><small class="member-name">Umairah Qasdina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto"><small class="member-name">N. Syazrila Hafifah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto"><small class="member-name">Nur Syauqina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto"><small class="member-name">Ruthriswary</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto"><small class="member-name">S. Amni Athirah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto"><small class="member-name">M. Syazwan</small></div></div>
     </div>
 
     <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
     <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Suwannarid</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Kong Zi Jun</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">M. Norhafiz</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto"><small class="member-name">Suwannarid</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto"><small class="member-name">Kong Zi Jun</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto"><small class="member-name">M. Norhafiz</small></div></div>
     </div>
 
     <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
     <div class="row g-3 justify-content-center">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Adam Tijani Adam</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Iman Faris</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto" onerror="this.src='https://via.placeholder.com/130'"><small class="member-name">Farish Aiman</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto"><small class="member-name">Adam Tijani Adam</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
     </div>
   </div>
 </section>
@@ -190,7 +180,10 @@
     <div class="row g-4">
       <div class="col-md-7" data-aos="fade-right">
         <div class="card p-2" style="overflow: hidden; min-height: 400px;">
-          <iframe src="https://maps.app.goo.gl/QHD8HtiiHMp5UfBt5。indexhtml可不可以都是英文呢，只有职位和错误保持马来文" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.378370154378!2d100.18780637586566!3d6.345025993644482!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ca21880478693%3A0xc3f982a5c3286b72!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1707660000000!5m2!1sen!2smy2" 
+            width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
       </div>
       <div class="col-md-5" data-aos="fade-left">
@@ -198,12 +191,12 @@
           <h5 class="fw-bold text-warning mb-4">Maklumat Hubungan</h5>
           <div class="about-info">
             <p><i class="fas fa-school"></i> <strong>SMK Syed Sirajuddin</strong></p>
-            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
+            <p><i class="fas fa-map-marker-alt"></i> Sekolah Menengah Kebangsaan Syed Sirajuddin<br>Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
             <p><i class="fas fa-phone-alt"></i> 6049760161</p>
             <p><i class="fas fa-fax"></i> 6049776604</p>
             <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
             <hr style="border-color: #333; margin: 20px 0;">
-            <a href="https://maps.app.goo.gl/QHD8HtiiHMp5UfBt5。indexhtml可不可以都是英文呢，只有职位和错误保持马来文" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
+            <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.378370154378!2d100.18780637586566!3d6.345025993644482!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ca21880478693%3A0xc3f982a5c3286b72!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1707660000000!5m2!1sen!2smy3" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
               <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
             </a>
           </div>
