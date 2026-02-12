@@ -20,7 +20,6 @@
             --max-width: 1250px;
         }
 
-        /* 基础修复：防止图片野蛮生长 */
         img { max-width: 100%; height: auto; display: block; }
 
         body { 
@@ -29,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* 电脑端三栏布局 */
         .page-wrapper {
             display: grid;
             grid-template-columns: 260px 1fr 320px;
@@ -60,11 +58,25 @@
 
         /* --- 中间主信息流 --- */
         .main-feed { padding: 40px 0; min-height: 100vh; }
-        .search-container { margin-bottom: 30px; position: sticky; top: 20px; z-index: 10; }
+        
+        /* 修正：搜索框容器现在与帖子内容宽度严格一致 */
+        .search-container { 
+            margin-bottom: 30px; 
+            position: sticky; 
+            top: 20px; 
+            z-index: 10;
+            width: 100%; /* 确保不超过父级容器宽度 */
+        }
         .search-input {
-            width: 100%; background: #161618; border: 1px solid var(--border);
-            border-radius: 12px; padding: 14px 20px; color: #fff; font-size: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 100%; 
+            background: #161618; 
+            border: 1px solid var(--border);
+            border-radius: 12px; 
+            padding: 14px 20px; 
+            color: #fff; 
+            font-size: 15px;
+            box-sizing: border-box; /* 关键：防止 padding 撑开宽度导致重叠 */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .post { 
@@ -88,17 +100,15 @@
         .info-card h3 { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 1px; }
         .info-card p { font-size: 0.95rem; line-height: 1.6; color: #ccc; margin: 0; }
 
-        /* 评论区适配 */
         .comment-container { 
             margin-top: 30px; padding: 25px; background: #0a0a0a; 
             border-radius: 16px; border: 1px solid var(--border); 
         }
 
-        /* --- 移动端专用样式 --- */
+        /* --- 移动端 --- */
         .mobile-header { display: none; }
         .mobile-nav { display: none; }
 
-        /* 响应式断点 */
         @media (max-width: 1100px) {
             .page-wrapper { grid-template-columns: 80px 1fr; }
             .right-sidebar, .nav-text { display: none; }
@@ -140,33 +150,34 @@
         <aside class="left-sidebar">
             <img src="semsira.png" alt="Logo" class="nav-logo">
             <a href="#" class="nav-item active">
-                <span>🏠</span> <span class="nav-text">首页 Home</span>
+                <span>🏠</span> <span class="nav-text">Home</span>
             </a>
             <a href="#" class="nav-item">
-                <span>📑</span> <span class="nav-text">文章 Feed</span>
+                <span>📑</span> <span class="nav-text">Feed</span>
             </a>
             <div class="nav-item" onclick="location.reload()">
-                <span>🔄</span> <span class="nav-text">刷新 Refresh</span>
+                <span>🔄</span> <span class="nav-text">Refresh</span>
             </div>
         </aside>
 
         <main class="main-feed">
             <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="搜索文章内容...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search insights...">
             </div>
             
             <div id="posts-container">
-                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">正在同步 GitHub 数据...</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">Syncing with GitHub...</div>
             </div>
         </main>
 
         <aside class="right-sidebar">
             <div class="info-card">
                 <h3>About BDP Semsira</h3>
-                <p>这是 BDP Semsira 的官方校园博客。我们在此记录校园动态、学术成果及学生精彩生活。所有内容实时同步自 GitHub 存储库。</p>
+                <p>Official portal for BDP Semsira. We document campus life, academic milestones, and student leadership highlights.</p>
             </div>
-            <p style="font-size: 0.75rem; color: #333; margin-top: 25px; text-align: center; letter-spacing: 1px;">
-                © 2026 BDP SEMSIRA<br>POWERED BY GITHUB ISSUES
+            <p style="font-size: 0.7rem; color: #444; margin-top: 25px; text-align: center; letter-spacing: 1px; line-height: 1.5;">
+                © 2026 BDP SEMSIRA<br>
+                POWERED BY SEMSIRA SUPER SIX
             </p>
         </aside>
     </div>
@@ -193,14 +204,14 @@
                 const issues = await res.json();
                 
                 if (issues.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">暂无发布的文章</div>';
+                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">No articles found.</div>';
                     return;
                 }
 
                 container.innerHTML = '';
                 issues.forEach(issue => {
-                    const date = new Date(issue.created_at).toLocaleDateString('zh-CN', {
-                        year: 'numeric', month: 'long', day: '2-digit'
+                    const date = new Date(issue.created_at).toLocaleDateString('en-GB', {
+                        year: 'numeric', month: 'short', day: '2-digit'
                     });
 
                     const postEl = document.createElement('article');
@@ -208,12 +219,12 @@
                     
                     postEl.innerHTML = `
                         <h2>${issue.title}</h2>
-                        <small>ADMINISTRATOR • ${date}</small>
+                        <small>ADMIN • ${date}</small>
                         <div class="content">${marked.parse(issue.body || "")}</div>
                         <div style="margin-top:25px;">
                             <button onclick="toggleComments('${issue.id}')" 
-                                style="background:#fff; border:none; color:#000; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:600; font-size:13px;">
-                                参与评论 DISCUSS
+                                style="background:#fff; border:none; color:#000; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:600; font-size:12px;">
+                                DISCUSS
                             </button>
                         </div>
                         <div id="comment-box-${issue.id}" class="hidden comment-container">
@@ -230,7 +241,7 @@
                     container.appendChild(postEl);
                 });
             } catch (err) {
-                container.innerHTML = '<div style="text-align:center;padding:100px 0;">GitHub 数据连接失败，请检查公开权限。</div>';
+                container.innerHTML = '<div style="text-align:center;padding:100px 0;">Connection Error.</div>';
             }
         }
 
@@ -243,7 +254,6 @@
             }
         }
 
-        // 搜索功能
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const kw = e.target.value.toLowerCase();
             document.querySelectorAll('.post').forEach(p => {
