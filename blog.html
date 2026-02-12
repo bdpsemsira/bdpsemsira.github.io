@@ -17,99 +17,114 @@
             --text-dim: #88888d;
             --accent: #007aff;
             --border: rgba(255, 255, 255, 0.1);
-            --max-width: 1200px;
+            --max-width: 1250px;
         }
+
+        /* 基础修复：防止图片野蛮生长 */
+        img { max-width: 100%; height: auto; display: block; }
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
             margin: 0; padding: 0; color: var(--text-main); background: var(--bg-color);
+            overflow-x: hidden;
         }
 
-        /* 响应式网格布局 */
+        /* 电脑端三栏布局 */
         .page-wrapper {
             display: grid;
-            grid-template-columns: 240px 1fr 300px;
-            gap: 40px;
+            grid-template-columns: 260px 1fr 320px;
+            gap: 20px;
             max-width: var(--max-width);
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* --- 左侧导航 (电脑端) --- */
+        /* --- 左侧导航栏 --- */
         .left-sidebar {
             position: sticky; top: 0; height: 100vh;
-            display: flex; flex-direction: column; padding: 40px 0;
+            display: flex; flex-direction: column; padding: 40px 20px;
             border-right: 1px solid var(--border);
+        }
+        .nav-logo { 
+            width: 48px !important; height: 48px !important; 
+            border-radius: 12px; margin-bottom: 40px; 
+            object-fit: contain;
         }
         .nav-item {
             display: flex; align-items: center; gap: 15px;
-            padding: 12px; font-size: 1.1rem; color: var(--text-dim);
-            text-decoration: none; transition: 0.3s; cursor: pointer;
+            padding: 14px 12px; font-size: 1.05rem; color: var(--text-dim);
+            text-decoration: none; transition: 0.2s; cursor: pointer;
+            border-radius: 10px;
         }
-        .nav-item:hover, .nav-item.active { color: #fff; }
-        .nav-logo { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 30px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: #fff; }
 
-        /* --- 中间内容流 --- */
-        .main-feed { padding: 40px 0; }
-        .search-container { margin-bottom: 30px; }
+        /* --- 中间主信息流 --- */
+        .main-feed { padding: 40px 0; min-height: 100vh; }
+        .search-container { margin-bottom: 30px; position: sticky; top: 20px; z-index: 10; }
         .search-input {
-            width: 100%; background: #1a1a1c; border: 1px solid var(--border);
-            border-radius: 12px; padding: 12px 20px; color: #fff; box-sizing: border-box;
+            width: 100%; background: #161618; border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px 20px; color: #fff; font-size: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .post { 
             background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 16px; padding: 30px; margin-bottom: 25px;
+            border-radius: 20px; padding: 35px; margin-bottom: 30px;
+            transition: border 0.3s;
         }
-        .post h2 { margin: 0 0 10px 0; font-size: 1.6rem; letter-spacing: -0.5px; }
-        .post small { color: var(--text-dim); font-size: 0.85rem; display: block; margin-bottom: 20px; }
-        .content { color: #d1d1d6; line-height: 1.7; font-size: 1.05rem; }
-        .content img { width: 100%; border-radius: 12px; margin: 15px 0; border: 1px solid var(--border); }
+        .post:hover { border-color: #333; }
+        .post h2 { margin: 0 0 12px 0; font-size: 1.7rem; font-weight: 700; }
+        .post small { color: var(--text-dim); font-size: 0.85rem; display: block; margin-bottom: 25px; letter-spacing: 0.5px; }
+        
+        .content { color: #e2e2e7; line-height: 1.8; font-size: 1.05rem; }
+        .content img { border-radius: 12px; margin: 25px 0; border: 1px solid var(--border); width: 100%; }
 
-        /* --- 右侧侧边栏 (电脑端) --- */
+        /* --- 右侧信息卡片 --- */
         .right-sidebar { padding: 40px 0; position: sticky; top: 0; }
         .info-card {
-            background: #161618; border-radius: 16px; padding: 20px; border: 1px solid var(--border);
+            background: linear-gradient(145deg, #1a1a1c, #111111);
+            border-radius: 20px; padding: 25px; border: 1px solid var(--border);
         }
-        .info-card h3 { font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; margin-top: 0; }
-        .info-card p { font-size: 0.95rem; margin-bottom: 0; line-height: 1.5; }
+        .info-card h3 { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 1px; }
+        .info-card p { font-size: 0.95rem; line-height: 1.6; color: #ccc; margin: 0; }
 
         /* 评论区适配 */
         .comment-container { 
-            margin-top: 20px; padding: 20px; background: #1a1a1c; 
-            border-radius: 12px; border: 1px solid var(--border); 
+            margin-top: 30px; padding: 25px; background: #0a0a0a; 
+            border-radius: 16px; border: 1px solid var(--border); 
         }
 
-        /* --- 移动端底部导航 --- */
+        /* --- 移动端专用样式 --- */
+        .mobile-header { display: none; }
         .mobile-nav { display: none; }
 
-        /* --- 响应式调整 --- */
+        /* 响应式断点 */
         @media (max-width: 1100px) {
             .page-wrapper { grid-template-columns: 80px 1fr; }
-            .right-sidebar { display: none; }
-            .nav-text { display: none; }
+            .right-sidebar, .nav-text { display: none; }
+            .left-sidebar { align-items: center; padding: 40px 0; }
         }
 
         @media (max-width: 768px) {
-            .page-wrapper { display: block; padding-bottom: 80px; }
-            .left-sidebar { display: none; }
-            .main-feed { padding-top: 20px; }
+            .page-wrapper { display: block; padding-top: 60px; padding-bottom: 100px; }
+            .left-sidebar, .right-sidebar { display: none; }
             
-            /* 手机端 Logo 居中显示 */
             .mobile-header {
-                display: flex; justify-content: center; align-items: center;
-                padding: 15px; border-bottom: 1px solid var(--border);
+                display: flex; position: fixed; top: 0; left: 0; right: 0; height: 60px;
+                background: rgba(5,5,5,0.8); backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--border); z-index: 1000;
+                justify-content: center; align-items: center;
             }
-            .mobile-header img { width: 30px; height: 30px; }
+            .mobile-header img { height: 32px; width: 32px; border-radius: 6px; }
 
-            /* 底部导航显示 */
             .mobile-nav {
-                display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-                background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px);
-                border-top: 1px solid var(--border); height: 65px;
-                justify-content: space-around; align-items: center; z-index: 1000;
+                display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+                background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border); z-index: 1000;
+                justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
             }
-            .mobile-nav-item { font-size: 1.5rem; color: var(--text-dim); }
+            .mobile-nav-item { font-size: 1.4rem; color: var(--text-dim); cursor: pointer; }
+            .post { padding: 25px; border-radius: 0; border-left: none; border-right: none; margin-bottom: 15px; }
         }
 
         .hidden { display: none; }
@@ -117,45 +132,48 @@
 </head>
 <body>
 
-    <div class="mobile-header">
+    <header class="mobile-header">
         <img src="semsira.png" alt="Logo">
-    </div>
+    </header>
 
     <div class="page-wrapper">
         <aside class="left-sidebar">
             <img src="semsira.png" alt="Logo" class="nav-logo">
             <a href="#" class="nav-item active">
-                <span>🏠</span> <span class="nav-text">Home</span>
+                <span>🏠</span> <span class="nav-text">首页 Home</span>
             </a>
             <a href="#" class="nav-item">
-                <span>📖</span> <span class="nav-text">Articles</span>
+                <span>📑</span> <span class="nav-text">文章 Feed</span>
             </a>
-            <a href="#" class="nav-item" onclick="location.reload()">
-                <span>🔄</span> <span class="nav-text">Refresh</span>
-            </a>
+            <div class="nav-item" onclick="location.reload()">
+                <span>🔄</span> <span class="nav-text">刷新 Refresh</span>
+            </div>
         </aside>
 
         <main class="main-feed">
             <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search insights...">
+                <input type="text" id="searchInput" class="search-input" placeholder="搜索文章内容...">
             </div>
+            
             <div id="posts-container">
-                <div style="text-align: center; color: var(--text-dim); margin-top: 50px;">Initialising Feed...</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">正在同步 GitHub 数据...</div>
             </div>
         </main>
 
         <aside class="right-sidebar">
             <div class="info-card">
                 <h3>About BDP Semsira</h3>
-                <p>Welcome to our official campus portal. We share the latest activities, academic insights, and student life updates here.</p>
+                <p>这是 BDP Semsira 的官方校园博客。我们在此记录校园动态、学术成果及学生精彩生活。所有内容实时同步自 GitHub 存储库。</p>
             </div>
-            <p style="font-size: 0.8rem; color: #444; margin-top: 20px; text-align: center;">© 2026 Semsira BDP</p>
+            <p style="font-size: 0.75rem; color: #333; margin-top: 25px; text-align: center; letter-spacing: 1px;">
+                © 2026 BDP SEMSIRA<br>POWERED BY GITHUB ISSUES
+            </p>
         </aside>
     </div>
 
     <nav class="mobile-nav">
         <div class="mobile-nav-item" onclick="window.scrollTo({top:0, behavior:'smooth'})">🏠</div>
-        <div class="mobile-nav-item">🔍</div>
+        <div class="mobile-nav-item" onclick="document.getElementById('searchInput').focus()">🔍</div>
         <div class="mobile-nav-item" onclick="location.reload()">🔄</div>
     </nav>
 
@@ -173,11 +191,16 @@
             try {
                 const res = await fetch(url);
                 const issues = await res.json();
-                container.innerHTML = '';
+                
+                if (issues.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">暂无发布的文章</div>';
+                    return;
+                }
 
+                container.innerHTML = '';
                 issues.forEach(issue => {
-                    const date = new Date(issue.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric', month: 'short', day: '2-digit'
+                    const date = new Date(issue.created_at).toLocaleDateString('zh-CN', {
+                        year: 'numeric', month: 'long', day: '2-digit'
                     });
 
                     const postEl = document.createElement('article');
@@ -185,12 +208,12 @@
                     
                     postEl.innerHTML = `
                         <h2>${issue.title}</h2>
-                        <small>BY ADMIN • ${date}</small>
+                        <small>ADMINISTRATOR • ${date}</small>
                         <div class="content">${marked.parse(issue.body || "")}</div>
-                        <div style="margin-top:20px;">
-                            <button class="btn-interact" onclick="toggleComments('${issue.id}')" 
-                                style="background:transparent; border:1px solid var(--border); color:#fff; padding:8px 15px; border-radius:8px; cursor:pointer;">
-                                DISCUSS
+                        <div style="margin-top:25px;">
+                            <button onclick="toggleComments('${issue.id}')" 
+                                style="background:#fff; border:none; color:#000; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:600; font-size:13px;">
+                                参与评论 DISCUSS
                             </button>
                         </div>
                         <div id="comment-box-${issue.id}" class="hidden comment-container">
@@ -207,7 +230,7 @@
                     container.appendChild(postEl);
                 });
             } catch (err) {
-                container.innerHTML = '<div style="text-align:center;">Failed to sync with GitHub.</div>';
+                container.innerHTML = '<div style="text-align:center;padding:100px 0;">GitHub 数据连接失败，请检查公开权限。</div>';
             }
         }
 
