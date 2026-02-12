@@ -12,39 +12,58 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
   <style>
-    body { font-family:'Poppins',sans-serif; background:#f4f6f9; overflow-x: hidden; }
-    header { background:linear-gradient(135deg,#004080,#0066cc); color:white; padding:80px 20px; text-align:center; }
-    header h1 { font-weight:700; font-size:2.8rem; text-transform: uppercase; }
-    header p { letter-spacing:2px; opacity:0.9; font-weight: 600; }
+    /* 暗色主题核心样式 */
+    :root {
+      --bg-dark: #0f111a;
+      --card-dark: #1a1d2b;
+      --accent: #ffcc00;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+    }
 
-    section { padding:80px 20px; }
-    .section-title { font-family:'Playfair Display',serif; font-size:2.4rem; margin-bottom:50px; text-align:center; color:#004080; position: relative; }
-    .section-title::after { content:''; width: 80px; height: 3px; background: #ffcc00; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
-
-    .card { border:none; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:transform 0.3s; height:100%; background: white; }
-    .card:hover { transform:translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
+    body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
     
+    header { background: linear-gradient(135deg, #001a33, #003366); color: white; padding: 100px 20px; text-align: center; border-bottom: 2px solid var(--accent); }
+    header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; }
+    header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; }
+
+    section { padding: 80px 20px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 50px; text-align: center; color: white; position: relative; }
+    .section-title::after { content: ''; width: 80px; height: 3px; background: var(--accent); position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
+
+    /* 卡片暗色处理 */
+    .card { border: 1px solid #2d324d; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s; height: 100%; background: var(--card-dark); color: var(--text-main); }
+    .card:hover { transform: translateY(-8px); border-color: var(--accent); }
+    
+    .navbar { background: rgba(15, 17, 26, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); }
     .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
-    .btn-main { background:#004080; color:white; font-weight:600; padding:14px 30px; border-radius:30px; text-decoration:none; transition: 0.3s; display: inline-block; }
-    .btn-main:hover { background:#0066cc; color:white; box-shadow: 0 4px 15px rgba(0,102,204,0.3); }
     
-    footer { background:#004080; color:white; padding:30px 10px; text-align:center; font-size:0.9rem; }
+    .btn-main { background: var(--accent); color: #000; font-weight: 700; padding: 14px 30px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; }
+    .btn-main:hover { background: white; color: #000; transform: scale(1.05); }
+    
+    footer { background: #080a12; color: var(--text-muted); padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
 
-    /* Members Styling */
-    .mpp-member img { width:130px; height:130px; object-fit:cover; margin:20px auto 10px; border: 4px solid #f8f9fa; background: #eee; }
-    .biro-title { color:#004080; font-weight: 700; margin-top: 60px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
-    .member-name { font-size: 0.95rem; font-weight: 600; margin-top: 5px; }
-    .member-role { font-size: 0.8rem; color: #666; }
+    /* 成员样式微调 */
+    .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
+    .biro-title { color: var(--accent); font-weight: 700; margin-top: 60px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
+    .member-name { font-size: 0.95rem; font-weight: 600; color: white; }
+    .member-role { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* Chart Styling */
+    /* Peraturan 列表样式 */
+    .rule-list { list-style: none; padding: 0; text-align: left; }
+    .rule-list li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: flex-start; }
+    .rule-list li::before { content: "⚡"; margin-right: 10px; color: var(--accent); }
+
+    /* 图表容器 */
     .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
+    #statsList b { color: var(--accent); }
 
-    #backToTopBtn { position:fixed; bottom:30px; right:30px; background:#004080; color:white; border:none; border-radius:50%; padding:12px 16px; display:none; z-index:999; cursor:pointer; }
+    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background:#004080; border-bottom: 3px solid #ffcc00;">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
       <img src="semsira.png" alt="Logo"> BDP SEMSIRA
@@ -58,16 +77,16 @@
         <li class="nav-item"><a class="nav-link" href="#members">AJK</a></li>
         <li class="nav-item"><a class="nav-link" href="#rules">Peraturan</a></li>
         <li class="nav-item"><a class="nav-link" href="#stats">Statistik</a></li>
-        <li class="nav-item"><a class="nav-link" target="_blank" href="https://adam007-bit.github.io/PORTAL-E-ADUAN-MPP/">Aduan</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" style="color:var(--accent);" href="blog.html">Blog</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
 <header id="home">
-  <div data-aos="zoom-in">
+  <div data-aos="fade-down">
     <h1>PORTAL RASMI BDP SEMSIRA</h1>
-    <p>BADAN DISIPLIN PELAJAR • INTEGRITI & DISIPLIN</p>
+    <p>INTEGRITI • DISIPLIN • KECEMERLANGAN</p>
   </div>
 </header>
 
@@ -77,10 +96,10 @@
     
     <div class="row justify-content-center mb-5">
       <div class="col-md-4" data-aos="fade-up">
-        <div class="card p-3 mpp-member" style="border-top: 5px solid #ffcc00;">
+        <div class="card p-3 mpp-member">
           <img src="/image/nurzakwan.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
           <h5 class="member-name">MUHAMMAD NUR ZAKWAN</h5>
-          <p class="text-primary fw-bold mb-0">Presiden</p>
+          <p class="text-warning fw-bold mb-0">Presiden</p>
         </div>
       </div>
     </div>
@@ -121,12 +140,52 @@
       <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
       <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
     </div>
-
   </div>
 </section>
 
-<section id="stats" style="background:#f8f9fa;">
-  <h2 class="section-title">📊 Statistik Kesalahan Semasa</h2>
+<section id="rules" style="background: #080a12;">
+  <h2 class="section-title">📘 PERATURAN SEKOLAH</h2>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="zoom-in">
+        <div class="card p-4">
+          <h5 class="fw-bold text-warning mb-3">Kesalahan Umum</h5>
+          <ul class="rule-list">
+            <li>Lewat hadir ke sekolah/majlis.</li>
+            <li>Ponteng sekolah atau kelas.</li>
+            <li>Membawa barang larangan (Contraband).</li>
+            <li>Kekemasan diri tidak mengikut spek.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="card p-4">
+          <h5 class="fw-bold text-info mb-3">Lalu Lintas (Traffic)</h5>
+          <ul class="rule-list">
+            <li>Memandu melebihi had laju.</li>
+            <li>No. Plat kenderaan tidak mengikut spek.</li>
+            <li>Cukai jalan (Road Tax) tamat tempoh.</li>
+            <li>Tiada lesen memandu yang sah.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="card p-4">
+          <h5 class="fw-bold text-danger mb-3">Kesalahan Berat</h5>
+          <ul class="rule-list">
+            <li>Buli dan gangguan fizikal/mental.</li>
+            <li>Diskriminasi antara kaum/agama.</li>
+            <li>Penyalahgunaan dadah & bahan terlarang.</li>
+            <li>Vandalisme terhadap harta sekolah.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats">
+  <h2 class="section-title">📊 STATISTIK SEMASA</h2>
   <div class="container">
     <div class="row justify-content-center align-items-center">
       <div class="col-md-6" data-aos="fade-right">
@@ -136,8 +195,8 @@
       </div>
       <div class="col-md-5 mt-4 mt-md-0" data-aos="fade-left">
         <div class="card p-4">
-          <h5 class="fw-bold mb-3">Ringkasan Kes</h5>
-          <div id="statsList" class="small">Memuat data...</div>
+          <h5 class="fw-bold mb-3 text-warning">Ringkasan Kes Terkini</h5>
+          <div id="statsList" class="small">Memuat data Firebase...</div>
         </div>
       </div>
     </div>
@@ -146,14 +205,17 @@
 
 <section id="mission">
   <div class="container text-center" data-aos="fade-up">
-    <h2 class="section-title">🎯 Misi & Visi</h2>
-    <p class="lead">Integriti & Disiplin Teras Kecemerlangan Pelajar.</p>
-    <a href="https://bdpsemsira.github.io/login.html" class="btn-main">➡️ Portal Isi Kesalahan (AJK Sahaja)</a>
+    <h2 class="section-title">🎯 VISI KAMI</h2>
+    <p class="lead mb-5 text-muted">Melahirkan modal insan yang mempunyai sahsiah terpuji, disiplin yang mantap, dan integriti yang tinggi demi mengharumkan nama SEMSIRA.</p>
+    <a href="https://bdpsemsira.github.io/login.html" class="btn-main">➡️ PORTAL PENGURUSAN AJK</a>
   </div>
 </section>
 
 <footer>
-  <div class="container">© 2026 Badan Disiplin Pelajar SEMSIRA</div>
+  <div class="container">
+    <p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by ZiJun.</p>
+    <small class="text-muted">Sistem ini memantau disiplin secara telus dan berintegriti.</small>
+  </div>
 </footer>
 
 <button id="backToTopBtn">↑</button>
@@ -180,23 +242,11 @@
   const colRef = collection(db, "students");
 
   let myChart;
-
-  // 更新后的颜色映射表 (Traffic 错误分级灰黑色)
   const colorMap = {
-      "Late": "#f1c40f", 
-      "Skipping Class": "#e67e22", 
-      "Bullying": "#e74c3c", 
-      "Discrimination": "#e74c3c", 
-      "Contraband": "#9b59b6", 
-      "Severe Misconduct/Drugs": "#8e44ad",
-      
-      // 交通类渐变：从纯黑到中灰
-      "Speeding": "#000000",       // 纯黑
-      "Plate Number": "#2C3E50",   // 深蓝灰
-      "Road Tax": "#566573",       // 中灰
-      "Driving License": "#808B96",// 浅灰
-      
-      "Others": "#3498db"
+      "Late": "#f1c40f", "Skipping Class": "#e67e22", "Bullying": "#e74c3c", 
+      "Discrimination": "#e74c3c", "Contraband": "#9b59b6", "Severe Misconduct/Drugs": "#8e44ad",
+      "Speeding": "#000000", "Plate Number": "#2C3E50", "Road Tax": "#566573", 
+      "Driving License": "#808B96", "Others": "#3498db"
   };
 
   onSnapshot(colRef, (snap) => {
@@ -211,8 +261,8 @@
 
       let listHtml = "";
       labels.forEach((l, i) => {
-          listHtml += `<div class="d-flex justify-content-between border-bottom py-2">
-            <span><i class="fas fa-square" style="color:${bgColors[i]}"></i> ${l}</span>
+          listHtml += `<div class="d-flex justify-content-between border-bottom border-secondary py-2">
+            <span><i class="fas fa-circle" style="color:${bgColors[i]}"></i> ${l}</span>
             <b>${dataValues[i]}</b>
           </div>`;
       });
@@ -227,17 +277,21 @@
       } else {
           myChart = new Chart(ctx, {
               type: 'pie',
-              data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#fff', borderWidth: 2 }] },
+              data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#1a1d2b', borderWidth: 2 }] },
               options: { 
-                  responsive: true, 
-                  maintainAspectRatio: false,
-                  plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }
+                  responsive: true, maintainAspectRatio: false,
+                  plugins: { 
+                    legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } 
+                  }
               }
           });
       }
   });
 
   AOS.init({ duration: 1000, once: true });
+  const btn = document.getElementById("backToTopBtn");
+  window.onscroll = () => { btn.style.display = window.scrollY > 400 ? "block" : "none"; };
+  btn.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
 
 </body>
