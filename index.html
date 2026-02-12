@@ -68,7 +68,7 @@
 
     /* Footer */
     footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
-    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; }
+    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
     #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
   </style>
@@ -159,39 +159,9 @@
   <h2 class="section-title">📘 PERATURAN SEKOLAH</h2>
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-4" data-aos="zoom-in">
-        <div class="card p-4">
-          <h5 class="fw-bold text-warning mb-3">Kesalahan Umum</h5>
-          <ul class="rule-list">
-            <li>Lewat hadir ke sekolah/majlis.</li>
-            <li>Ponteng sekolah atau kelas.</li>
-            <li>Membawa barang larangan (Contraband).</li>
-            <li>Kekemasan diri tidak mengikut spek.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
-        <div class="card p-4">
-          <h5 class="fw-bold text-info mb-3">Lalu Lintas (Traffic)</h5>
-          <ul class="rule-list">
-            <li>Memandu melebihi had laju.</li>
-            <li>No. Plat kenderaan tidak mengikut spek.</li>
-            <li>Cukai jalan (Road Tax) tamat tempoh.</li>
-            <li>Tiada lesen memandu yang sah.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
-        <div class="card p-4">
-          <h5 class="fw-bold text-danger mb-3">Kesalahan Berat</h5>
-          <ul class="rule-list">
-            <li>Buli dan gangguan fizikal/mental.</li>
-            <li>Diskriminasi antara kaum/agama.</li>
-            <li>Penyalahgunaan dadah & bahan terlarang.</li>
-            <li>Vandalisme terhadap harta sekolah.</li>
-          </ul>
-        </div>
-      </div>
+      <div class="col-md-4" data-aos="zoom-in"><div class="card p-4"><h5 class="fw-bold text-warning mb-3">Kesalahan Umum</h5><ul class="rule-list"><li>Lewat hadir ke sekolah/majlis.</li><li>Ponteng sekolah atau kelas.</li><li>Membawa barang larangan (Contraband).</li><li>Kekemasan diri tidak mengikut spek.</li></ul></div></div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100"><div class="card p-4"><h5 class="fw-bold text-info mb-3">Lalu Lintas (Traffic)</h5><ul class="rule-list"><li>Memandu melebihi had laju.</li><li>No. Plat kenderaan tidak mengikut spek.</li><li>Cukai jalan (Road Tax) tamat tempoh.</li><li>Tiada lesen memandu yang sah.</li></ul></div></div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200"><div class="card p-4"><h5 class="fw-bold text-danger mb-3">Kesalahan Berat</h5><ul class="rule-list"><li>Buli dan gangguan fizikal/mental.</li><li>Diskriminasi antara kaum/agama.</li><li>Penyalahgunaan dadah & bahan terlarang.</li><li>Vandalisme terhadap harta sekolah.</li></ul></div></div>
     </div>
   </div>
 </section>
@@ -200,17 +170,8 @@
   <h2 class="section-title">📊 STATISTIK SEMASA</h2>
   <div class="container">
     <div class="row justify-content-center align-items-center">
-      <div class="col-md-6" data-aos="fade-right">
-        <div class="card p-4">
-          <div class="chart-container"><canvas id="offencePieChart"></canvas></div>
-        </div>
-      </div>
-      <div class="col-md-5 mt-4 mt-md-0" data-aos="fade-left">
-        <div class="card p-4">
-          <h5 class="fw-bold mb-3 text-warning">Ringkasan Kes Terkini</h5>
-          <div id="statsList" class="small">Memuat data Firebase...</div>
-        </div>
-      </div>
+      <div class="col-md-6" data-aos="fade-right"><div class="card p-4"><div class="chart-container"><canvas id="offencePieChart"></canvas></div></div></div>
+      <div class="col-md-5 mt-4 mt-md-0" data-aos="fade-left"><div class="card p-4"><h5 class="fw-bold mb-3 text-warning">Ringkasan Kes Terkini</h5><div id="statsList" class="small">Memuat data...</div></div></div>
     </div>
   </div>
 </section>
@@ -229,10 +190,7 @@
     <div class="row g-4">
       <div class="col-md-7" data-aos="fade-right">
         <div class="card p-2" style="overflow: hidden; min-height: 400px;">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.380026214532!2d100.2241630113884!3d6.473456823737505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ca21271172a75%3A0x6b49048a1f81d85d!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1707412345678!5m2!1sen!2smy" 
-            width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
-          </iframe>
+          <iframe src="https://maps.app.goo.gl/QHD8HtiiHMp5UfBt5。indexhtml可不可以都是英文呢，只有职位和错误保持马来文" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
         </div>
       </div>
       <div class="col-md-5" data-aos="fade-left">
@@ -244,9 +202,8 @@
             <p><i class="fas fa-phone-alt"></i> 6049760161</p>
             <p><i class="fas fa-fax"></i> 6049776604</p>
             <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
-            
             <hr style="border-color: #333; margin: 20px 0;">
-            <a href="https://maps.app.goo.gl/hG2p5n87G2G7H3R66" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
+            <a href="https://maps.app.goo.gl/QHD8HtiiHMp5UfBt5。indexhtml可不可以都是英文呢，只有职位和错误保持马来文" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
               <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
             </a>
           </div>
@@ -299,7 +256,6 @@
       snap.docs.forEach(doc => {
           doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; });
       });
-
       const labels = Object.keys(stats);
       const dataValues = Object.values(stats);
       const bgColors = labels.map(l => colorMap[l] || "#D5D8DC");
@@ -323,10 +279,7 @@
           myChart = new Chart(ctx, {
               type: 'pie',
               data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#1a1d2b', borderWidth: 2 }] },
-              options: { 
-                  responsive: true, maintainAspectRatio: false,
-                  plugins: { legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } }
-              }
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } } }
           });
       }
   });
