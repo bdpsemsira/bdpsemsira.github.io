@@ -32,15 +32,12 @@
 
     /* Members Styling */
     .mpp-member img { width:130px; height:130px; object-fit:cover; margin:20px auto 10px; border: 4px solid #f8f9fa; background: #eee; }
-    .biro-title { color:#004080; font-weight: 700; margin-top: 40px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
-    
-    /* Offence List Styling */
-    .offence-list { list-style: none; padding-left: 0; }
-    .offence-list li { padding: 8px 0; border-bottom: 1px dotted #eee; font-size: 0.95rem; }
-    .offence-list li::before { content: "•"; color: #004080; font-weight: bold; display: inline-block; width: 1.2em; }
+    .biro-title { color:#004080; font-weight: 700; margin-top: 60px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+    .member-name { font-size: 0.95rem; font-weight: 600; margin-top: 5px; }
+    .member-role { font-size: 0.8rem; color: #666; }
 
     /* Chart Styling */
-    .chart-container { position: relative; margin: auto; height: 400px; width: 100%; max-width: 500px; }
+    .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
 
     #backToTopBtn { position:fixed; bottom:30px; right:30px; background:#004080; color:white; border:none; border-radius:50%; padding:12px 16px; display:none; z-index:999; cursor:pointer; }
   </style>
@@ -77,56 +74,54 @@
 <section id="members">
   <h2 class="section-title">AHLI JAWATANKUASA BDP</h2>
   <div class="container text-center">
+    
     <div class="row justify-content-center mb-5">
       <div class="col-md-4" data-aos="fade-up">
         <div class="card p-3 mpp-member" style="border-top: 5px solid #ffcc00;">
           <img src="/image/nurzakwan.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
-          <h5 class="fw-bold mt-2">MUHAMMAD NUR ZAKWAN</h5>
-          <p class="text-primary fw-bold">Presiden</p>
+          <h5 class="member-name">MUHAMMAD NUR ZAKWAN</h5>
+          <p class="text-primary fw-bold mb-0">Presiden</p>
         </div>
       </div>
     </div>
+    <div class="row g-4 justify-content-center mb-5">
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle"><h5 class="member-name">NIK NUR FARHANEY</h5><p class="member-role">Timbalan Presiden 1</p></div></div>
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle"><h5 class="member-name">MUHAMMAD MIKHAIL RIZKY</h5><p class="member-role">Timbalan Presiden 2</p></div></div>
     </div>
-</section>
 
-<section id="rules" style="background:#ffffff;">
-  <h2 class="section-title">📘 Peraturan & Tatatertib</h2>
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-md-4" data-aos="zoom-in">
-        <div class="card p-4">
-          <h5 class="fw-bold text-warning mb-3">Disiplin Am</h5>
-          <ul class="offence-list">
-            <li>Late (Lewat Hadir)</li>
-            <li>Skipping Class (Ponteng)</li>
-            <li>Contraband (Barang Larangan)</li>
-            <li>Others (Lain-lain Salah Laku)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
-        <div class="card p-4">
-          <h5 class="fw-bold text-dark mb-3">Lalu Lintas (Traffic)</h5>
-          <ul class="offence-list">
-            <li>Speeding (Memandu Laju)</li>
-            <li>Plate Number (No. Plat Luar Spek)</li>
-            <li>Road Tax (Cukai Jalan Tamat)</li>
-            <li>Driving License (Tiada Lesen)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
-        <div class="card p-4">
-          <h5 class="fw-bold text-danger mb-3">Salah Laku Berat</h5>
-          <ul class="offence-list">
-            <li>Bullying (Buli & Gangguan)</li>
-            <li>Discrimination (Diskriminasi)</li>
-            <li>Drugs/Severe (Penyalahgunaan Dadah)</li>
-            <li>Misconduct (Salah Laku Tegar)</li>
-          </ul>
-        </div>
-      </div>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto"><h6 class="member-name">NUR RIFQAH UMAIRAH</h6><small class="member-role">Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto"><h6 class="member-name">LEE ZHI HUI</h6><small class="member-role">Pen. Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto"><h6 class="member-name">TAN QIAN YU</h6><small class="member-role">Bendahari</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto"><h6 class="member-name">CIK ANIS FARISHA</h6><small class="member-role">Pen. Bendahari</small></div></div>
     </div>
+
+    <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto"><small class="member-name">Syed Ashraff Ali</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto"><small class="member-name">M. Airil Wafie</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto"><small class="member-name">Umairah Qasdina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto"><small class="member-name">N. Syazrila Hafifah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto"><small class="member-name">Nur Syauqina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto"><small class="member-name">Ruthriswary</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto"><small class="member-name">S. Amni Athirah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto"><small class="member-name">M. Syazwan</small></div></div>
+    </div>
+
+    <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto"><small class="member-name">Suwannarid</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto"><small class="member-name">Kong Zi Jun</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto"><small class="member-name">M. Norhafiz</small></div></div>
+    </div>
+
+    <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto"><small class="member-name">Adam Tijani Adam</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
+    </div>
+
   </div>
 </section>
 
@@ -136,17 +131,13 @@
     <div class="row justify-content-center align-items-center">
       <div class="col-md-6" data-aos="fade-right">
         <div class="card p-4">
-          <div class="chart-container">
-            <canvas id="offencePieChart"></canvas>
-          </div>
+          <div class="chart-container"><canvas id="offencePieChart"></canvas></div>
         </div>
       </div>
       <div class="col-md-5 mt-4 mt-md-0" data-aos="fade-left">
         <div class="card p-4">
-          <h5 class="fw-bold mb-3">Ringkasan Analisis</h5>
-          <div id="statsList" class="small">
-            <p class="text-muted">Memuat turun data terkini...</p>
-          </div>
+          <h5 class="fw-bold mb-3">Ringkasan Kes</h5>
+          <div id="statsList" class="small">Memuat data...</div>
         </div>
       </div>
     </div>
@@ -154,28 +145,15 @@
 </section>
 
 <section id="mission">
-  <h2 class="section-title">🎯 Misi & Visi</h2>
   <div class="container text-center" data-aos="fade-up">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <p class="lead mb-4">
-          ✔️ Memupuk disiplin dan integriti pelajar melalui penguatkuasaan yang adil.<br>
-          ✔️ Membantu pihak sekolah dalam memastikan peraturan dipatuhi sepenuhnya.<br>
-          ✔️ Melahirkan pelajar yang bertanggungjawab terhadap diri dan komuniti.
-        </p>
-        <a href="https://bdpsemsira.github.io/login.html" class="btn-main mt-5">
-          ➡️ Portal Isi Kesalahan (AJK Sahaja)
-        </a>
-      </div>
-    </div>
+    <h2 class="section-title">🎯 Misi & Visi</h2>
+    <p class="lead">Integriti & Disiplin Teras Kecemerlangan Pelajar.</p>
+    <a href="https://bdpsemsira.github.io/login.html" class="btn-main">➡️ Portal Isi Kesalahan (AJK Sahaja)</a>
   </div>
 </section>
 
 <footer>
-  <div class="container">
-    © 2026 Badan Disiplin Pelajar SEMSIRA<br>
-    <small>Sistem Pengurusan Disiplin Bersepadu.</small>
-  </div>
+  <div class="container">© 2026 Badan Disiplin Pelajar SEMSIRA</div>
 </footer>
 
 <button id="backToTopBtn">↑</button>
@@ -203,47 +181,43 @@
 
   let myChart;
 
-  // 颜色定义 (与后端逻辑一致)
+  // 更新后的颜色映射表 (Traffic 错误分级灰黑色)
   const colorMap = {
-      "Late": "#f1c40f",           // 黄色
-      "Skipping Class": "#e67e22", // 橙色
-      "Bullying": "#e74c3c",       // 红色
-      "Discrimination": "#e74c3c", // 红色
-      "Contraband": "#9b59b6",     // 紫色
-      "Severe Misconduct/Drugs": "#8e44ad", // 深紫
-      "Speeding": "#000000",       // 黑色
-      "Plate Number": "#000000",   // 黑色
-      "Road Tax": "#000000",       // 黑色
-      "Driving License": "#000000",// 黑色
-      "Others": "#3498db"          // 蓝色
+      "Late": "#f1c40f", 
+      "Skipping Class": "#e67e22", 
+      "Bullying": "#e74c3c", 
+      "Discrimination": "#e74c3c", 
+      "Contraband": "#9b59b6", 
+      "Severe Misconduct/Drugs": "#8e44ad",
+      
+      // 交通类渐变：从纯黑到中灰
+      "Speeding": "#000000",       // 纯黑
+      "Plate Number": "#2C3E50",   // 深蓝灰
+      "Road Tax": "#566573",       // 中灰
+      "Driving License": "#808B96",// 浅灰
+      
+      "Others": "#3498db"
   };
 
   onSnapshot(colRef, (snap) => {
       const stats = {};
       snap.docs.forEach(doc => {
-          const data = doc.data();
-          if (data.offences) {
-              data.offences.forEach(off => {
-                  stats[off.type] = (stats[off.type] || 0) + 1;
-              });
-          }
+          doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; });
       });
 
       const labels = Object.keys(stats);
       const dataValues = Object.values(stats);
-      const bgColors = labels.map(label => colorMap[label] || "#333");
+      const bgColors = labels.map(l => colorMap[l] || "#D5D8DC");
 
-      // 更新右侧文字列表
       let listHtml = "";
-      labels.forEach((label, index) => {
+      labels.forEach((l, i) => {
           listHtml += `<div class="d-flex justify-content-between border-bottom py-2">
-            <span><i class="fas fa-circle" style="color:${bgColors[index]}"></i> ${label}</span>
-            <span class="fw-bold">${dataValues[index]}</span>
+            <span><i class="fas fa-square" style="color:${bgColors[i]}"></i> ${l}</span>
+            <b>${dataValues[i]}</b>
           </div>`;
       });
       document.getElementById('statsList').innerHTML = listHtml || "Tiada rekod.";
 
-      // 初始化或更新图表
       const ctx = document.getElementById('offencePieChart').getContext('2d');
       if (myChart) {
           myChart.data.labels = labels;
@@ -253,32 +227,17 @@
       } else {
           myChart = new Chart(ctx, {
               type: 'pie',
-              data: {
-                  labels: labels,
-                  datasets: [{
-                      data: dataValues,
-                      backgroundColor: bgColors,
-                      borderWidth: 2,
-                      borderColor: '#ffffff'
-                  }]
-              },
-              options: {
-                  responsive: true,
+              data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#fff', borderWidth: 2 }] },
+              options: { 
+                  responsive: true, 
                   maintainAspectRatio: false,
-                  plugins: {
-                      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
-                  }
+                  plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }
               }
           });
       }
   });
-</script>
 
-<script>
   AOS.init({ duration: 1000, once: true });
-  const btn = document.getElementById("backToTopBtn");
-  window.onscroll = () => { btn.style.display = window.scrollY > 400 ? "block" : "none"; };
-  btn.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
 
 </body>
