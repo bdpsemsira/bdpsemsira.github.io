@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bdpsemsira.github.io/sitemap.xml
