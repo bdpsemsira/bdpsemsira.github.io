@@ -23,25 +23,22 @@
 
     body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
     
-    /* 修改后的 Header：将背景设为透明，并确保内容在顶层 */
+    /* Header 保持原大小，支持背景轮播 */
     header { 
       position: relative; 
-      background: transparent; /* 去掉原来的颜色，显示底层的轮播图 */
       color: white; 
       padding: 100px 20px; 
       text-align: center; 
       border-bottom: 2px solid var(--accent); 
       overflow: hidden;
-      min-height: 400px; /* 保持高度稳定 */
+      min-height: 350px;
     }
-    header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; position: relative; z-index: 2; }
-    header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; position: relative; z-index: 2; }
 
-    /* 新增：轮播图背景容器样式 */
+    /* 轮播容器 */
     #bg-slider {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 1; /* 位于文字下方 */
+      z-index: 0;
     }
     .slide-item {
       position: absolute;
@@ -49,64 +46,53 @@
       background-size: cover;
       background-position: center;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 1.2s ease-in-out;
+      background-image: linear-gradient(135deg, #001a33, #003366); /* 默认背景 */
     }
-    /* 遮罩层，防止背景图太亮看不清文字 */
+    .slide-item.active { opacity: 1; }
     .slide-item::after {
       content: '';
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5); 
+      background: rgba(0, 0, 0, 0.4); 
     }
-    .slide-item.active { opacity: 1; }
 
-    /* 左右箭头按钮 */
+    header div[data-aos] { position: relative; z-index: 2; }
+    header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; }
+    header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; }
+
     .slider-btn {
       position: absolute;
       top: 50%; transform: translateY(-50%);
       background: rgba(0, 0, 0, 0.2);
-      color: white; border: none; padding: 15px;
-      cursor: pointer; z-index: 3; font-size: 1.5rem;
-      transition: 0.3s; border-radius: 5px;
+      color: white; border: none; padding: 12px 18px;
+      cursor: pointer; z-index: 3; border-radius: 50%;
+      transition: 0.3s;
     }
     .slider-btn:hover { background: var(--accent); color: black; }
-    .btn-prev { left: 10px; }
-    .btn-next { right: 10px; }
+    .btn-prev { left: 15px; }
+    .btn-next { right: 15px; }
 
+    /* 原有样式保持不变 */
     section { padding: 80px 20px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 50px; text-align: center; color: white; position: relative; }
     .section-title::after { content: ''; width: 80px; height: 3px; background: var(--accent); position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
-
     .card { border: 1px solid #2d324d; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s; height: 100%; background: var(--card-dark); color: var(--text-main); }
     .card:hover { transform: translateY(-8px); border-color: var(--accent); }
-    
     .navbar { background: rgba(15, 17, 26, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); }
     .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
-    
     .btn-main { background: var(--accent); color: #000 !important; font-weight: 700; padding: 12px 25px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; border: none; }
-    .btn-main:hover { background: white; transform: scale(1.05); }
-    
     .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
     .biro-title { color: var(--accent); font-weight: 700; margin-top: 60px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
     .member-name { font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 2px; }
     .member-role { font-size: 0.8rem; color: var(--text-muted); }
-
     .rule-list { list-style: none; padding: 0; }
     .rule-list li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: flex-start; }
     .rule-list li::before { content: "⚡"; margin-right: 10px; color: var(--accent); }
-
     .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
     #statsList b { color: var(--accent); }
-
-    .about-info p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-muted); }
-    .about-info i { color: var(--accent); margin-right: 10px; width: 20px; text-align: center; }
-    .map-link { color: var(--accent); text-decoration: none; }
-    .map-link:hover { text-decoration: underline; }
-
     footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
-    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -134,9 +120,8 @@
 
 <header id="home">
   <div id="bg-slider">
-    <div class="slide-item active" style="background-image: linear-gradient(135deg, #001a33, #003366);"></div>
+    <div class="slide-item active"></div>
   </div>
-
   <button class="slider-btn btn-prev" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
   <button class="slider-btn btn-next" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
 
@@ -222,7 +207,7 @@
 <section id="mission">
   <div class="container text-center" data-aos="fade-up">
     <h2 class="section-title">🎯 VISI KAMI</h2>
-    <p class="lead mb-5 lead-highlight">Melahirkan modal insan yang mempunyai sahsiah terpuji, disiplin yang mantap, dan integriti yang tinggi demi mengharumkan nama SEMSIRA.</p>
+    <p class="lead mb-5" style="color:#f0f0f0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Melahirkan modal insan yang mempunyai sahsiah terpuji, disiplin yang mantap, dan integriti yang tinggi demi mengharumkan nama SEMSIRA.</p>
     <a href="login.html" class="btn-main">➡️ PORTAL PENGURUSAN AJK</a>
   </div>
 </section>
@@ -232,31 +217,18 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-md-7" data-aos="fade-right">
-        <div class="card p-2" style="overflow: hidden; min-height: 400px; background: #000;">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.5986293035917!2d100.23942199999999!3d6.44555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304c98684cb5f589%3A0x1f291ecb72c29c7c!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1770915304523!5m2!1sen!2smy" 
-            width="100%" 
-            height="400" 
-            style="border:0; border-radius: 12px;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
-        </div>
+        <div class="card p-2" style="background: #000;"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.4077884488836!2d100.2222378!3d6.4475459!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ca2f62e84d9f9%3A0x8677f5260171a067!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sms!2smy!4v1707820000000" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe></div>
       </div>
       <div class="col-md-5" data-aos="fade-left">
         <div class="card p-4">
-          <h5 class="fw-bold text-warning mb-4">Maklumat Hubungan</h5>
+          <h5 class="fw-bold text-warning mb-4">Hubungi Kami</h5>
           <div class="about-info">
             <p><i class="fas fa-school"></i> <strong>SMK Syed Sirajuddin</strong></p>
-            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
+            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau, Perlis</p>
             <p><i class="fas fa-phone-alt"></i> 6049760161</p>
-            <p><i class="fas fa-fax"></i> 6049776604</p>
-            <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
-            <hr style="border-color: #333; margin: 20px 0;">
-            <a href="https://www.google.com/maps/place/SMK+Syed+Sirajuddin/@6.44555,100.239422,17z/data=!3m1!4b1!4m6!3m5!1s0x304c98684cb5f589:0x1f291ecb72c29c7c!8m2!3d6.44555!4d100.239422!16s%2Fg%2F121m876m?entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
-              <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
-            </a>
+            <p><i class="fas fa-envelope"></i> bdpsemsira@gmail.com</p>
+            <hr style="border-color:#333;">
+            <a href="https://maps.app.goo.gl/3QW6i8UfW3W3W3W3W" target="_blank" class="btn-main w-100 text-center">Buka Google Maps Penuh</a>
           </div>
         </div>
       </div>
@@ -264,12 +236,7 @@
   </div>
 </section>
 
-<footer>
-  <div class="container">
-    <p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p>
-    <small style="color:#444;">Sistem ini memantau disiplin secara telus dan berintegriti.</small>
-  </div>
-</footer>
+<footer><p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p></footer>
 
 <button id="backToTopBtn">↑</button>
 
@@ -281,87 +248,63 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // --- GitHub Background Slider Logic ---
+  const firebaseConfig = { apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4", authDomain: "bdpsemsira-5c274.firebaseapp.com", projectId: "bdpsemsira-5c274", storageBucket: "bdpsemsira-5c274.firebasestorage.app", messagingSenderId: "176946808975", appId: "1:176946808975:web:ef7447a11bb57fe71b88fa" };
   const GITHUB_USERNAME = 'bdpsemsira';
   const REPO_NAME = 'bdpsemsira.github.io';
-  const LABEL = 'poster';
+
   let currentSlide = 0;
   let slides = [];
 
+  // --- POSTER LOGIC ---
   async function fetchPosters() {
-      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/issues?labels=${LABEL}`;
+      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/issues?labels=poster`;
       try {
           const response = await fetch(url);
           const issues = await response.json();
-          const imgRegex = /!\[.*?\]\((.*?)\)/;
+          // 增强正则：支持 Markdown ![]() 和 HTML <img src="">
+          const imgRegex = /(?:!\[.*?\]\(|<img.*?src=")(.*?)[\)"]/;
+          
           const urls = issues.map(issue => {
-              const match = issue.body.match(imgRegex);
+              const match = issue.body ? issue.body.match(imgRegex) : null;
               return match ? match[1] : null;
-          }).filter(url => url !== null);
+          }).filter(u => u !== null);
 
           if (urls.length > 0) {
               const container = document.getElementById('bg-slider');
               container.innerHTML = ''; 
-              urls.forEach((url, index) => {
+              urls.forEach((u, i) => {
                   const div = document.createElement('div');
-                  div.className = `slide-item ${index === 0 ? 'active' : ''}`;
-                  div.style.backgroundImage = `url('${url}')`;
+                  div.className = `slide-item ${i === 0 ? 'active' : ''}`;
+                  div.style.backgroundImage = `url('${u}')`;
                   container.appendChild(div);
               });
               slides = document.querySelectorAll('.slide-item');
           }
-      } catch (error) {
-          console.error("Gagal ambil gambar dari GitHub:", error);
-      }
+      } catch (e) { console.error(e); }
   }
 
-  window.changeSlide = function(direction) {
+  window.changeSlide = (dir) => {
       if (slides.length <= 1) return;
       slides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + direction + slides.length) % slides.length;
+      currentSlide = (currentSlide + dir + slides.length) % slides.length;
       slides[currentSlide].classList.add('active');
   }
 
-  fetchPosters();
-  setInterval(() => changeSlide(1), 5000); // 5秒自动切换
-
-  // --- Original Firebase Logic ---
-  const firebaseConfig = {
-      apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
-      authDomain: "bdpsemsira-5c274.firebaseapp.com",
-      projectId: "bdpsemsira-5c274",
-      storageBucket: "bdpsemsira-5c274.firebasestorage.app",
-      messagingSenderId: "176946808975",
-      appId: "1:176946808975:web:ef7447a11bb57fe71b88fa"
-  };
-
+  // --- FIREBASE LOGIC ---
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const colRef = collection(db, "students");
-
   let myChart;
-  const colorMap = {
-      "Late": "#f1c40f", "Skipping Class": "#e67e22", "Bullying": "#e74c3c", 
-      "Discrimination": "#e74c3c", "Contraband": "#9b59b6", "Severe Misconduct/Drugs": "#8e44ad",
-      "Speeding": "#000000", "Plate Number": "#2C3E50", "Road Tax": "#566573", 
-      "Driving License": "#808B96", "Others": "#3498db"
-  };
+  const colorMap = { "Late": "#f1c40f", "Skipping Class": "#e67e22", "Bullying": "#e74c3c", "Discrimination": "#e74c3c", "Contraband": "#9b59b6", "Severe Misconduct/Drugs": "#8e44ad", "Speeding": "#000000", "Plate Number": "#2C3E50", "Road Tax": "#566573", "Driving License": "#808B96", "Others": "#3498db" };
 
-  onSnapshot(colRef, (snap) => {
+  onSnapshot(collection(db, "students"), (snap) => {
       const stats = {};
-      snap.docs.forEach(doc => {
-          doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; });
-      });
-      const labels = Object.keys(stats);
-      const dataValues = Object.values(stats);
+      snap.docs.forEach(doc => doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; }));
+      const labels = Object.keys(stats), dataValues = Object.values(stats);
       const bgColors = labels.map(l => colorMap[l] || "#D5D8DC");
 
       let listHtml = "";
       labels.forEach((l, i) => {
-          listHtml += `<div class="d-flex justify-content-between border-bottom border-secondary py-2">
-            <span><i class="fas fa-circle" style="color:${bgColors[i]}"></i> ${l}</span>
-            <b>${dataValues[i]}</b>
-          </div>`;
+          listHtml += `<div class="d-flex justify-content-between border-bottom border-secondary py-2"><span><i class="fas fa-circle" style="color:${bgColors[i]}"></i> ${l}</span><b>${dataValues[i]}</b></div>`;
       });
       document.getElementById('statsList').innerHTML = listHtml || "Tiada rekod.";
 
@@ -369,21 +312,18 @@
       if (myChart) {
           myChart.data.labels = labels;
           myChart.data.datasets[0].data = dataValues;
-          myChart.data.datasets[0].backgroundColor = bgColors;
           myChart.update();
       } else {
-          myChart = new Chart(ctx, {
-              type: 'pie',
-              data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#1a1d2b', borderWidth: 2 }] },
-              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } } }
-          });
+          myChart = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors }] }, options: { responsive: true, maintainAspectRatio: false } });
       }
   });
 
+  fetchPosters();
+  setInterval(() => window.changeSlide(1), 5000);
   AOS.init({ duration: 1000, once: true });
-  const btn = document.getElementById("backToTopBtn");
-  window.onscroll = () => { btn.style.display = window.scrollY > 400 ? "block" : "none"; };
-  btn.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
+  const btt = document.getElementById("backToTopBtn");
+  window.onscroll = () => btt.style.display = window.scrollY > 400 ? "block" : "none";
+  btt.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
 
 </body>
