@@ -23,75 +23,90 @@
 
     body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
     
-    /* 互动轮播 Header */
+    /* 修改后的 Header：将背景设为透明，并确保内容在顶层 */
     header { 
-      position: relative;
-      height: 85vh; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      text-align: center;
+      position: relative; 
+      background: transparent; /* 去掉原来的颜色，显示底层的轮播图 */
+      color: white; 
+      padding: 100px 20px; 
+      text-align: center; 
+      border-bottom: 2px solid var(--accent); 
       overflow: hidden;
-      border-bottom: 3px solid var(--accent);
+      min-height: 400px; /* 保持高度稳定 */
     }
-    
-    #bg-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    header h1 { font-weight: 700; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; position: relative; z-index: 2; }
+    header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; position: relative; z-index: 2; }
+
+    /* 新增：轮播图背景容器样式 */
+    #bg-slider {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1; /* 位于文字下方 */
+    }
     .slide-item {
       position: absolute;
-      width: 100%; height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background-size: cover;
       background-position: center;
       opacity: 0;
-      transition: opacity 1.2s ease-in-out;
+      transition: opacity 1s ease-in-out;
+    }
+    /* 遮罩层，防止背景图太亮看不清文字 */
+    .slide-item::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); 
     }
     .slide-item.active { opacity: 1; }
 
-    .header-content {
-      position: relative;
-      z-index: 3;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 40px;
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,204,0,0.3);
-    }
-
-    header h1 { font-weight: 700; font-size: 3rem; text-transform: uppercase; letter-spacing: 2px; }
-    header p { letter-spacing: 3px; color: var(--accent); font-weight: 600; }
-
+    /* 左右箭头按钮 */
     .slider-btn {
       position: absolute;
       top: 50%; transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.3);
-      color: white; border: none; padding: 20px;
-      cursor: pointer; z-index: 4; font-size: 2rem;
-      transition: 0.3s; border-radius: 50%;
-      width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.2);
+      color: white; border: none; padding: 15px;
+      cursor: pointer; z-index: 3; font-size: 1.5rem;
+      transition: 0.3s; border-radius: 5px;
     }
     .slider-btn:hover { background: var(--accent); color: black; }
-    .btn-prev { left: 20px; }
-    .btn-next { right: 20px; }
+    .btn-prev { left: 10px; }
+    .btn-next { right: 10px; }
 
     section { padding: 80px 20px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 50px; text-align: center; color: white; position: relative; }
     .section-title::after { content: ''; width: 80px; height: 3px; background: var(--accent); position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
 
-    .card { border: 1px solid #2d324d; border-radius: 16px; background: var(--card-dark); color: var(--text-main); transition: 0.3s; height: 100%; }
+    .card { border: 1px solid #2d324d; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s, border-color 0.3s; height: 100%; background: var(--card-dark); color: var(--text-main); }
     .card:hover { transform: translateY(-8px); border-color: var(--accent); }
     
     .navbar { background: rgba(15, 17, 26, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); }
-    .btn-main { background: var(--accent); color: #000 !important; font-weight: 700; padding: 12px 25px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; border:none; }
-    .btn-main:hover { background:white; transform:scale(1.05); }
-
-    .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
-    .biro-title { color: var(--accent); font-weight: 700; margin: 50px 0 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
+    .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
     
+    .btn-main { background: var(--accent); color: #000 !important; font-weight: 700; padding: 12px 25px; border-radius: 30px; text-decoration: none; transition: 0.3s; display: inline-block; border: none; }
+    .btn-main:hover { background: white; transform: scale(1.05); }
+    
+    .mpp-member img { width: 130px; height: 130px; object-fit: cover; margin: 20px auto 10px; border: 4px solid var(--accent); background: #222; }
+    .biro-title { color: var(--accent); font-weight: 700; margin-top: 60px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #2d324d; padding-bottom: 10px; }
+    .member-name { font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 2px; }
+    .member-role { font-size: 0.8rem; color: var(--text-muted); }
+
     .rule-list { list-style: none; padding: 0; }
-    .rule-list li { margin-bottom: 10px; color: var(--text-muted); font-size: 0.9rem; }
+    .rule-list li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: flex-start; }
     .rule-list li::before { content: "⚡"; margin-right: 10px; color: var(--accent); }
 
-    .chart-container { position: relative; height: 350px; width: 100%; }
-    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 15px; display: none; z-index: 999; cursor: pointer; font-weight: bold; }
+    .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
+    #statsList b { color: var(--accent); }
+
+    .about-info p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-muted); }
+    .about-info i { color: var(--accent); margin-right: 10px; width: 20px; text-align: center; }
+    .map-link { color: var(--accent); text-decoration: none; }
+    .map-link:hover { text-decoration: underline; }
+
+    footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
+    .lead-highlight { color: #f0f0f0 !important; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
   </style>
 </head>
 <body>
@@ -99,7 +114,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-      <img src="semsira.png" alt="Logo" height="45"> BDP SEMSIRA
+      <img src="semsira.png" alt="Logo"> BDP SEMSIRA
     </a>
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
       <span class="navbar-toggler-icon"></span>
@@ -111,7 +126,7 @@
         <li class="nav-item"><a class="nav-link" href="#rules">Peraturan</a></li>
         <li class="nav-item"><a class="nav-link" href="#stats">Statistik</a></li>
         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold text-warning" href="blog.html">Blog</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" style="color:var(--accent);" href="blog.html">Blog</a></li>
       </ul>
     </div>
   </div>
@@ -119,11 +134,13 @@
 
 <header id="home">
   <div id="bg-slider">
-    <div class="slide-item active" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1523050853064-db838a6a6f6d?q=80&w=2070')"></div>
+    <div class="slide-item active" style="background-image: linear-gradient(135deg, #001a33, #003366);"></div>
   </div>
+
   <button class="slider-btn btn-prev" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
   <button class="slider-btn btn-next" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
-  <div class="header-content" data-aos="zoom-in">
+
+  <div data-aos="fade-down">
     <h1>PORTAL RASMI BDP SEMSIRA</h1>
     <p>INTEGRITI • DISIPLIN • KECEMERLANGAN</p>
   </div>
@@ -136,43 +153,47 @@
       <div class="col-md-4" data-aos="fade-up">
         <div class="card p-3 mpp-member">
           <img src="/image/nurzakwan.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'">
-          <h5 class="mt-2">MUHAMMAD NUR ZAKWAN</h5>
-          <p class="text-warning fw-bold">Presiden</p>
+          <h5 class="member-name">MUHAMMAD NUR ZAKWAN</h5>
+          <p class="text-warning fw-bold mb-0">Presiden</p>
         </div>
       </div>
     </div>
     <div class="row g-4 justify-content-center mb-5">
-      <div class="col-md-3"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle"><h6 class="mt-2">NIK NUR FARHANEY</h6><p class="small text-muted">Timbalan Presiden 1</p></div></div>
-      <div class="col-md-3"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle"><h6 class="mt-2">MUHAMMAD MIKHAIL RIZKY</h6><p class="small text-muted">Timbalan Presiden 2</p></div></div>
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">NIK NUR FARHANEY</h5><p class="member-role">Timbalan Presiden 1</p></div></div>
+      <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">MUHAMMAD MIKHAIL RIZKY</h5><p class="member-role">Timbalan Presiden 2</p></div></div>
     </div>
 
     <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto"><h6>NUR RIFQAH</h6><small>Setiausaha</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto"><h6>LEE ZHI HUI</h6><small>Pen. Setiausaha</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto"><h6>TAN QIAN YU</h6><small>Bendahari</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto"><h6>CIK ANIS</h6><small>Pen. Bendahari</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto"><h6 class="member-name">NUR RIFQAH UMAIRAH</h6><small class="member-role">Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto"><h6 class="member-name">LEE ZHI HUI</h6><small class="member-role">Pen. Setiausaha</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto"><h6 class="member-name">TAN QIAN YU</h6><small class="member-role">Bendahari</small></div></div>
+      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto"><h6 class="member-name">CIK ANIS FARISHA</h6><small class="member-role">Pen. Bendahari</small></div></div>
     </div>
 
     <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
-    <div class="row g-2 justify-content-center">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle"><small>Syed Ashraff</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle"><small>M. Airil Wafie</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle"><small>Umairah Qasdina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle"><small>N. Syazrila</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle"><small>Nur Syauqina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle"><small>Ruthriswary</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle"><small>S. Amni Athirah</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle"><small>M. Syazwan</small></div></div>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto"><small class="member-name">Syed Ashraff Ali</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto"><small class="member-name">M. Airil Wafie</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto"><small class="member-name">Umairah Qasdina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto"><small class="member-name">N. Syazrila Hafifah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto"><small class="member-name">Nur Syauqina</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto"><small class="member-name">Ruthriswary</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto"><small class="member-name">S. Amni Athirah</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto"><small class="member-name">M. Syazwan</small></div></div>
     </div>
 
-    <h4 class="biro-title">BIRO MULTIMEDIA & KEROHANIAN</h4>
-    <div class="row g-2 justify-content-center">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle"><small>Suwannarid</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle"><small>Kong Zi Jun</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle"><small>M. Norhafiz</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle"><small>Adam Tijani</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle"><small>Iman Faris</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle"><small>Farish Aiman</small></div></div>
+    <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
+    <div class="row g-3 justify-content-center mb-5">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto"><small class="member-name">Suwannarid</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto"><small class="member-name">Kong Zi Jun</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto"><small class="member-name">M. Norhafiz</small></div></div>
+    </div>
+
+    <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto"><small class="member-name">Adam Tijani Adam</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
+      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
     </div>
   </div>
 </section>
@@ -181,9 +202,9 @@
   <h2 class="section-title">📘 PERATURAN SEKOLAH</h2>
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-4"><div class="card p-4"><h5 class="text-warning">Umum</h5><ul class="rule-list"><li>Lewat hadir</li><li>Ponteng</li><li>Kekemasan diri</li></ul></div></div>
-      <div class="col-md-4"><div class="card p-4"><h5 class="text-info">Trafik</h5><ul class="rule-list"><li>Had laju</li><li>No. Plat</li><li>Road Tax/Lesen</li></ul></div></div>
-      <div class="col-md-4"><div class="card p-4"><h5 class="text-danger">Berat</h5><ul class="rule-list"><li>Buli</li><li>Dadah</li><li>Vandalisme</li></ul></div></div>
+      <div class="col-md-4" data-aos="zoom-in"><div class="card p-4"><h5 class="fw-bold text-warning mb-3">Kesalahan Umum</h5><ul class="rule-list"><li>Lewat hadir ke sekolah/majlis.</li><li>Ponteng sekolah atau kelas.</li><li>Membawa barang larangan (Contraband).</li><li>Kekemasan diri tidak mengikut spek.</li></ul></div></div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100"><div class="card p-4"><h5 class="fw-bold text-info mb-3">Lalu Lintas (Traffic)</h5><ul class="rule-list"><li>Memandu melebihi had laju.</li><li>No. Plat kenderaan tidak mengikut spek.</li><li>Cukai jalan (Road Tax) tamat tempoh.</li><li>Tiada lesen memandu yang sah.</li></ul></div></div>
+      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200"><div class="card p-4"><h5 class="fw-bold text-danger mb-3">Kesalahan Berat</h5><ul class="rule-list"><li>Buli dan gangguan fizikal/mental.</li><li>Diskriminasi antara kaum/agama.</li><li>Penyalahgunaan dadah & bahan terlarang.</li><li>Vandalisme terhadap harta sekolah.</li></ul></div></div>
     </div>
   </div>
 </section>
@@ -191,36 +212,65 @@
 <section id="stats">
   <h2 class="section-title">📊 STATISTIK SEMASA</h2>
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-7"><div class="card p-3"><div class="chart-container"><canvas id="offencePieChart"></canvas></div></div></div>
-      <div class="col-md-5"><div class="card p-4"><h5 class="text-warning mb-3">Ringkasan</h5><div id="statsList" class="small">Memuat data...</div></div></div>
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-6" data-aos="fade-right"><div class="card p-4"><div class="chart-container"><canvas id="offencePieChart"></canvas></div></div></div>
+      <div class="col-md-5 mt-4 mt-md-0" data-aos="fade-left"><div class="card p-4"><h5 class="fw-bold mb-3 text-warning">Ringkasan Kes Terkini</h5><div id="statsList" class="small">Memuat data...</div></div></div>
     </div>
   </div>
 </section>
 
+<section id="mission">
+  <div class="container text-center" data-aos="fade-up">
+    <h2 class="section-title">🎯 VISI KAMI</h2>
+    <p class="lead mb-5 lead-highlight">Melahirkan modal insan yang mempunyai sahsiah terpuji, disiplin yang mantap, dan integriti yang tinggi demi mengharumkan nama SEMSIRA.</p>
+    <a href="login.html" class="btn-main">➡️ PORTAL PENGURUSAN AJK</a>
+  </div>
+</section>
+
 <section id="about" style="background: #080a12;">
-  <h2 class="section-title">🏢 ABOUT US</h2>
+  <h2 class="section-title">🏢 MENGENAI KAMI</h2>
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-7">
-        <div class="card p-2" style="background:#000;"><iframe src="https://maps.app.goo.gl/wY6pU3VvN2xY7p9x97" width="100%" height="400" style="border:0; border-radius:12px;" allowfullscreen="" loading="lazy"></iframe></div>
+      <div class="col-md-7" data-aos="fade-right">
+        <div class="card p-2" style="overflow: hidden; min-height: 400px; background: #000;">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.5986293035917!2d100.23942199999999!3d6.44555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304c98684cb5f589%3A0x1f291ecb72c29c7c!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1770915304523!5m2!1sen!2smy" 
+            width="100%" 
+            height="400" 
+            style="border:0; border-radius: 12px;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
       </div>
-      <div class="col-md-5">
+      <div class="col-md-5" data-aos="fade-left">
         <div class="card p-4">
-          <h5 class="text-warning mb-4">Hubungi Kami</h5>
-          <p><i class="fas fa-school me-2"></i> SMK Syed Sirajuddin</p>
-          <p><i class="fas fa-map-marker-alt me-2"></i> Jejawi, 02600, Arau, Perlis</p>
-          <p><i class="fas fa-phone-alt me-2"></i> 6049760161</p>
-          <p><i class="fas fa-envelope me-2"></i> bdpsemsira@gmail.com</p>
-          <hr style="border-color:#444;">
-          <a href="https://maps.app.goo.gl/wY6pU3VvN2xY7p9x98" target="_blank" class="btn-main w-100 text-center">Buka Google Maps Penuh</a>
+          <h5 class="fw-bold text-warning mb-4">Maklumat Hubungan</h5>
+          <div class="about-info">
+            <p><i class="fas fa-school"></i> <strong>SMK Syed Sirajuddin</strong></p>
+            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
+            <p><i class="fas fa-phone-alt"></i> 6049760161</p>
+            <p><i class="fas fa-fax"></i> 6049776604</p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
+            <hr style="border-color: #333; margin: 20px 0;">
+            <a href="https://www.google.com/maps/place/SMK+Syed+Sirajuddin/@6.44555,100.239422,17z/data=!3m1!4b1!4m6!3m5!1s0x304c98684cb5f589:0x1f291ecb72c29c7c!8m2!3d6.44555!4d100.239422!16s%2Fg%2F121m876m?entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
+              <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<footer><p class="text-center py-4">© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p></footer>
+<footer>
+  <div class="container">
+    <p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p>
+    <small style="color:#444;">Sistem ini memantau disiplin secara telus dan berintegriti.</small>
+  </div>
+</footer>
+
 <button id="backToTopBtn">↑</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -231,60 +281,110 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // Firebase Init
-  const firebaseConfig = { apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4", authDomain: "bdpsemsira-5c274.firebaseapp.com", projectId: "bdpsemsira-5c274", storageBucket: "bdpsemsira-5c274.firebasestorage.app", messagingSenderId: "176946808975", appId: "1:176946808975:web:ef7447a11bb57fe71b88fa" };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  
-  // GitHub Config
+  // --- GitHub Background Slider Logic ---
   const GITHUB_USERNAME = 'bdpsemsira';
   const REPO_NAME = 'bdpsemsira.github.io';
   const LABEL = 'poster';
-  let currentSlide = 0, slides = [];
+  let currentSlide = 0;
+  let slides = [];
 
   async function fetchPosters() {
-    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/issues?labels=${LABEL}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const imgRegex = /!\[.*?\]\((.*?)\)/;
-      const urls = data.map(i => i.body.match(imgRegex)?.[1]).filter(u => u);
-      if (urls.length > 0) {
-        const container = document.getElementById('bg-slider');
-        container.innerHTML = '';
-        urls.forEach((u, i) => {
-          const d = document.createElement('div');
-          d.className = `slide-item ${i===0?'active':''}`;
-          d.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${u}')`;
-          container.appendChild(d);
-        });
-        slides = document.querySelectorAll('.slide-item');
+      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/issues?labels=${LABEL}`;
+      try {
+          const response = await fetch(url);
+          const issues = await response.json();
+          const imgRegex = /!\[.*?\]\((.*?)\)/;
+          const urls = issues.map(issue => {
+              const match = issue.body.match(imgRegex);
+              return match ? match[1] : null;
+          }).filter(url => url !== null);
+
+          if (urls.length > 0) {
+              const container = document.getElementById('bg-slider');
+              container.innerHTML = ''; 
+              urls.forEach((url, index) => {
+                  const div = document.createElement('div');
+                  div.className = `slide-item ${index === 0 ? 'active' : ''}`;
+                  div.style.backgroundImage = `url('${url}')`;
+                  container.appendChild(div);
+              });
+              slides = document.querySelectorAll('.slide-item');
+          }
+      } catch (error) {
+          console.error("Gagal ambil gambar dari GitHub:", error);
       }
-    } catch(e) { console.error(e); }
   }
 
-  window.changeSlide = (n) => {
-    if (slides.length < 2) return;
-    slides[currentSlide].classList.remove('active');
-    currentSlide = (currentSlide + n + slides.length) % slides.length;
-    slides[currentSlide].classList.add('active');
+  window.changeSlide = function(direction) {
+      if (slides.length <= 1) return;
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + direction + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
   }
-
-  // Firebase Stats logic
-  onSnapshot(collection(db, "students"), (snap) => {
-    const stats = {};
-    snap.docs.forEach(d => d.data().offences?.forEach(o => stats[o.type] = (stats[o.type]||0)+1));
-    const labels = Object.keys(stats), dataValues = Object.values(stats);
-    let listHtml = "";
-    labels.forEach((l, i) => { listHtml += `<div class="d-flex justify-content-between border-bottom border-secondary py-2"><span>${l}</span><b>${dataValues[i]}</b></div>`; });
-    document.getElementById('statsList').innerHTML = listHtml || "No data.";
-    const ctx = document.getElementById('offencePieChart').getContext('2d');
-    new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: dataValues, backgroundColor: ["#f1c40f","#e67e22","#e74c3c","#9b59b6","#3498db"] }] }, options: { responsive: true, maintainAspectRatio: false } });
-  });
 
   fetchPosters();
-  setInterval(() => window.changeSlide(1), 6000);
-  AOS.init();
+  setInterval(() => changeSlide(1), 5000); // 5秒自动切换
+
+  // --- Original Firebase Logic ---
+  const firebaseConfig = {
+      apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
+      authDomain: "bdpsemsira-5c274.firebaseapp.com",
+      projectId: "bdpsemsira-5c274",
+      storageBucket: "bdpsemsira-5c274.firebasestorage.app",
+      messagingSenderId: "176946808975",
+      appId: "1:176946808975:web:ef7447a11bb57fe71b88fa"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const colRef = collection(db, "students");
+
+  let myChart;
+  const colorMap = {
+      "Late": "#f1c40f", "Skipping Class": "#e67e22", "Bullying": "#e74c3c", 
+      "Discrimination": "#e74c3c", "Contraband": "#9b59b6", "Severe Misconduct/Drugs": "#8e44ad",
+      "Speeding": "#000000", "Plate Number": "#2C3E50", "Road Tax": "#566573", 
+      "Driving License": "#808B96", "Others": "#3498db"
+  };
+
+  onSnapshot(colRef, (snap) => {
+      const stats = {};
+      snap.docs.forEach(doc => {
+          doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; });
+      });
+      const labels = Object.keys(stats);
+      const dataValues = Object.values(stats);
+      const bgColors = labels.map(l => colorMap[l] || "#D5D8DC");
+
+      let listHtml = "";
+      labels.forEach((l, i) => {
+          listHtml += `<div class="d-flex justify-content-between border-bottom border-secondary py-2">
+            <span><i class="fas fa-circle" style="color:${bgColors[i]}"></i> ${l}</span>
+            <b>${dataValues[i]}</b>
+          </div>`;
+      });
+      document.getElementById('statsList').innerHTML = listHtml || "Tiada rekod.";
+
+      const ctx = document.getElementById('offencePieChart').getContext('2d');
+      if (myChart) {
+          myChart.data.labels = labels;
+          myChart.data.datasets[0].data = dataValues;
+          myChart.data.datasets[0].backgroundColor = bgColors;
+          myChart.update();
+      } else {
+          myChart = new Chart(ctx, {
+              type: 'pie',
+              data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors, borderColor: '#1a1d2b', borderWidth: 2 }] },
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff', boxWidth: 10 } } } }
+          });
+      }
+  });
+
+  AOS.init({ duration: 1000, once: true });
+  const btn = document.getElementById("backToTopBtn");
+  window.onscroll = () => { btn.style.display = window.scrollY > 400 ? "block" : "none"; };
+  btn.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
+
 </body>
 </html>
