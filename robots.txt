@@ -1,3 +1,9 @@
 User-agent: *
 Allow: /
 Sitemap: https://bdpsemsira.github.io/sitemap.xml
+
+User-agent: Googlebot-Image
+Disallow: /image/
+
+User-agent: *
+Disallow: /image/
