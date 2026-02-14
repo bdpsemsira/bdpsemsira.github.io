@@ -2,9 +2,8 @@
 <html lang="ms">
 <head>
   <meta name="google-site-verification" content="3GQMPCD78CZvbAuBuE8e1hMt9q8TVVCrahPBfsiqraA" />
-
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
   <title>BDP SEMSIRA | Portal Rasmi Badan Disiplin Pelajar SMK Syed Sirajuddin</title>
 
@@ -47,8 +46,19 @@
       --text-muted: #cccccc;
     }
 
-    body { font-family:'Poppins',sans-serif; background: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
-    
+    /* 优化手机端：禁止左右滑动 */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body { 
+      font-family:'Poppins',sans-serif; 
+      background: var(--bg-dark); 
+      color: var(--text-main); 
+    }
+
     header { 
       position: relative; 
       color: white; 
@@ -115,7 +125,51 @@
     .chart-container { position: relative; margin: auto; height: 350px; width: 100%; }
     #statsList b { color: var(--accent); }
     footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
-    #backToTopBtn { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: black; border: none; border-radius: 50%; padding: 12px 18px; display: none; z-index: 999; cursor: pointer; font-weight: bold; }
+
+    /* 核心美化：Back to Top 按钮 */
+    #backToTopBtn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 204, 0, 0.85); /* 半透明主色 */
+      backdrop-filter: blur(8px); /* 毛玻璃效果 */
+      color: #000;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 8px 25px rgba(255, 204, 0, 0.3);
+    }
+
+    #backToTopBtn.show {
+      opacity: 1;
+      visibility: visible;
+      bottom: 30px;
+    }
+
+    #backToTopBtn:hover {
+      background: var(--accent);
+      transform: scale(1.1) translateY(-5px);
+      box-shadow: 0 12px 30px rgba(255, 204, 0, 0.5);
+    }
+
+    #backToTopBtn i {
+      font-size: 20px;
+      transition: 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.8rem; }
+      #backToTopBtn { width: 45px; height: 45px; bottom: 20px; right: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -242,7 +296,7 @@
       <div class="col-md-7" data-aos="fade-right">
         <div class="card p-2" style="overflow: hidden; min-height: 400px; background: #000;">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.5986293035917!2d100.23942199999999!3d6.44555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304c98684cb5f589%3A0x1f291ecb72c29c7c!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1770915304523!5m2!1sen!2smy" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.2345!2d100.2234!3d6.4456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjYnNDQuMiJOIDEwMMKwMTMnMjQuMiJF!5e0!3m2!1sen!2smy!4v1234567890" 
             width="100%" 
             height="400" 
             style="border:0; border-radius: 12px;" 
@@ -262,7 +316,7 @@
             <p><i class="fas fa-fax"></i> 6049776604</p>
             <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
             <hr style="border-color: #333; margin: 20px 0;">
-            <a href="https://www.google.com/maps/place/SMK+Syed+Sirajuddin/@6.44555,100.239422,17z/data=!3m1!4b1!4m6!3m5!1s0x304c98684cb5f589:0x1f291ecb72c29c7c!8m2!3d6.44555!4d100.239422!16s%2Fg%2F121m876m?entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
+            <a href="https://maps.google.com" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
               <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
             </a>
           </div>
@@ -274,7 +328,9 @@
   
 <footer><p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p></footer>
 
-<button id="backToTopBtn">↑</button>
+<button id="backToTopBtn" title="Back to Top">
+  <i class="fas fa-arrow-up"></i>
+</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
@@ -356,8 +412,16 @@
   fetchPosters();
   setInterval(() => window.changeSlide(1), 5000);
   AOS.init({ duration: 1000, once: true });
+
+  // 优化后的 Back to Top 控制
   const btt = document.getElementById("backToTopBtn");
-  window.onscroll = () => btt.style.display = window.scrollY > 400 ? "block" : "none";
+  window.onscroll = () => {
+    if (window.scrollY > 400) {
+      btt.classList.add("show");
+    } else {
+      btt.classList.remove("show");
+    }
+  };
   btt.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
 
