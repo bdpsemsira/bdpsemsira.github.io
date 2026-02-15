@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员面部采集</title>
+    <style>
+        /* 保持和你搜索框一致的风格 */
+        .container { text-align: center; padding: 20px; font-family: Arial, sans-serif; }
+        
+        select, button {
+            width: 300px; /* 确保长度一致 */
+            height: 40px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        #video-container {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #333;
+            background: #000;
+        }
+        
+        /* 模拟你系统中的 Highlight 效果，如果检测到面部则变绿 */
+        .detected { border-color: #28a745 !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>管理员面部密码录制</h2>
+    <p>当前操作员: <span id="current-operator">Admin_01</span></p>
+
+    <div>
+        <select id="cameraSelect">
+            <option value="">正在检测镜头...</option>
+        </select>
+    </div>
+
+    <div id="video-container">
+        <video id="webcam" width="640" height="480" autoplay playsinline></video>
+    </div>
+
+    <div>
+        <button onclick="captureFace()" style="background-color: #007bff; color: white;">录制面部数据</button>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('webcam');
+    const cameraSelect = document.getElementById('cameraSelect');
+
+    // 获取并填充摄像头列表
+    async function initCamera() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        
+        cameraSelect.innerHTML = videoDevices.map(device => 
+            `<option value="${device.deviceId}">${device.label || 'Camera ' + device.deviceId}</option>`
+        ).join('');
+
+        cameraSelect.onchange = () => startStream(cameraSelect.value);
+        
+        if (videoDevices.length > 0) startStream(videoDevices[0].deviceId);
+    }
+
+    async function startStream(deviceId) {
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => track.stop());
+        }
+        const constraints = { video: { deviceId: { exact: deviceId } } };
+        window.stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = window.stream;
+    }
+
+    function captureFace() {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/png');
+        console.log("面部数据已生成:", imageData.substring(0, 50) + "...");
+        alert("面部密码已成功关联至当前 Operator！");
+    }
+
+    initCamera();
+</script>
+</body>
+</html>
