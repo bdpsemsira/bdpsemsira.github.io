@@ -9,7 +9,13 @@
     <style>
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        
+        /* 右上角双行状态显示 */
+        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 12px; font-family: monospace; }
+        .info-header div:first-child { color: #888; }
+        .info-header div:last-child { color: var(--primary); font-weight: bold; }
+
+        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 10; }
         .logo { width: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(230, 126, 34, 0.4)); }
         h2 { color: var(--primary); margin: 0; letter-spacing: 2px; font-weight: 800; }
         p { font-size: 11px; color: #555; margin-bottom: 20px; text-transform: uppercase; }
@@ -17,11 +23,13 @@
         #face-area { display: none; width: 100%; height: 240px; background: #000; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary); overflow: hidden; position: relative; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        .input-group input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: white; box-sizing: border-box; text-align: center; font-size: 15px; }
+        .input-group input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: white; box-sizing: border-box; text-align: center; font-size: 15px; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--primary); outline: none; }
+        
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
         button { padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-main { background: var(--primary); color: white; }
-        .btn-face { background: #2c3e50; color: white; border: 1px solid #34495e; }
+        .btn-main { background: var(--primary); color: white; width: 100%; }
+        .btn-face { background: #2c3e50; color: white; border: 1px solid #34495e; width: 100%; }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
         button:disabled { background: #444; cursor: not-allowed; }
 
@@ -33,6 +41,11 @@
 </head>
 <body oncontextmenu="return false">
 
+<div class="info-header">
+    <div id="top-op">Operator: Guest</div>
+    <div id="top-status">Status: System Offline</div>
+</div>
+
 <div class="login-card">
     <img src="semsira.png" alt="Logo" class="logo">
     <h2>DASHBOARD</h2>
@@ -40,15 +53,17 @@
 
     <div id="face-area"><video id="video" autoplay muted playsinline></video></div>
 
-    <div class="input-group">
-        <input type="text" id="username" placeholder="USERNAME">
-        <input type="password" id="passkey" placeholder="PASSWORD">
-    </div>
+    <form id="loginForm" onsubmit="event.preventDefault(); verify();">
+        <div class="input-group">
+            <input type="text" id="username" placeholder="USERNAME" required autocomplete="username">
+            <input type="password" id="passkey" placeholder="PASSWORD" required autocomplete="current-password">
+        </div>
 
-    <div class="btn-group">
-        <button class="btn-main" id="loginBtn" onclick="verify()">Manual Login</button>
-        <button class="btn-face" id="faceBtn" onclick="startFaceScan()">Facial Recognition</button>
-    </div>
+        <div class="btn-group">
+            <button type="submit" class="btn-main" id="loginBtn">Manual Login</button>
+            <button type="button" class="btn-face" id="faceBtn" onclick="startFaceScan()">Facial Recognition</button>
+        </div>
+    </form>
 
     <div id="status-msg"></div>
 </div>
@@ -61,54 +76,85 @@
 
     const video = document.getElementById('video');
     const faceArea = document.getElementById('face-area');
-    const status = document.getElementById('status-msg');
+    const statusMsg = document.getElementById('status-msg');
+    const topOp = document.getElementById('top-op');
+    const topStatus = document.getElementById('top-status');
 
-    // 1. 预加载模型 (加快反应速度)
+    // 1. 系统初始化
     window.onload = async () => {
-        showMsg("System Warming Up...", "loading");
+        updateUI("Guest", "Warming Up...", "loading");
         try {
+            // 注意：这里路径需根据你实际存放 model 的位置修改
             await faceapi.nets.ssdMobilenetv1.loadFromUri('./model');
             await faceapi.nets.faceLandmark68Net.loadFromUri('./model');
             await faceapi.nets.faceRecognitionNet.loadFromUri('./model');
-            showMsg("System Ready", "success");
-            setTimeout(() => showMsg("", ""), 2000);
+            updateUI("Guest", "System Ready", "success");
         } catch (e) {
-            showMsg("Model Load Failed", "error");
+            updateUI("Guest", "Model Error", "error");
         }
     };
 
-    // 2. 开始扫描
+    // 2. 手动登录验证逻辑 (修复无法登录问题)
+    async function verify() {
+        const userIn = document.getElementById('username').value.trim();
+        const passIn = document.getElementById('passkey').value.trim();
+
+        if (!userIn || !passIn) return;
+
+        updateUI(userIn, "Verifying...", "loading");
+
+        try {
+            const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
+            const text = await res.text();
+            const lines = text.split(/\r?\n/).filter(l => l.includes(':'));
+
+            let found = false;
+            for (let line of lines) {
+                const [user, pass] = line.split(':');
+                if (user === userIn && pass === passIn) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                updateUI(userIn, "Access Granted", "success");
+                executeLogin(userIn);
+            } else {
+                updateUI("Guest", "Invalid Credentials", "error");
+                document.querySelectorAll('input').forEach(i => i.style.borderColor = 'red');
+            }
+        } catch (e) {
+            updateUI("Guest", "Sync Error", "error");
+        }
+    }
+
+    // 3. 人脸扫描比对
     async function startFaceScan() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
             video.srcObject = stream;
             faceArea.style.display = 'block';
-            showMsg("Scanning... Align your face", "loading");
+            updateUI("Scanning", "Align Face", "loading");
 
             const scanInterval = setInterval(async () => {
                 const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
                 
                 if (detection) {
-                    // 控制台输出数据（用于注册新用户）
-                    console.log("Current Face Descriptor:", JSON.stringify(Array.from(detection.descriptor)));
-                    
                     const match = await checkFaceMatch(detection.descriptor);
                     if (match) {
                         clearInterval(scanInterval);
                         stopCamera();
-                        showMsg("Verified: " + match.user, "success");
+                        updateUI(match.user, "Face Verified", "success");
                         executeLogin(match.user);
-                    } else {
-                        showMsg("Identity Unknown", "loading");
                     }
                 }
             }, 1000);
         } catch (err) {
-            showMsg("Camera Denied", "error");
+            updateUI("Guest", "Camera Error", "error");
         }
     }
 
-    // 3. 比对逻辑
     async function checkFaceMatch(currentDescriptor) {
         try {
             const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
@@ -119,23 +165,23 @@
                 const parts = line.split(':');
                 if (parts.length < 3) continue;
 
-                try {
-                    const savedDescriptor = new Float32Array(JSON.parse(parts[2]));
-                    const distance = faceapi.euclideanDistance(currentDescriptor, savedDescriptor);
-                    
-                    // 调试输出：距离越小越接近
-                    console.log(`Matching ${parts[0]} - Distance: ${distance.toFixed(4)}`);
+                const savedDescriptor = new Float32Array(JSON.parse(parts[2]));
+                const distance = faceapi.euclideanDistance(currentDescriptor, savedDescriptor);
 
-                    if (distance < 0.6) return { user: parts[0] }; 
-                } catch (jsonErr) {
-                    console.error("JSON Error in keys.txt line:", line);
-                }
+                if (distance < 0.6) return { user: parts[0] }; 
             }
-        } catch (e) { console.error("Fetch Error:", e); }
+        } catch (e) { console.error(e); }
         return null;
     }
 
-    // 4. 辅助函数
+    // 4. 通用工具函数
+    function updateUI(op, stat, cls) {
+        topOp.innerText = "Operator: " + op;
+        topStatus.innerText = "Status: " + stat;
+        statusMsg.innerText = stat;
+        statusMsg.className = cls;
+    }
+
     function stopCamera() {
         if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
         faceArea.style.display = 'none';
@@ -144,14 +190,8 @@
     function executeLogin(user) {
         sessionStorage.setItem('access_granted', 'true');
         sessionStorage.setItem('admin_name', user);
-        setTimeout(() => window.location.replace(TARGET_PAGE), 1000);
+        setTimeout(() => window.location.replace(TARGET_PAGE), 1200);
     }
-
-    async function verify() {
-        // ... 此处保留你原本的用户名密码验证逻辑 ...
-    }
-
-    function showMsg(txt, cls) { status.innerText = txt; status.className = cls; }
 </script>
 </body>
 </html>
