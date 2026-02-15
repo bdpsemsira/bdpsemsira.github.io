@@ -2,57 +2,80 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>管理员面部采集</title>
+    <title>管理员面部特征采集</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        /* 保持和你搜索框一致的风格 */
-        .container { text-align: center; padding: 20px; font-family: Arial, sans-serif; }
+        :root { --main-width: 320px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; margin: 0; display: flex; flex-direction: column; align-items: center; }
+
+        /* 右上角双行显示 Operator 和 Status */
+        .info-header { position: absolute; top: 10px; right: 20px; text-align: right; font-size: 14px; line-height: 1.6; }
+        .status-active { color: #28a745; font-weight: bold; }
+
+        .main-container { margin-top: 80px; text-align: center; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* 统一搜索框、下拉框、按钮的长度 */
+        .uniform-input { width: var(--main-width); height: 40px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; padding: 0 10px; font-size: 14px; }
         
-        select, button {
-            width: 300px; /* 确保长度一致 */
-            height: 40px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-        #video-container {
-            position: relative;
-            display: inline-block;
-            border: 2px solid #333;
-            background: #000;
-        }
-        
-        /* 模拟你系统中的 Highlight 效果，如果检测到面部则变绿 */
-        .detected { border-color: #28a745 !important; }
+        button { background-color: #0078d4; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #005a9e; }
+        button:disabled { background-color: #ccc; }
+
+        /* 视频预览区：根据识别状态 Highlight */
+        #video-wrapper { position: relative; margin: 20px auto; width: 400px; height: 300px; border: 3px solid #ccc; border-radius: 8px; overflow: hidden; background: #000; }
+        #video-wrapper.detected { border-color: #28a745; box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); }
+        video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>管理员面部密码录制</h2>
-    <p>当前操作员: <span id="current-operator">Admin_01</span></p>
+    <div class="info-header">
+        <div>Operator: <span id="op-name">Admin_Root</span></div>
+        <div>Status: <span id="op-status">正在初始化模型...</span></div>
+    </div>
 
-    <div>
-        <select id="cameraSelect">
-            <option value="">正在检测镜头...</option>
+    <div class="main-container">
+        <h2>管理员面部特征采集</h2>
+        
+        <select id="cameraSelect" class="uniform-input">
+            <option value="">正在检测摄像头...</option>
         </select>
-    </div>
 
-    <div id="video-container">
-        <video id="webcam" width="640" height="480" autoplay playsinline></video>
-    </div>
+        <div id="video-wrapper">
+            <video id="webcam" autoplay muted playsinline></video>
+        </div>
 
-    <div>
-        <button onclick="captureFace()" style="background-color: #007bff; color: white;">录制面部数据</button>
+        <button id="captureBtn" class="uniform-input" disabled>开始提取特征向量</button>
+        
+        <div style="margin-top: 15px; font-size: 12px; color: #666;">
+            * 请确保 Android 手机已连接并授权摄像头权限
+        </div>
     </div>
-</div>
 
 <script>
     const video = document.getElementById('webcam');
     const cameraSelect = document.getElementById('cameraSelect');
+    const captureBtn = document.getElementById('captureBtn');
+    const statusText = document.getElementById('op-status');
+    const videoWrapper = document.getElementById('video-wrapper');
 
-    // 获取并填充摄像头列表
-    async function initCamera() {
+    // 1. 加载 face-api.js 模型
+    async function loadModels() {
+        const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+        try {
+            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+            statusText.innerText = "模型加载完成，请选择镜头";
+            initCameraList();
+        } catch (e) {
+            statusText.innerText = "模型加载失败，请检查网络";
+            console.error(e);
+        }
+    }
+
+    // 2. 初始化摄像头列表 (适配 Android + Windows 11)
+    async function initCameraList() {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(d => d.kind === 'videoinput');
         
@@ -61,31 +84,48 @@
         ).join('');
 
         cameraSelect.onchange = () => startStream(cameraSelect.value);
-        
         if (videoDevices.length > 0) startStream(videoDevices[0].deviceId);
     }
 
     async function startStream(deviceId) {
-        if (window.stream) {
-            window.stream.getTracks().forEach(track => track.stop());
+        if (window.stream) window.stream.getTracks().forEach(t => t.stop());
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } });
+        window.stream = stream;
+        video.srcObject = stream;
+        statusText.innerText = "镜头就绪";
+        captureBtn.disabled = false;
+    }
+
+    // 3. 核心功能：提取那串 128 位数组
+    captureBtn.onclick = async () => {
+        statusText.innerText = "正在分析面部特征...";
+        captureBtn.disabled = true;
+
+        const detection = await faceapi.detectSingleFace(video)
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detection) {
+            // 这就是你要的那串数字数组
+            const descriptor = Array.from(detection.descriptor);
+            console.log("成功获取特征向量:", descriptor);
+            
+            videoWrapper.classList.add('detected');
+            statusText.innerHTML = '<span class="status-active">关联成功 ✓</span>';
+            
+            // 将数据保存到本地，模拟关联到当前 Operator
+            localStorage.setItem('admin_face_vector', JSON.stringify(descriptor));
+            
+            alert("面部特征向量已提取！共 " + descriptor.length + " 位数据。");
+        } else {
+            statusText.innerText = "识别失败，请对准镜头";
+            alert("未检测到人脸，请确保光线充足且手机镜头已开启。");
         }
-        const constraints = { video: { deviceId: { exact: deviceId } } };
-        window.stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = window.stream;
-    }
+        captureBtn.disabled = false;
+    };
 
-    function captureFace() {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        
-        const imageData = canvas.toDataURL('image/png');
-        console.log("面部数据已生成:", imageData.substring(0, 50) + "...");
-        alert("面部密码已成功关联至当前 Operator！");
-    }
-
-    initCamera();
+    // 启动流程
+    window.onload = loadModels;
 </script>
 </body>
 </html>
