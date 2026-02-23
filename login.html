@@ -2,56 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verification System | SMKSS</title>
-    <link rel="icon" type="image/png" href="semsira.png">
+    <title>Security Terminal | SMKSS</title>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 12px; font-family: monospace; z-index: 100; }
-        #top-op { color: #888; }
-        #top-status { color: var(--primary); font-weight: bold; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .logo { width: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(230, 126, 34, 0.4)); }
-        #face-area { display: none; width: 100%; height: 240px; background: #000; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary); overflow: hidden; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Courier New', monospace; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .login-card { background: var(--card); padding: 30px; border-radius: 15px; width: 350px; text-align: center; border: 1px solid #333; box-shadow: 0 0 20px rgba(230,126,34,0.2); }
+        #face-area { display: none; width: 100%; height: 250px; background: #000; border-radius: 10px; margin: 15px 0; border: 1px solid var(--primary); }
         video { width: 100%; height: 100%; object-fit: cover; }
-        .input-group input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: white; box-sizing: border-box; text-align: center; }
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-main { background: var(--primary); color: white; }
-        .btn-face { background: #2c3e50; color: white; }
-        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; min-height: 18px; }
+        .input-group input { width: 100%; padding: 12px; margin: 5px 0; background: #000; border: 1px solid #444; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 10px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-face { background: #222; color: var(--primary); border: 1px solid var(--primary); }
+        #status-msg { margin-top: 15px; font-size: 13px; letter-spacing: 1px; }
         .loading { color: var(--primary); }
         .success { color: #2ecc71; }
-        .error { color: #ff4d4d; }
+        .error { color: #e74c3c; }
     </style>
 </head>
 <body>
 
-<div class="info-header">
-    <div id="top-op">Operator: Guest</div>
-    <div id="top-status">Status: Standby</div>
-</div>
-
 <div class="login-card">
-    <img src="semsira.png" alt="Logo" class="logo">
-    <h2 style="color:var(--primary); margin:0;">DASHBOARD</h2>
-    <p style="font-size: 11px; color:#555; margin-bottom:20px;">Biometric Bridge v5.0</p>
-
+    <h2 style="color:var(--primary); margin-top:0;">BIO-SCAN V5.1</h2>
     <div id="face-area"><video id="video" autoplay muted playsinline></video></div>
-
-    <form onsubmit="event.preventDefault(); verify();">
-        <div class="input-group">
-            <input type="text" id="username" placeholder="USERNAME" required>
-            <input type="password" id="passkey" placeholder="PASSWORD" required>
-        </div>
-        <div class="btn-group">
-            <button type="submit" class="btn-main">Manual Login</button>
-            <button type="button" class="btn-face" onclick="startSecureScan()">Facial Recognition</button>
-        </div>
-    </form>
-    <div id="status-msg"></div>
+    
+    <div class="input-group">
+        <input type="text" id="username" placeholder="USER ID">
+        <input type="password" id="passkey" placeholder="PASS KEY">
+    </div>
+    
+    <button class="btn-face" onclick="startSecureScan()">INITIATE FACE SCAN</button>
+    <div id="status-msg">SYSTEM STANDBY</div>
 </div>
 
 <script>
@@ -60,127 +40,116 @@
     const KEY_FILE_PATH = "keys.txt"; 
     const TARGET_PAGE = 'sks_panel_982x.html'; 
 
-    let faceMatcher = null; // 存储所有人特征的匹配器
+    let faceMatcher = null;
 
+    // 1. 页面加载即初始化模型
     window.onload = async () => {
+        updateMsg("LOADING AI MODELS...", "loading");
         try {
-            updateStatus("Guest", "Loading Intelligence...", "loading");
             await faceapi.nets.ssdMobilenetv1.loadFromUri('./model');
             await faceapi.nets.faceLandmark68Net.loadFromUri('./model');
             await faceapi.nets.faceRecognitionNet.loadFromUri('./model');
-            
-            // 初始化时就加载所有特征数据
-            await loadAllDescriptors();
-            
-            updateStatus("Guest", "System Ready", "success");
+            // 立即加载数据库
+            await refreshUserDatabase();
         } catch (e) {
-            updateStatus("Guest", "Core Error", "error");
+            updateMsg("MODEL LOAD ERROR", "error");
         }
     };
 
-    // 预加载所有人的特征向量并创建匹配器
-    async function loadAllDescriptors() {
+    // 2. 核心：全量加载数据库，防止卡在第一个人
+    async function refreshUserDatabase() {
         try {
             const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
             const text = await res.text();
-            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.includes('['));
+            
+            // 使用更健壮的正则分割和清洗数据
+            const lines = text.split(/\r?\n/).filter(line => line.includes('['));
+            const labeledDescriptors = [];
 
-            const labeledDescriptors = lines.map(line => {
-                const cleanLine = line.replace(/[\]\。]/g, "").trim();
-                const parts = cleanLine.split(':');
-                const name = parts[0];
-                const descriptors = [new Float32Array(JSON.parse(parts[2]))];
-                return new faceapi.LabeledFaceDescriptors(name, descriptors);
-            });
+            for (let line of lines) {
+                try {
+                    // 彻底清除干扰符
+                    const cleanLine = line.replace(/[\]\。]/g, "").trim();
+                    const parts = cleanLine.split(':');
+                    
+                    if (parts.length < 3) continue;
 
-            // 创建匹配器，容错率设为 0.5
-            faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.5);
-            console.log("Face Matcher Initialized with", labeledDescriptors.length, "users.");
+                    const name = parts[0].trim();
+                    const rawVector = parts[2].trim();
+                    
+                    // 尝试解析 JSON 数组
+                    const vectorArray = JSON.parse(rawVector);
+                    labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(name, [new Float32Array(vectorArray)]));
+                    console.log(`[Database] Loaded user: ${name}`);
+                } catch (err) {
+                    console.warn(`[Database] Failed to parse a line: ${line.substring(0,20)}...`);
+                }
+            }
+
+            if (labeledDescriptors.length > 0) {
+                // 创建匹配器，0.5 是容错率
+                faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.5);
+                updateMsg("DATABASE READY", "success");
+            } else {
+                updateMsg("DATABASE EMPTY", "error");
+            }
         } catch (e) {
-            console.error("Descriptor Load Error:", e);
+            updateMsg("NETWORK ERROR", "error");
         }
     }
 
+    // 3. 启动扫描
     async function startSecureScan() {
         if (!faceMatcher) {
-            updateStatus("Guest", "Data Missing", "error");
-            return;
+            await refreshUserDatabase();
+            if (!faceMatcher) return;
         }
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-            document.getElementById('video').srcObject = stream;
+            const videoEl = document.getElementById('video');
+            videoEl.srcObject = stream;
             document.getElementById('face-area').style.display = 'block';
-            updateStatus("Scanning", "Searching Database...", "loading");
+            updateMsg("SCANNING...", "loading");
 
             const scanInterval = setInterval(async () => {
-                const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+                const detection = await faceapi.detectSingleFace(videoEl).withFaceLandmarks().withFaceDescriptor();
                 
                 if (detection) {
-                    // 核心逻辑：直接在匹配器中寻找这张脸是谁
-                    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-                    const name = bestMatch.label;
-                    const distance = bestMatch.distance;
+                    // 核心逻辑：在所有人里找最像的一个
+                    const match = faceMatcher.findBestMatch(detection.descriptor);
+                    
+                    // 打印当前系统看到的结果
+                    console.log(`Target identified as: ${match.label} | Confid: ${(1 - match.distance).toFixed(2)}`);
 
-                    // 在控制台实时打印系统“认为”你是谁，以及有多像
-                    console.log(`System thinks you are: ${name} (Distance: ${distance.toFixed(4)})`);
-
-                    if (name !== 'unknown') {
-                        // 如果距离小于 0.45，判定验证通过
-                        if (distance < 0.45) {
-                            clearInterval(scanInterval);
-                            stopCamera();
-                            updateStatus(name, "Verification Success!", "success");
-                            executeLogin(name);
-                        } else {
-                            // 距离太远，虽然认出了人但不敢通过
-                            updateStatus(name, `Match too weak (${distance.toFixed(2)})`, "loading");
-                        }
+                    if (match.label !== 'unknown' && match.distance < 0.45) {
+                        clearInterval(scanInterval);
+                        if (videoEl.srcObject) videoEl.srcObject.getTracks().forEach(t => t.stop());
+                        document.getElementById('face-area').style.display = 'none';
+                        
+                        updateMsg(`ACCESS GRANTED: ${match.label}`, "success");
+                        login(match.label);
                     } else {
-                        updateStatus("Guest", "Unknown Operator", "loading");
+                        // 如果识别出是 ZAKWAN 但距离太远，会显示在这里
+                        updateMsg(`ID: ${match.label} (UNVERIFIED)`, "loading");
                     }
                 }
             }, 600);
         } catch (err) {
-            updateStatus("Guest", "Camera Access Denied", "error");
+            updateMsg("CAMERA ERROR", "error");
         }
     }
 
-    async function verify() {
-        // 手动登录保持不变
-        const userIn = document.getElementById('username').value.trim();
-        const passIn = document.getElementById('passkey').value.trim();
-        updateStatus(userIn, "Validating...", "loading");
-        try {
-            const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
-            const text = await res.text();
-            const found = text.split(/\r?\n/).some(line => {
-                const [user, pass] = line.split(':');
-                return user === userIn && pass === passIn;
-            });
-            if (found) executeLogin(userIn);
-            else updateStatus("Guest", "Auth Failed", "error");
-        } catch (e) { updateStatus("Guest", "Network Error", "error"); }
-    }
-
-    function executeLogin(user) {
+    function login(user) {
         sessionStorage.setItem('access_granted', 'true');
         sessionStorage.setItem('admin_name', user);
         setTimeout(() => window.location.replace(TARGET_PAGE), 1000);
     }
 
-    function updateStatus(op, stat, cls) {
-        document.getElementById('top-op').innerText = "Operator: " + op;
-        document.getElementById('top-status').innerText = "Status: " + stat;
-        const msg = document.getElementById('status-msg');
-        msg.innerText = stat;
-        msg.className = cls;
-    }
-
-    function stopCamera() {
-        const stream = document.getElementById('video').srcObject;
-        if (stream) stream.getTracks().forEach(t => t.stop());
-        document.getElementById('face-area').style.display = 'none';
+    function updateMsg(txt, cls) {
+        const el = document.getElementById('status-msg');
+        el.innerText = txt;
+        el.className = cls;
     }
 </script>
 </body>
