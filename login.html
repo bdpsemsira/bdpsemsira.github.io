@@ -3,150 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMKSS Security Pro</title>
+    <title>SMKSS Dashboard | Secure Access</title>
+    <link rel="icon" type="image/png" href="semsira.png">
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        :root { --orange: #e67e22; --dark: #0d0d0d; --gray: #1a1a1a; }
-        body { margin: 0; background: var(--dark); color: white; font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        
-        .glass-card { 
-            background: var(--gray); padding: 30px; border-radius: 20px; width: 340px; 
-            border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
-        }
-
-        /* 扫描窗口优化：增加科技感圆环 */
-        #scanner-container { 
-            display: none; position: relative; width: 220px; height: 220px; 
-            margin: 0 auto 20px; border-radius: 50%; border: 2px solid #333; overflow: hidden;
-        }
-        #scanner-container.active { border-color: var(--orange); box-shadow: 0 0 15px var(--orange); }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-
-        .scan-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--orange); box-shadow: 0 0 10px var(--orange);
-            animation: scan 2s linear infinite; display: none;
-        }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-
-        .btn { 
-            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 600; 
-            cursor: pointer; transition: 0.3s; margin-top: 10px;
-        }
-        .btn-primary { background: var(--orange); color: white; }
-        .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
-
-        #msg { margin-top: 15px; font-size: 13px; color: #888; }
+        :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; z-index: 100; }
+        #top-status { color: var(--primary); font-weight: bold; }
+        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .logo { width: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.4)); }
+        #face-area { display: none; width: 100%; height: 240px; background: #000; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary); overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .btn-face { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); background: transparent; color: var(--primary); font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-face:disabled { border-color: #333; color: #555; cursor: not-allowed; }
+        .btn-face:hover:not(:disabled) { background: var(--primary); color: white; }
+        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; }
+        .loading { color: var(--primary); } .success { color: #2ecc71; } .error { color: #e74c3c; }
     </style>
 </head>
 <body>
 
-<div class="glass-card">
-    <h3 style="margin: 0 0 5px; color: var(--orange);">SMKSS SECURITY</h3>
-    <p style="font-size: 11px; color: #555; margin-bottom: 20px;">v6.0 ENHANCED ENGINE</p>
+<div class="info-header">
+    <div>OPERATOR: <span id="top-op">GUEST</span></div>
+    <div>SYSTEM: <span id="top-status">BOOTING</span></div>
+</div>
 
-    <div id="scanner-container">
-        <video id="video" autoplay muted playsinline></video>
-        <div class="scan-line" id="line"></div>
-    </div>
+<div class="login-card">
+    <img src="semsira.png" alt="Logo" class="logo">
+    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px;">DASHBOARD</h2>
+    <p style="font-size: 10px; color:#555; margin-bottom:20px;">V6.1 BIOMETRIC STACK</p>
 
-    <button id="mainBtn" class="btn btn-primary" onclick="initScan()" disabled>SYNCING DATA...</button>
-    <div id="msg">Initializing AI Systems...</div>
+    <div id="face-area"><video id="video" autoplay muted playsinline></video></div>
+    
+    <button type="button" id="scanBtn" class="btn-face" onclick="startSecureScan()" disabled>SYNCING DATABASE...</button>
+    <div id="status-msg">SYSTEM INITIALIZING...</div>
 </div>
 
 <script>
-    const GITHUB_URL = "https://raw.githubusercontent.com/bdpsemsira/bdpsemsira.github.io/main/keys.txt";
-    let faceMatcher = null;
+    const CONFIG = {
+        OWNER: "bdpsemsira",
+        REPO: "bdpsemsira.github.io",
+        FILE: "keys.txt",
+        TARGET: "sks_panel_982x.html",
+        THRESHOLD: 0.52 // 识别灵敏度
+    };
 
-    // 优化 1: 采用 Promise.all 并行加载，大幅缩短等待时间
+    let faceMatcher = null;
+    let isScanning = false;
+
+    // 1. 启动初始化
     window.onload = async () => {
         try {
+            updateUI("SYSTEM", "LOADING MODELS", "loading");
             await Promise.all([
                 faceapi.nets.ssdMobilenetv1.loadFromUri('./model'),
                 faceapi.nets.faceLandmark68Net.loadFromUri('./model'),
                 faceapi.nets.faceRecognitionNet.loadFromUri('./model')
             ]);
-            await loadDB();
+            
+            updateUI("SYSTEM", "SYNCING USERS", "loading");
+            const dbStatus = await syncDatabase();
+            
+            if (dbStatus) {
+                updateUI("GUEST", "READY", "success");
+                document.getElementById('top-status').innerText = "ONLINE";
+                document.getElementById('scanBtn').disabled = false;
+                document.getElementById('scanBtn').innerText = "START BIO-SCAN";
+            } else {
+                updateUI("SYSTEM", "DB EMPTY", "error");
+            }
         } catch (e) {
-            log("System Error", "red");
+            updateUI("SYSTEM", "INIT ERROR", "error");
+            console.error(e);
         }
     };
 
-    // 优化 2: 强力正则解析，无视 keys.txt 里的任何杂质符号
-    async function loadDB() {
+    // 2. 核心：全量同步数据库
+    async function syncDatabase() {
         try {
-            const res = await fetch(`${GITHUB_URL}?t=${Date.now()}`);
+            const url = `https://raw.githubusercontent.com/${CONFIG.OWNER}/${CONFIG.REPO}/main/${CONFIG.FILE}?t=${Date.now()}`;
+            const res = await fetch(url);
             const text = await res.text();
             
-            const lines = text.split('\n');
-            const descriptors = [];
+            // 兼容各种换行符，并过滤空行
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 20);
+            const labeledDescriptors = [];
 
-            lines.forEach(line => {
-                // 正则表达式直接匹配 [数字, 数字...] 部分
-                const nameMatch = line.match(/^[^:]+/);
-                const arrayMatch = line.match(/\[(.*?)\]/);
+            console.log(`[Database] Found ${lines.length} lines.`);
 
-                if (nameMatch && arrayMatch) {
-                    try {
-                        const name = nameMatch[0].trim();
-                        const vec = new Float32Array(JSON.parse(`[${arrayMatch[1]}]`));
-                        descriptors.push(new faceapi.LabeledFaceDescriptors(name, [vec]));
-                    } catch (err) { console.warn("Parse skip"); }
+            for (let line of lines) {
+                try {
+                    // 提取名字：取第一个冒号前的内容
+                    const name = line.split(':')[0].trim();
+                    // 提取数组：抠出 [ ... ] 内部的东西
+                    const arrayMatch = line.match(/\[(.*?)\]/);
+                    
+                    if (name && arrayMatch) {
+                        const vector = new Float32Array(JSON.parse(`[${arrayMatch[1]}]`));
+                        labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(name, [vector]));
+                        // 每一个成功的都会显示，如果这里没出 ZAKWAN，说明那一行的格式有问题
+                        console.log(`%c[OK] Synced: ${name}`, "color: #2ecc71; font-weight: bold;");
+                    }
+                } catch (err) {
+                    console.warn("Failed to parse line, moving to next...");
                 }
-            });
-
-            if (descriptors.length > 0) {
-                // 优化 3: 适当放宽阈值到 0.52，让识别更“大众化”一点，不至于稍微侧头就失败
-                faceMatcher = new faceapi.FaceMatcher(descriptors, 0.52);
-                const btn = document.getElementById('mainBtn');
-                btn.disabled = false;
-                btn.innerText = "START BIO-SCAN";
-                log("System Ready");
-            } else {
-                log("Database Empty", "red");
             }
-        } catch (e) { log("Network Error", "red"); }
+
+            if (labeledDescriptors.length > 0) {
+                faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, CONFIG.THRESHOLD);
+                return true;
+            }
+        } catch (e) { console.error("Sync Error:", e); }
+        return false;
     }
 
-    async function initScan() {
+    // 3. 扫描逻辑
+    async function startSecureScan() {
+        if (isScanning || !faceMatcher) return;
+        
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            const v = document.getElementById('video');
-            v.srcObject = stream;
-            
-            document.getElementById('scanner-container').style.display = 'block';
-            document.getElementById('scanner-container').classList.add('active');
-            document.getElementById('line').style.display = 'block';
-            log("Scanning...");
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            document.getElementById('face-area').style.display = 'block';
+            isScanning = true;
+            updateUI("SCANNER", "SCANNING...", "loading");
 
-            const loop = async () => {
-                const detect = await faceapi.detectSingleFace(v).withFaceLandmarks().withFaceDescriptor();
+            const detect = async () => {
+                if (!isScanning) return;
+
+                const result = await faceapi.detectSingleFace(video)
+                                          .withFaceLandmarks()
+                                          .withFaceDescriptor();
                 
-                if (detect) {
-                    const match = faceMatcher.findBestMatch(detect.descriptor);
-                    // 优化 4: 控制台只显示最终判定结果，减轻渲染压力
-                    console.log(`%c Detected: ${match.label}`, 'color: #e67e22');
+                if (result) {
+                    const match = faceMatcher.findBestMatch(result.descriptor);
+                    // 调试输出：看看 AI 认为你是谁
+                    console.log(`Match: ${match.label} (${match.distance.toFixed(3)})`);
 
-                    if (match.label !== 'unknown') {
-                        log(`Welcome, ${match.label}`, "#2ecc71");
-                        // 识别成功反馈
-                        setTimeout(() => {
-                            sessionStorage.setItem('access_granted', 'true');
-                            window.location.href = "sks_panel_982x.html";
-                        }, 500);
+                    if (match.label !== 'unknown' && match.distance < CONFIG.THRESHOLD) {
+                        isScanning = false;
+                        updateUI(match.label, "ACCESS GRANTED", "success");
+                        
+                        // 停止摄像头
+                        video.srcObject.getTracks().forEach(t => t.stop());
+                        
+                        sessionStorage.setItem('access_granted', 'true');
+                        sessionStorage.setItem('admin_name', match.label);
+                        setTimeout(() => window.location.replace(CONFIG.TARGET), 1000);
                         return;
+                    } else {
+                        updateUI("GUEST", `IDENTIFYING: ${match.label}`, "loading");
                     }
                 }
-                requestAnimationFrame(loop);
+                requestAnimationFrame(detect);
             };
-            loop();
-        } catch (e) { log("Camera Access Denied", "red"); }
+            detect();
+        } catch (err) {
+            updateUI("SYSTEM", "CAMERA ERROR", "error");
+        }
     }
 
-    function log(t, color = "#888") {
-        const m = document.getElementById('msg');
-        m.innerText = t;
-        m.style.color = color;
+    function updateUI(op, stat, cls) {
+        document.getElementById('top-op').innerText = op;
+        const msg = document.getElementById('status-msg');
+        msg.innerText = stat;
+        msg.className = cls;
     }
 </script>
 </body>
