@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMKSS Security v5.5</title>
+    <title>SMKSS Security Dashboard</title>
+    <link rel="icon" type="image/png" href="semsira.png">
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 12px; font-family: monospace; z-index: 100; }
-        #top-op { color: #888; } #top-status { color: var(--primary); font-weight: bold; }
+        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; z-index: 100; }
+        #top-status { color: var(--primary); font-weight: bold; text-transform: uppercase; }
         .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         .logo { width: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.4)); }
         #face-area { display: none; width: 100%; height: 240px; background: #000; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary); overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        .btn-face { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); background: #222; color: var(--primary); font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-face:disabled { border-color: #444; color: #444; cursor: not-allowed; }
-        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; min-height: 18px; }
-        .loading { color: var(--primary); } .success { color: #2ecc71; } .error { color: #ff4d4d; }
+        .btn-face { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); background: transparent; color: var(--primary); font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-face:disabled { border-color: #333; color: #444; cursor: not-allowed; }
+        .btn-face:hover:not(:disabled) { background: var(--primary); color: white; }
+        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+        .loading { color: var(--primary); } .success { color: #2ecc71; } .error { color: #e74c3c; }
     </style>
 </head>
 <body>
 
 <div class="info-header">
-    <div id="top-op">Operator: Guest</div>
-    <div id="top-status">Status: Standby</div>
+    <div>SYSTEM_OP: <span id="top-op">GUEST</span></div>
+    <div>ENCRYPTION: <span id="top-status">OFFLINE</span></div>
 </div>
 
 <div class="login-card">
     <img src="semsira.png" alt="Logo" class="logo">
-    <h2 style="color:var(--primary); margin:0;">DASHBOARD</h2>
-    <p style="font-size: 10px; color:#555; margin-bottom:15px;">Secure Access v5.5</p>
+    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px;">DASHBOARD</h2>
+    <p style="font-size: 10px; color:#555; margin-bottom:20px;">BIOMETRIC BRIDGE v5.6</p>
 
     <div id="face-area"><video id="video" autoplay muted playsinline></video></div>
     
-    <button type="button" id="scanBtn" class="btn-face" onclick="startSecureScan()" disabled>WAITING FOR DATABASE...</button>
-    <div id="status-msg">INITIALIZING AI...</div>
+    <button type="button" id="scanBtn" class="btn-face" onclick="startSecureScan()" disabled>SYNCHRONIZING...</button>
+    <div id="status-msg">INITIALIZING MODELS...</div>
 </div>
 
 <script>
-    const REPO_OWNER = "bdpsemsira"; 
-    const REPO_NAME = "bdpsemsira.github.io"; 
-    const KEY_FILE_PATH = "keys.txt"; 
-    const TARGET_PAGE = 'sks_panel_982x.html'; 
+    // 配置参数
+    const CONFIG = {
+        OWNER: "bdpsemsira",
+        REPO: "bdpsemsira.github.io",
+        PATH: "keys.txt",
+        TARGET: "sks_panel_982x.html",
+        DIST_THRESHOLD: 0.48 // 识别精度，越小越严
+    };
 
     let faceMatcher = null;
-    let scanActive = false;
+    let isScanning = false;
 
-    // 1. 初始化入口
     window.onload = async () => {
         try {
-            updateStatus("Guest", "Loading Models...", "loading");
+            updateUI("SYSTEM", "LOADING AI", "loading");
             // 并行加载模型
             await Promise.all([
                 faceapi.nets.ssdMobilenetv1.loadFromUri('./model'),
@@ -58,123 +63,116 @@
                 faceapi.nets.faceRecognitionNet.loadFromUri('./model')
             ]);
             
-            updateStatus("Guest", "Syncing Database...", "loading");
-            const success = await loadDatabase();
+            updateUI("SYSTEM", "FETCHING DB", "loading");
+            const dbLoaded = await syncDatabase();
             
-            if (success) {
-                updateStatus("Guest", "System Online", "success");
+            if (dbLoaded) {
+                updateUI("GUEST", "SYSTEM READY", "success");
                 const btn = document.getElementById('scanBtn');
                 btn.disabled = false;
                 btn.innerText = "START BIOMETRIC SCAN";
+                document.getElementById('top-status').innerText = "ENCRYPTED";
             } else {
-                updateStatus("Guest", "Database Empty", "error");
-                document.getElementById('scanBtn').innerText = "DATABASE ERROR";
+                updateUI("SYSTEM", "DATABASE EMPTY", "error");
+                document.getElementById('scanBtn').innerText = "DB ERROR";
             }
         } catch (e) {
-            updateStatus("Guest", "Init Failed", "error");
-            console.error("Initialization Error:", e);
+            updateUI("SYSTEM", "INIT FAILED", "error");
+            console.error("Critical Init Error:", e);
         }
     };
 
-    // 2. 加载并解析数据库 (防止 findBestMatch of null)
-    async function loadDatabase() {
+    // 强力解析函数
+    async function syncDatabase() {
         try {
-            const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
-            if (!res.ok) throw new Error("Fetch failed");
+            const url = `https://raw.githubusercontent.com/${CONFIG.OWNER}/${CONFIG.REPO}/main/${CONFIG.PATH}?t=${Date.now()}`;
+            const res = await fetch(url);
+            if (!res.ok) return false;
             
-            const text = await res.text();
-            const lines = text.split(/\r?\n/).filter(line => line.includes('[') && line.includes(':'));
+            const rawContent = await res.text();
+            // 过滤 GitHub 可能返回的 HTML 报错页面
+            if (rawContent.includes("<!DOCTYPE html>")) return false;
+
+            const lines = rawContent.split(/\r?\n/).filter(l => l.includes('['));
             const labeledDescriptors = [];
 
             for (let line of lines) {
                 try {
-                    // 彻底清理格式
-                    const cleanLine = line.replace(/[\]\。]/g, "").trim();
-                    const parts = cleanLine.split(':');
-                    if (parts.length < 3) continue;
+                    // 1. 提取名字（第一个冒号前）
+                    const name = line.split(':')[0].trim();
+                    // 2. 正则提取 [ ... ] 之间的内容
+                    const arrayMatch = line.match(/\[(.*?)\]/);
+                    if (!arrayMatch) continue;
 
-                    const name = parts[0].trim();
-                    const vectorData = JSON.parse(parts[2].trim());
-                    const vector = new Float32Array(vectorData);
+                    // 3. 将抠出来的字符串转为 Float32Array
+                    const vectorData = JSON.parse(`[${arrayMatch[1]}]`);
+                    const descriptor = new Float32Array(vectorData);
                     
-                    labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(name, [vector]));
-                    console.log("Successfully loaded user:", name);
+                    labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(name, [descriptor]));
+                    console.log(`Successfully synced user: ${name}`);
                 } catch (err) {
-                    console.error("Line parse error:", line.substring(0, 20));
+                    console.warn("Skipping line due to parse error");
                 }
             }
 
             if (labeledDescriptors.length > 0) {
-                // 阈值设为 0.6 方便识别
                 faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
                 return true;
             }
-        } catch (e) {
-            console.error("Load Database Error:", e);
-        }
+        } catch (e) { console.error("Sync Error:", e); }
         return false;
     }
 
-    // 3. 扫描逻辑
     async function startSecureScan() {
-        if (!faceMatcher) {
-            alert("Database not ready!");
-            return;
-        }
-
+        if (isScanning || !faceMatcher) return;
+        
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             const video = document.getElementById('video');
             video.srcObject = stream;
             document.getElementById('face-area').style.display = 'block';
-            scanActive = true;
-            updateStatus("Scanning", "Looking for face...", "loading");
+            isScanning = true;
+            updateUI("SCANNER", "SCANNING...", "loading");
 
-            const runDetection = async () => {
-                if (!scanActive) return;
+            const detect = async () => {
+                if (!isScanning) return;
 
                 const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.4 }))
                                              .withFaceLandmarks()
                                              .withFaceDescriptor();
                 
                 if (detection) {
-                    // 此时 faceMatcher 保证不为 null
-                    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-                    console.log("Match Result:", bestMatch.toString());
+                    const match = faceMatcher.findBestMatch(detection.descriptor);
+                    console.log(`Identify: ${match.label} (${match.distance.toFixed(3)})`);
 
-                    if (bestMatch.label !== 'unknown' && bestMatch.distance < 0.5) {
-                        updateStatus(bestMatch.label, "Success", "success");
+                    if (match.label !== 'unknown' && match.distance < CONFIG.DIST_THRESHOLD) {
+                        isScanning = false;
+                        updateUI(match.label, "ACCESS GRANTED", "success");
                         stopCamera();
                         sessionStorage.setItem('access_granted', 'true');
-                        sessionStorage.setItem('admin_name', bestMatch.label);
-                        setTimeout(() => window.location.replace(TARGET_PAGE), 800);
+                        sessionStorage.setItem('admin_name', match.label);
+                        setTimeout(() => window.location.replace(CONFIG.TARGET), 800);
                         return;
                     } else {
-                        updateStatus("Guest", `Identity: ${bestMatch.label}`, "loading");
+                        updateUI("GUEST", `IDENTIFYING: ${match.label}`, "loading");
                     }
-                } else {
-                    console.log("Waiting for face...");
                 }
-                
-                // 使用 requestAnimationFrame 比 setInterval 更平滑且省资源
-                requestAnimationFrame(runDetection);
+                requestAnimationFrame(detect);
             };
-
-            runDetection();
+            detect();
         } catch (err) {
-            updateStatus("Guest", "Camera Denied", "error");
+            updateUI("SYSTEM", "CAMERA ERROR", "error");
         }
     }
 
     function stopCamera() {
-        scanActive = false;
         const video = document.getElementById('video');
         if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('face-area').style.display = 'none';
     }
 
-    function updateStatus(op, stat, cls) {
-        document.getElementById('top-op').innerText = "Operator: " + op;
-        document.getElementById('top-status').innerText = "Status: " + stat;
+    function updateUI(op, stat, cls) {
+        document.getElementById('top-op').innerText = op;
         const msg = document.getElementById('status-msg');
         msg.innerText = stat;
         msg.className = cls;
