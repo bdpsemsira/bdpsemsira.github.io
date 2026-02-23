@@ -25,9 +25,6 @@
         .input-group input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #0f0f0f; color: white; box-sizing: border-box; text-align: center; font-size: 15px; transition: 0.3s; }
         .input-group input:focus { border-color: var(--primary); outline: none; }
         
-        .remember-me { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #555; margin: 5px 0 20px 5px; cursor: pointer; user-select: none; }
-        .remember-me input { cursor: pointer; }
-
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
         button { padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn-main { background: var(--primary); color: white; }
@@ -56,17 +53,13 @@
 
     <form id="loginForm" onsubmit="event.preventDefault(); verify();">
         <div class="input-group">
-            <input type="text" id="username" name="username" placeholder="USERNAME" required autocomplete="username">
-            <input type="password" id="passkey" name="password" placeholder="PASSWORD" required autocomplete="current-password">
+            <input type="text" id="username" placeholder="USERNAME" required>
+            <input type="password" id="passkey" placeholder="PASSWORD" required>
         </div>
 
-        <label class="remember-me">
-            <input type="checkbox" id="saveCreds"> REMEMBER USERNAME
-        </label>
-
         <div class="btn-group">
-            <button type="submit" class="btn-main" id="loginBtn">Manual Login</button>
-            <button type="button" class="btn-face" id="faceBtn" onclick="startSecureScan()">Facial Recognition</button>
+            <button type="submit" class="btn-main">Manual Login</button>
+            <button type="button" class="btn-face" onclick="startSecureScan()">Facial Recognition</button>
         </div>
     </form>
 
@@ -83,38 +76,29 @@
     const video = document.getElementById('video');
     const faceArea = document.getElementById('face-area');
     const statusMsg = document.getElementById('status-msg');
-    const topOp = document.getElementById('top-op');
-    const topStatus = document.getElementById('top-status');
 
-    // 1. 系统初始化与账号回显
+    // 1. 初始化模型
     window.onload = async () => {
-        updateStatus("Guest", "Initializing...", "loading");
-        
-        // 自动填入记住的账号
-        const savedUser = localStorage.getItem('remembered_user');
-        if (savedUser) {
-            document.getElementById('username').value = savedUser;
-            document.getElementById('saveCreds').checked = true;
-            topOp.innerText = "Operator: " + savedUser;
-        }
-
+        updateStatus("Guest", "Loading Models...", "loading");
         try {
+            // 确保模型文件夹路径正确
             await faceapi.nets.ssdMobilenetv1.loadFromUri('./model');
             await faceapi.nets.faceLandmark68Net.loadFromUri('./model');
             await faceapi.nets.faceRecognitionNet.loadFromUri('./model');
-            updateStatus(savedUser || "Guest", "System Ready", "success");
+            updateStatus("Guest", "System Ready", "success");
         } catch (e) {
-            updateStatus("Guest", "Model Error", "error");
+            updateStatus("Guest", "Model Load Failed", "error");
+            console.error(e);
         }
     };
 
-    // 2. 高安全性人脸扫描
+    // 2. 启动人脸扫描
     async function startSecureScan() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
             video.srcObject = stream;
             faceArea.style.display = 'block';
-            updateStatus("Scanning", "Align your face", "loading");
+            updateStatus("Scanning", "Align your face...", "loading");
 
             lastDescriptors = [];
             const scanInterval = setInterval(async () => {
@@ -123,13 +107,13 @@
                 if (detection) {
                     const currentDesc = detection.descriptor;
                     lastDescriptors.push(new Float32Array(currentDesc));
-                    if (lastDescriptors.length > 8) lastDescriptors.shift();
+                    if (lastDescriptors.length > 5) lastDescriptors.shift();
 
-                    // 活体检测判断（积累够数据后开始）
-                    if (lastDescriptors.length >= 5) {
+                    // 活体检测：只要有微小数据波动即可（0.0001）
+                    if (lastDescriptors.length >= 3) {
                         const isAlive = checkLiveness();
                         if (!isAlive) {
-                            updateStatus("Security", "Static Object Detected", "error");
+                            updateStatus("Security", "Liveness Failed - Keep Moving", "error");
                             return; 
                         }
 
@@ -137,58 +121,65 @@
                         if (match) {
                             clearInterval(scanInterval);
                             stopCamera();
-                            updateStatus(match.user, "Face Verified", "success");
+                            updateStatus(match.user, "Face Verified!", "success");
                             executeLogin(match.user);
                         } else {
+                            // 实时显示匹配距离，方便调试
                             updateStatus("Guest", "Identifying...", "loading");
                         }
                     }
                 }
-            }, 600);
+            }, 500);
         } catch (err) {
-            updateStatus("Guest", "Camera Error", "error");
+            updateStatus("Guest", "Camera Denied", "error");
         }
     }
 
-    // 活体算法：计算特征向量的标准差波动
     function checkLiveness() {
         if (lastDescriptors.length < 2) return true;
         const d1 = lastDescriptors[lastDescriptors.length - 1];
         const d2 = lastDescriptors[lastDescriptors.length - 2];
         let diff = 0;
-        for(let i=0; i<d1.length; i++) {
-            diff += Math.abs(d1[i] - d2[i]);
-        }
-        // 动漫手办或照片的波动通常 < 0.0001
-        return diff > 0.0005; 
+        for(let i=0; i<d1.length; i++) diff += Math.abs(d1[i] - d2[i]);
+        // 降低要求：只要有 0.0001 的位移就被认为是真人
+        return diff > 0.0001; 
     }
 
     async function checkFaceMatch(currentDesc) {
         try {
+            // 加时间戳防止缓存
             const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
             const text = await res.text();
-            const lines = text.split(/\r?\n/).filter(l => l.includes(':'));
+            const lines = text.split(/\r?\n/).filter(l => l.includes('[') && l.includes(':'));
 
             for (let line of lines) {
-                const parts = line.split(':');
+                // 清理可能存在的杂质（如你提到的中括号）
+                const cleanLine = line.replace(/\]\。/g, "").trim();
+                const parts = cleanLine.split(':');
                 if (parts.length < 3) continue;
-                const savedDesc = new Float32Array(JSON.parse(parts[2]));
-                const distance = faceapi.euclideanDistance(currentDesc, savedDesc);
-                
-                // 阈值设置为 0.35
-                if (distance < 0.35) return { user: parts[0] };
+
+                try {
+                    const savedDesc = new Float32Array(JSON.parse(parts[2]));
+                    const distance = faceapi.euclideanDistance(currentDesc, savedDesc);
+                    
+                    // 调试日志：按 F12 在控制台看实时距离
+                    console.log(`Checking ${parts[0]}: Distance = ${distance.toFixed(4)}`);
+
+                    // 阈值设为 0.45，平衡安全性与成功率
+                    if (distance < 0.45) return { user: parts[0] };
+                } catch (jsonErr) {
+                    continue; // 跳过格式错误的行
+                }
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Match Error:", e); }
         return null;
     }
 
-    // 3. 手动验证与保存账号逻辑
+    // 3. 手动验证
     async function verify() {
         const userIn = document.getElementById('username').value.trim();
         const passIn = document.getElementById('passkey').value.trim();
-        if (!userIn || !passIn) return;
-
-        updateStatus(userIn, "Authenticating...", "loading");
+        updateStatus(userIn, "Verifying...", "loading");
 
         try {
             const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${KEY_FILE_PATH}?t=${Date.now()}`);
@@ -205,32 +196,23 @@
             }
 
             if (found) {
-                updateStatus(userIn, "Login Success", "success");
+                updateStatus(userIn, "Access Granted", "success");
                 executeLogin(userIn);
             } else {
-                updateStatus("Guest", "Wrong Credentials", "error");
+                updateStatus("Guest", "Invalid Credentials", "error");
             }
         } catch (e) { updateStatus("Guest", "Network Error", "error"); }
     }
 
     function executeLogin(user) {
-        // 处理 Remember Me
-        if (document.getElementById('saveCreds').checked) {
-            localStorage.setItem('remembered_user', user);
-        } else {
-            localStorage.removeItem('remembered_user');
-        }
-
         sessionStorage.setItem('access_granted', 'true');
         sessionStorage.setItem('admin_name', user);
-        
-        // 关键：延迟跳转让浏览器有机会弹出“保存密码”提示
-        setTimeout(() => window.location.replace(TARGET_PAGE), 1000);
+        setTimeout(() => window.location.replace(TARGET_PAGE), 800);
     }
 
     function updateStatus(op, stat, cls) {
-        topOp.innerText = "Operator: " + op;
-        topStatus.innerText = "Status: " + stat;
+        document.getElementById('top-op').innerText = "Operator: " + op;
+        document.getElementById('top-status').innerText = "Status: " + stat;
         statusMsg.innerText = stat;
         statusMsg.className = cls;
     }
