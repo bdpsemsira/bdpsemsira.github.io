@@ -14,7 +14,7 @@
             --text: #ffffff;
             --tag-late: #f1c40f;
             --tag-skip: #e67e22;
-            --tag-bad: #e74c3c; /* Merah untuk Buli/Bergaduh */
+            --tag-bad: #e74c3c;
             --tag-contra: #9b59b6;
             --tag-drug: #8e44ad;
             --tag-traffic: #000000; 
@@ -33,7 +33,11 @@
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
         .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; }
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-        input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; }
+        
+        /* 输入框样式优化 */
+        input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; min-width: 120px; }
+        input[type="time"] { cursor: pointer; }
+        
         #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
@@ -59,6 +63,7 @@
         .pagination { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px; border-radius: 8px; margin-top: 10px; }
         .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 40px; padding: 20px; border-top: 1px solid #222; }
 
+        /* 弹窗及导出模板样式保持不变... */
         #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px; }
         .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
         .rpt-header img { height: 60px; margin-right: 20px; }
@@ -89,6 +94,12 @@
         <div class="input-group">
             <input type="text" id="stuName" placeholder="Nama Penuh Pelajar">
             <input type="text" id="stuClass" placeholder="Kelas">
+            
+            <div style="display:flex; flex-direction:column; gap:4px; flex:0.5;">
+                <label style="font-size:9px; color:var(--accent); font-weight:bold;">MASA KESALAHAN:</label>
+                <input type="time" id="violationTime">
+            </div>
+
             <select id="violation">
                 <option value="" disabled selected>Pilih Kesalahan</option>
                 <option value="Lewat">Lewat</option>
@@ -176,6 +187,10 @@
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
 
+    // 初始化时间输入框为当前时间
+    const now = new Date();
+    document.getElementById('violationTime').value = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
     let allData = [];
     let currentPage = 1;
     const pageSize = 15;
@@ -188,7 +203,6 @@
     function getTagClass(type) {
         if(type === "Lewat") return "tag-late";
         if(type === "Ponteng Kelas") return "tag-skip";
-        // Buli, Bergaduh dan Diskriminasi menggunakan warna Merah
         if(type === "Buli" || type === "Bergaduh" || type === "Diskriminasi") return "tag-bad";
         if(type === "Barang Larangan") return "tag-contra";
         if(type.includes("Dadah")) return "tag-drug";
@@ -231,6 +245,40 @@
         document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">Tiada Rekod Dijumpai.</td></tr>';
     }
 
+    window.submitRecord = async () => {
+        const name = document.getElementById('stuName').value.trim().toUpperCase();
+        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
+        const type = document.getElementById('violation').value;
+        const manualTime = document.getElementById('violationTime').value; // 获取手动时间
+
+        if(!name || !cls || !type || !manualTime) return alert("Sila isi semua ruangan!");
+
+        // 组合日期和手动输入的时间
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        const combinedTime = `${formattedDate}, ${manualTime}`; // 格式：26/02/2026, 14:30
+
+        const log = { type, time: combinedTime, by: currentAdmin };
+        
+        const q = query(colRef, where("name", "==", name), where("class", "==", cls));
+        const qs = await getDocs(q);
+        
+        if(!qs.empty) {
+            await updateDoc(doc(db, "students", qs.docs[0].id), { 
+                offences: [...qs.docs[0].data().offences, log], 
+                counts: increment(1) 
+            });
+        } else {
+            await addDoc(colRef, { name, class: cls, offences: [log], counts: 1 });
+        }
+        
+        document.getElementById('stuName').value = "";
+        // 重置时间为当前实时时间
+        const resetNow = new Date();
+        document.getElementById('violationTime').value = resetNow.getHours().toString().padStart(2, '0') + ":" + resetNow.getMinutes().toString().padStart(2, '0');
+    };
+
+    // 其他原有函数 (manageOffence, deleteSingleOffence, downloadReport, etc.) 保持不变...
     window.manageOffence = (studentId, type) => {
         const student = allData.find(s => s.id === studentId);
         const list = student.offences.map((o, idx) => ({...o, idx})).filter(o => o.type === type);
@@ -251,41 +299,17 @@
         const student = allData.find(s => s.id === studentId);
         let newOffences = [...student.offences];
         newOffences.splice(index, 1);
-        
         if(newOffences.length === 0) {
             await deleteDoc(doc(db, "students", studentId));
         } else {
-            await updateDoc(doc(db, "students", studentId), { 
-                offences: newOffences, 
-                counts: newOffences.length 
-            });
+            await updateDoc(doc(db, "students", studentId), { offences: newOffences, counts: newOffences.length });
         }
         closeModal();
     };
 
     window.closeModal = () => document.getElementById('historyModal').style.display = 'none';
     window.handleSearch = () => { currentPage = 1; render(); };
-    window.changePage = (n) => { 
-        currentPage += n; 
-        if(currentPage < 1) currentPage = 1;
-        render(); 
-    };
-
-    window.submitRecord = async () => {
-        const name = document.getElementById('stuName').value.trim().toUpperCase();
-        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
-        const type = document.getElementById('violation').value;
-        if(!name || !cls || !type) return alert("Sila isi semua ruangan!");
-        const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
-        const q = query(colRef, where("name", "==", name), where("class", "==", cls));
-        const qs = await getDocs(q);
-        if(!qs.empty) {
-            await updateDoc(doc(db, "students", qs.docs[0].id), { offences: [...qs.docs[0].data().offences, log], counts: increment(1) });
-        } else {
-            await addDoc(colRef, { name, class: cls, offences: [log], counts: 1 });
-        }
-        document.getElementById('stuName').value = "";
-    };
+    window.changePage = (n) => { currentPage += n; if(currentPage < 1) currentPage = 1; render(); };
 
     window.downloadReport = async () => {
         const dateInput = document.getElementById('reportDate').value;
