@@ -63,13 +63,19 @@
         button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
 
+        /* Monthly Stats Style */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+        .stat-card { background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+        .stat-val { font-size: 20px; font-weight: bold; color: var(--accent); display: block; }
+        .stat-lbl { font-size: 9px; color: #777; text-transform: uppercase; }
+
         /* Modal */
         .modal { display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;}
         .modal-content { background:#181818; padding:20px; border-radius:12px; width:400px; border:1px solid #333; }
         .history-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #333; font-size:12px; }
 
         /* =========================================
-           EXPORT TEMPLATE (WHITE BACKGROUND)
+            EXPORT TEMPLATE (WHITE BACKGROUND)
            ========================================= */
         #reportExportTemplate { 
             position: absolute; 
@@ -127,13 +133,28 @@
     </div>
 
     <div class="card">
-        <h3>2. LOG AKTIVITI (TERKINI)</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>2. ANALISIS KESALAHAN BULANAN</h3>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="month" id="statsMonth" style="width:160px; flex:none;">
+                <button onclick="downloadMonthlyReport()" style="background:#2980b9; color:white; font-size:11px;">CETAK LAPORAN BULANAN</button>
+            </div>
+        </div>
+        <div class="stats-grid" id="statsDisplay">
+            </div>
+    </div>
+
+    <div class="card">
+        <h3>3. LOG AKTIVITI (TERKINI)</h3>
         <div class="log-panel" id="logDisplay">Memuatkan log...</div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
-        <h3>3. SENARAI DISIPLIN</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas...">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>4. SENARAI DISIPLIN</h3>
+            <button id="btnStudentReport" onclick="downloadStudentMonthlyReport()" style="background:var(--tag-contra); color:white; font-size:10px; display:none;">CETAK LAPORAN BULANAN PELAJAR</button>
+        </div>
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas untuk urus/cetak laporan...">
         <table>
             <thead>
                 <tr>
@@ -148,9 +169,9 @@
     </div>
 
     <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:30px;">
-        <span style="font-size:11px; color:#555">PILIH TARIKH LAPORAN:</span>
+        <span style="font-size:11px; color:#555">PILIH TARIKH LAPORAN HARIAN:</span>
         <input type="date" id="reportDate" style="width:150px; flex:none;">
-        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN PNG (PUTIH)</button>
+        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN PNG HARIAN</button>
         <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
@@ -171,6 +192,7 @@
             <p id="rptMeta" style="margin:5px 0; font-size:14px;"></p>
         </div>
     </div>
+    <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; text-align:left;"></div>
     <table class="rpt-table">
         <thead>
             <tr>
@@ -212,20 +234,26 @@
     const currentAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     document.getElementById('displayAdmin').innerText = currentAdmin;
 
-    // Default time & date
+    // Default time & dates
     const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
     setTimeNow();
     document.getElementById('reportDate').valueAsDate = new Date();
+    
+    const now = new Date();
+    const monthVal = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`;
+    document.getElementById('statsMonth').value = monthVal;
 
     let allData = [];
+    let selectedStudent = null; // For specific student reports
 
     // Real-time student data
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
+        updateStats();
     });
 
     // Real-time activity logs
@@ -247,6 +275,36 @@
     async function sysLog(msg) {
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
     }
+
+    // Update Analysis Grid
+    function updateStats() {
+        const selMonth = document.getElementById('statsMonth').value; // YYYY-MM
+        if(!selMonth) return;
+        
+        const [year, month] = selMonth.split('-');
+        const targetString = `/${month}/${year}`; // Match DD/MM/YYYY
+
+        const stats = {};
+        allData.forEach(s => {
+            s.offences.forEach(o => {
+                if(o.time.includes(targetString)) {
+                    stats[o.type] = (stats[o.type] || 0) + 1;
+                }
+            });
+        });
+
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Isu Trafik"];
+        let html = "";
+        
+        // Show defined types first
+        types.forEach(t => {
+            html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`;
+        });
+        
+        document.getElementById('statsDisplay').innerHTML = html;
+    }
+    
+    document.getElementById('statsMonth').addEventListener('change', updateStats);
 
     // Submit Record
     window.submitRecord = async () => {
@@ -282,6 +340,17 @@
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
+        
+        // Show/Hide student report button based on selection
+        const btnReport = document.getElementById('btnStudentReport');
+        if(term.length > 2 && filtered.length === 1) {
+            selectedStudent = filtered[0];
+            btnReport.style.display = 'block';
+            btnReport.innerText = `CETAK BULANAN: ${selectedStudent.name}`;
+        } else {
+            btnReport.style.display = 'none';
+        }
+
         let html = "";
         filtered.forEach(s => {
             const grouped = s.offences.reduce((acc, curr, i) => {
@@ -341,8 +410,25 @@
     window.handleSearch = () => render();
 
     // =========================================
-    // EXPORT PNG (WHITE VERSION)
+    // EXPORT LOGIC
     // =========================================
+    
+    // Core capture function
+    async function captureAndDownload(filename) {
+        const template = document.getElementById('reportExportTemplate');
+        return html2canvas(template, { 
+            backgroundColor: "#ffffff",
+            scale: 2,
+            useCORS: true 
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
+    // Daily Report
     window.downloadReport = async () => {
         const dInput = document.getElementById('reportDate').value;
         if(!dInput) return alert("Pilih tarikh!");
@@ -357,32 +443,66 @@
             s.offences.forEach(o => {
                 if(o.time.includes(targetDate)) {
                     count++;
-                    tbody.innerHTML += `<tr>
-                        <td>${s.name}</td>
-                        <td>${s.class}</td>
-                        <td>${o.type}</td>
-                        <td>${o.time.split(', ')[1]}</td>
-                        <td>${o.by}</td>
-                    </tr>`;
+                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time.split(', ')[1]}</td><td>${o.by}</td></tr>`;
                 }
             });
         });
 
         if(count === 0) return alert("Tiada rekod pada tarikh ini.");
-        
-        document.getElementById('rptMeta').innerText = `TARIKH: ${targetDate} | OPERATOR: ${currentAdmin}`;
-        
-        const template = document.getElementById('reportExportTemplate');
-        html2canvas(template, { 
-            backgroundColor: "#ffffff",
-            scale: 2,
-            useCORS: true 
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `Laporan_BDP_${targetDate}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
+        document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${targetDate}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
+    };
+
+    // Monthly Report (All Students)
+    window.downloadMonthlyReport = async () => {
+        const selMonth = document.getElementById('statsMonth').value;
+        if(!selMonth) return alert("Pilih bulan!");
+        const [year, month] = selMonth.split('-');
+        const targetString = `/${month}/${year}`;
+
+        const tbody = document.getElementById('reportTbody');
+        tbody.innerHTML = "";
+        let count = 0;
+
+        allData.forEach(s => {
+            s.offences.forEach(o => {
+                if(o.time.includes(targetString)) {
+                    count++;
+                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+                }
+            });
         });
+
+        if(count === 0) return alert("Tiada rekod pada bulan ini.");
+        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN: ${month}/${year}`;
+        document.getElementById('rptExtraInfo').innerText = `RINGKASAN KESELURUHAN BULANAN | JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_Bulanan_${month}_${year}.png`);
+    };
+
+    // Individual Student Monthly Report
+    window.downloadStudentMonthlyReport = async () => {
+        if(!selectedStudent) return alert("Sila cari dan pilih seorang pelajar dahulu.");
+        const selMonth = document.getElementById('statsMonth').value;
+        if(!selMonth) return alert("Sila pilih bulan di bahagian analisis.");
+        const [year, month] = selMonth.split('-');
+        const targetString = `/${month}/${year}`;
+
+        const tbody = document.getElementById('reportTbody');
+        tbody.innerHTML = "";
+        let count = 0;
+
+        selectedStudent.offences.forEach(o => {
+            if(o.time.includes(targetString)) {
+                count++;
+                tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+            }
+        });
+
+        if(count === 0) return alert("Tiada rekod untuk pelajar ini pada bulan yang dipilih.");
+        document.getElementById('rptMeta').innerText = `LAPORAN DISIPLIN INDIVIDU`;
+        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class} | BULAN: ${month}/${year} | JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_${selectedStudent.name}_${month}_${year}.png`);
     };
 
     window.masterReset = async () => {
