@@ -3,39 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMKSS Dashboard | v6.2</title>
+    <title>SMKSS Dashboard | Secure Login</title>
     <link rel="icon" type="image/png" href="semsira.png">
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; }
+        :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; --input: #252525; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; z-index: 100; }
-        #top-status { color: var(--primary); font-weight: bold; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 360px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        #face-area { display: none; width: 100%; height: 240px; background: #000; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary); overflow: hidden; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .btn-face { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); background: transparent; color: var(--primary); font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-face:disabled { border-color: #333; color: #555; cursor: not-allowed; }
-        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; }
+        
+        /* 顶部装饰 */
+        .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; opacity: 0.6; }
+        
+        .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 340px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        
+        .logo { width: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.3)); }
+        
+        /* 表单样式 */
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 10px; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; font-weight: bold; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: var(--input); color: white; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(230, 126, 34, 0.2); }
+        
+        /* 记住密码勾选框 */
+        .remember-me { display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 20px; cursor: pointer; }
+        .remember-me input { margin-right: 8px; accent-color: var(--primary); }
+
+        .btn-login { 
+            width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); 
+            background: var(--primary); color: white; font-weight: bold; cursor: pointer; 
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-login:hover { background: transparent; color: var(--primary); }
+        .btn-login:disabled { opacity: 0.5; cursor: not-allowed; border-color: #444; background: #333; }
+
+        #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; min-height: 1.2em; }
         .loading { color: var(--primary); } .success { color: #2ecc71; } .error { color: #e74c3c; }
     </style>
 </head>
 <body>
 
 <div class="info-header">
-    <div>OPERATOR: <span id="top-op">GUEST</span></div>
-    <div>USERS_LOADED: <span id="user-count">0</span></div>
+    <div>SYSTEM: ONLINE</div>
+    <div>ENCRYPTION: AES-256</div>
 </div>
 
 <div class="login-card">
-    <img src="semsira.png" alt="Logo" style="width:80px; margin-bottom:10px;">
-    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px;">DASHBOARD</h2>
-    <p style="font-size: 10px; color:#555; margin-bottom:20px;">V6.2 STABLE ENGINE</p>
+    <img src="semsira.png" alt="Logo" class="logo">
+    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px; font-size: 18px;">DASHBOARD</h2>
+    <p style="font-size: 9px; color:#555; margin-bottom:25px; text-transform: uppercase;">Secure Terminal Access</p>
 
-    <div id="face-area"><video id="video" autoplay muted playsinline></video></div>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="input-group">
+            <label>USERNAME</label>
+            <input type="text" id="username" placeholder="Enter operator ID" required>
+        </div>
+        <div class="input-group">
+            <label>PASSWORD</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        
+        <label class="remember-me">
+            <input type="checkbox" id="remember"> Remember operator credentials
+        </label>
+
+        <button type="submit" id="loginBtn" class="btn-login" disabled>Syncing Database...</button>
+    </form>
     
-    <button type="button" id="scanBtn" class="btn-face" onclick="startSecureScan()" disabled>SYNCING DB...</button>
-    <div id="status-msg">WAITING...</div>
+    <div id="status-msg"></div>
 </div>
 
 <script>
@@ -46,97 +80,87 @@
         TARGET: "sks_panel_982x.html"
     };
 
-    let faceMatcher = null;
-    let isScanning = false;
+    let usersDatabase = [];
 
+    // 1. 页面加载：同步数据库并填充保存的信息
     window.onload = async () => {
-        try {
-            updateMsg("LOADING MODELS", "loading");
-            await Promise.all([
-                faceapi.nets.ssdMobilenetv1.loadFromUri('./model'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('./model'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('./model')
-            ]);
-            await syncDatabase();
-        } catch (e) { updateMsg("INIT ERROR", "error"); }
+        updateMsg("CONNECTING TO SERVER...", "loading");
+        
+        // 尝试从本地加载“记住”的信息
+        const savedUser = localStorage.getItem('rm_user');
+        const savedPass = localStorage.getItem('rm_pass');
+        if (savedUser && savedPass) {
+            document.getElementById('username').value = savedUser;
+            document.getElementById('password').value = savedPass;
+            document.getElementById('remember').checked = true;
+        }
+
+        await syncDatabase();
     };
 
+    // 2. 从 keys.txt 同步账号密码（不再处理人脸特征，提速！）
     async function syncDatabase() {
         try {
             const url = `https://raw.githubusercontent.com/${CONFIG.OWNER}/${CONFIG.REPO}/main/${CONFIG.FILE}?t=${Date.now()}`;
             const res = await fetch(url);
             const text = await res.text();
             
-            // 过滤掉完全没用的空行
-            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 20);
-            const labeledDescriptors = [];
+            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 5);
+            
+            usersDatabase = lines.map(line => {
+                const parts = line.split(':');
+                return {
+                    user: parts[0] ? parts[0].trim() : "",
+                    pass: parts[1] ? parts[1].trim() : ""
+                };
+            }).filter(u => u.user !== "");
 
-            console.log(`[Database] Found ${lines.length} lines.`);
-
-            for (let i = 0; i < lines.length; i++) {
-                try {
-                    const line = lines[i];
-                    // 改用更激进的正则提取：只拿名字和中括号内容
-                    const name = line.split(':')[0].trim();
-                    const match = line.match(/\[(.*?)\]/);
-                    
-                    if (name && match) {
-                        // 核心：在 JSON.parse 前先清理一下字符串
-                        const cleanVectorStr = match[1].replace(/[^\d.,\-eE]/g, '');
-                        const vector = new Float32Array(JSON.parse(`[${cleanVectorStr}]`));
-                        
-                        labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(name, [vector]));
-                        console.log(`%c[OK] Line ${i+1}: ${name}`, "color: #2ecc71");
-                    }
-                } catch (err) {
-                    // 如果这一行坏了，打印出来但不要停止循环！
-                    console.error(`%c[Error] Line ${i+1} is broken. Skipping...`, "color: #e74c3c");
-                }
-            }
-
-            document.getElementById('user-count').innerText = labeledDescriptors.length;
-
-            if (labeledDescriptors.length > 0) {
-                faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.55);
-                document.getElementById('scanBtn').disabled = false;
-                document.getElementById('scanBtn').innerText = "START BIO-SCAN";
+            if (usersDatabase.length > 0) {
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = false;
+                btn.innerText = "Authorize Login";
                 updateMsg("SYSTEM READY", "success");
             } else {
-                updateMsg("DATABASE EMPTY", "error");
+                updateMsg("DATABASE ERROR", "error");
             }
-        } catch (e) { updateMsg("FETCH ERROR", "error"); }
+        } catch (e) {
+            updateMsg("CONNECTION FAILED", "error");
+        }
     }
 
-    async function startSecureScan() {
-        if (isScanning || !faceMatcher) return;
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            const video = document.getElementById('video');
-            video.srcObject = stream;
-            document.getElementById('face-area').style.display = 'block';
-            isScanning = true;
-            updateMsg("SCANNING...", "loading");
+    // 3. 登录逻辑
+    async function handleLogin(event) {
+        event.preventDefault();
+        const userIn = document.getElementById('username').value.trim();
+        const passIn = document.getElementById('password').value.trim();
+        const remember = document.getElementById('remember').checked;
 
-            const detect = async () => {
-                if (!isScanning) return;
-                const result = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
-                if (result) {
-                    const match = faceMatcher.findBestMatch(result.descriptor);
-                    console.log(`Match: ${match.label} (${match.distance.toFixed(3)})`);
-                    if (match.label !== 'unknown' && match.distance < 0.55) {
-                        isScanning = false;
-                        updateMsg("ACCESS GRANTED", "success");
-                        video.srcObject.getTracks().forEach(t => t.stop());
-                        sessionStorage.setItem('access_granted', 'true');
-                        sessionStorage.setItem('admin_name', match.label);
-                        setTimeout(() => window.location.replace(CONFIG.TARGET), 1000);
-                        return;
-                    }
-                }
-                requestAnimationFrame(detect);
-            };
-            detect();
-        } catch (err) { updateMsg("CAMERA ERROR", "error"); }
+        updateMsg("VERIFYING...", "loading");
+
+        // 在数据库中查找匹配项
+        const found = usersDatabase.find(u => u.user === userIn && u.pass === passIn);
+
+        if (found) {
+            // 处理“记住密码”
+            if (remember) {
+                localStorage.setItem('rm_user', userIn);
+                localStorage.setItem('rm_pass', passIn);
+            } else {
+                localStorage.removeItem('rm_user');
+                localStorage.removeItem('rm_pass');
+            }
+
+            updateMsg("ACCESS GRANTED", "success");
+            
+            // 设置 Session
+            sessionStorage.setItem('access_granted', 'true');
+            sessionStorage.setItem('admin_name', userIn);
+            
+            // 跳转
+            setTimeout(() => window.location.replace(CONFIG.TARGET), 1000);
+        } else {
+            updateMsg("INVALID CREDENTIALS", "error");
+        }
     }
 
     function updateMsg(t, cls) {
