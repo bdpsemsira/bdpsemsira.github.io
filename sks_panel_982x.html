@@ -23,11 +23,9 @@
         .input-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
         input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; flex: 1; outline: none; }
         
-        /* 统计面板样式 */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
-        .stat-item { background: #111; padding: 10px; border-radius: 8px; border-left: 3px solid var(--accent); text-align: center; }
-        .stat-count { font-size: 20px; font-weight: bold; color: var(--accent); }
-        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        /* Analysis Filter Styling */
+        .analysis-controls { display: flex; gap: 15px; background: #111; padding: 15px; border-radius: 10px; align-items: center; margin-bottom: 15px; }
+        .stat-display { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-align: center; min-width: 100px; }
 
         .log-panel { background: #050505; border: 1px solid #222; height: 120px; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 11px; border-radius: 8px; }
         .log-entry { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid #111; }
@@ -37,16 +35,15 @@
         .offence-tag { display: inline-block; padding: 3px 8px; margin: 2px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; background: #222; border-left: 3px solid #555; }
         
         button { background: var(--accent); color: black; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
         .btn-download { background: #27ae60; color: white; }
 
-        /* 导出模板 (白色) */
-        #exportTemplate { position: absolute; left: -9999px; width: 800px; background: white; color: black; padding: 40px; }
+        /* Export Template (White) */
+        #exportTemplate { position: absolute; left: -9999px; width: 850px; background: white; color: black; padding: 40px; border: 1px solid #eee; }
         #exportTemplate * { color: black !important; border-color: black !important; }
         .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .rpt-table th, .rpt-table td { border: 1px solid black; padding: 8px; text-align: left; font-size: 12px; }
+        .rpt-table th, .rpt-table td { border: 1px solid black; padding: 10px; text-align: left; font-size: 13px; }
         .rpt-header { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; }
-        .sig-area { margin-top: 50px; display: flex; justify-content: flex-end; text-align: center; }
+        .sig-area { margin-top: 60px; display: flex; justify-content: flex-end; text-align: center; }
 
         .modal { display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; }
         .modal-content { background:#181818; padding:20px; border-radius:12px; width:450px; border:1px solid #333; }
@@ -58,7 +55,7 @@
     <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
     <div style="text-align:right; font-size:12px;">
         <div>OPERATOR: <span id="displayAdmin" style="color:var(--accent)">...</span></div>
-        <div style="color:#27ae60">SISTEM ONLINE</div>
+        <div style="color:#27ae60">SISTEM AKTIF</div>
     </div>
 </div>
 
@@ -86,23 +83,40 @@
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>2. ANALISIS BULANAN</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="month" id="monthPicker" style="flex:none; width:150px;">
-                <button onclick="downloadMonthlyReport()" class="btn-download">MUAT TURUN RPT BULANAN</button>
+        <h3>2. ANALISIS & TAPISAN BULANAN</h3>
+        <div class="analysis-controls">
+            <div style="flex:1">
+                <label style="font-size:10px; color:#666">PILIH BULAN</label>
+                <input type="month" id="monthPicker" onchange="updateAnalysis()">
             </div>
+            <div style="flex:1">
+                <label style="font-size:10px; color:#666">TAPIS JENIS KESALAHAN</label>
+                <select id="filterType" onchange="updateAnalysis()">
+                    <option value="SEMUA">SEMUA KESALAHAN</option>
+                    <option value="Lewat">Lewat</option>
+                    <option value="Ponteng Kelas">Ponteng Kelas</option>
+                    <option value="Buli">Buli</option>
+                    <option value="Bergaduh">Bergaduh</option>
+                    <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                    <option value="Isu Trafik">Isu Trafik</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                </select>
+            </div>
+            <div class="stat-display">
+                <div style="font-size:9px; text-transform:uppercase">Jumlah Kes</div>
+                <div id="totalCaseCount" style="font-size:24px">0</div>
+            </div>
+            <button onclick="downloadFilteredReport()" class="btn-download">MUAT TURUN LAPORAN</button>
         </div>
-        <div class="stats-grid" id="statsDisplay">
-            </div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3>3. CARIAN & REKOD PELAJAR</h3>
-            <button onclick="downloadStudentProfile()" id="btnDownloadProfile" class="btn-outline" style="display:none;">MUAT TURUN PROFIL PELAJAR</button>
+            <h3>3. SENARAI REKOD PELAJAR</h3>
+            <button onclick="downloadStudentProfile()" id="btnDownloadProfile" style="display:none; background:transparent; border:1px solid var(--accent); color:var(--accent);">MUAT TURUN PROFIL PELAJAR</button>
         </div>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama pelajar untuk melihat sejarah atau muat turun profil...">
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama pelajar...">
         <table>
             <tbody id="recordBody"></tbody>
         </table>
@@ -113,9 +127,6 @@
         <div class="log-panel" id="logDisplay"></div>
     </div>
 
-    <div style="text-align:right">
-        <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; font-size:10px;">RESET TAHUNAN</button>
-    </div>
 </div>
 
 <div id="exportTemplate">
@@ -123,7 +134,7 @@
         <img src="semsira.png" style="height:70px; margin-right:20px;">
         <div>
             <h1 style="margin:0; font-size:22px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
-            <p id="rptSubTitle" style="margin:5px 0; font-weight:bold;"></p>
+            <p id="rptSubTitle" style="margin:5px 0; font-weight:bold; font-size:14px;"></p>
         </div>
     </div>
     <div id="rptContent"></div>
@@ -173,7 +184,7 @@
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
-        updateStats();
+        updateAnalysis();
     });
 
     onSnapshot(query(logRef, orderBy("timestamp", "desc"), limit(10)), (snap) => {
@@ -181,14 +192,14 @@
         snap.forEach(d => {
             const data = d.data();
             const t = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : "...";
-            html += `<div class="log-entry"><span style="color:#555">[${t}]</span> <span>${data.msg}</span> <span style="color:var(--accent)">@${data.admin}</span></div>`;
+            html += `<div class="log-entry"><span>[${t}] ${data.msg}</span> <span style="color:var(--accent)">@${data.admin}</span></div>`;
         });
         document.getElementById('logDisplay').innerHTML = html;
     });
 
     async function sysLog(msg) { await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() }); }
 
-    // --- Logic ---
+    // --- Core Logic ---
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
@@ -196,7 +207,8 @@
         const time = document.getElementById('violationTime').value;
         if(!name || !cls || !type || !time) return alert("Sila isi semua maklumat!");
 
-        const date = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
+        const date = new Date().toLocaleDateString('en-GB'); 
+        const monthStr = document.getElementById('monthPicker').value; // Get current selected month context
         const entry = { type, time: `${date}, ${time}`, by: currentAdmin, month: new Date().toISOString().slice(0, 7) };
         
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
@@ -206,123 +218,83 @@
         } else {
             await addDoc(colRef, { name, class: cls, offences: [entry], counts: 1 });
         }
-        await sysLog(`KEY-IN: ${type} - ${name}`);
+        await sysLog(`TAMBAH: ${type} - ${name}`);
         document.getElementById('stuName').value = "";
     };
 
-    function updateStats() {
+    // --- Analysis Logic ---
+    window.updateAnalysis = () => {
         const selMonth = document.getElementById('monthPicker').value;
-        const summary = {};
+        const selType = document.getElementById('filterType').value;
+        let count = 0;
+
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.month === selMonth) {
-                    summary[o.type] = (summary[o.type] || 0) + 1;
-                }
+                const matchMonth = o.month === selMonth;
+                const matchType = selType === "SEMUA" || o.type === selType;
+                if(matchMonth && matchType) count++;
             });
         });
-        let html = "";
-        for(const [type, count] of Object.entries(summary)) {
-            html += `<div class="stat-item"><div class="stat-count">${count}</div><div class="stat-label">${type}</div></div>`;
-        }
-        document.getElementById('statsDisplay').innerHTML = html || "<div style='color:#555'>Tiada rekod untuk bulan ini.</div>";
-    }
-
-    function render() {
-        const term = document.getElementById('searchBox').value.toUpperCase();
-        const filtered = allData.filter(s => s.name.includes(term));
-        
-        // Show/Hide Profile Download Button
-        const btn = document.getElementById('btnDownloadProfile');
-        if(term.length > 2 && filtered.length === 1) {
-            btn.style.display = "block";
-            selectedStudentForReport = filtered[0];
-        } else {
-            btn.style.display = "none";
-            selectedStudentForReport = null;
-        }
-
-        let html = "";
-        filtered.slice(0, 10).forEach(s => {
-            const tags = s.offences.map((o, i) => `<span class="offence-tag" onclick="viewHistory('${s.id}')" style="border-left-color:${o.type==='Lewat'?'#f1c40f':'#e74c3c'}">${o.type}</span>`).join('');
-            html += `<tr>
-                <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
-                <td>${tags}</td>
-                <td style="text-align:right"><button onclick="purge('${s.id}')" style="background:#221111; color:#ff4d4d; font-size:10px;">HAPUS</button></td>
-            </tr>`;
-        });
-        document.getElementById('recordBody').innerHTML = html;
-    }
-
-    window.viewHistory = (id) => {
-        const s = allData.find(x => x.id === id);
-        document.getElementById('modalTitle').innerText = s.name;
-        document.getElementById('historyList').innerHTML = s.offences.map((o, i) => `
-            <div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px;">${o.time}<br><b style="color:var(--accent)">${o.type}</b></span>
-                <button onclick="delEntry('${id}', ${i})" style="background:#442222; color:red; font-size:9px;">HAPUS</button>
-            </div>
-        `).join('');
-        document.getElementById('historyModal').style.display = "flex";
+        document.getElementById('totalCaseCount').innerText = count;
     };
-
-    window.delEntry = async (id, idx) => {
-        if(!confirm("Hapus rekod ini?")) return;
-        const s = allData.find(x => x.id === id);
-        let updated = [...s.offences];
-        updated.splice(idx, 1);
-        if(updated.length === 0) await deleteDoc(doc(db, "students", id));
-        else await updateDoc(doc(db, "students", id), { offences: updated, counts: updated.length });
-        await sysLog(`DELETE REKOD: ${s.name}`);
-        closeModal();
-    };
-
-    window.purge = async (id) => { if(confirm("Hapus keseluruhan profil pelajar?")) { await deleteDoc(doc(db, "students", id)); await sysLog("PROFIL DELETED"); } };
 
     // --- Reporting ---
-    
-    // 1. Download Monthly Report
-    window.downloadMonthlyReport = async () => {
+    window.downloadFilteredReport = async () => {
         const selMonth = document.getElementById('monthPicker').value;
+        const selType = document.getElementById('filterType').value;
         const [y, m] = selMonth.split('-');
-        document.getElementById('rptSubTitle').innerText = `LAPORAN BULANAN: ${m}/${y}`;
+        
+        document.getElementById('rptSubTitle').innerText = `LAPORAN KES DISIPLIN (${selType.toUpperCase()}) - ${m}/${y}`;
         document.getElementById('rptAdminName').innerText = `Disediakan oleh: ${currentAdmin}`;
         
         let rows = "";
+        let listCount = 0;
+        
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.month === selMonth) {
-                    rows += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+                const matchMonth = o.month === selMonth;
+                const matchType = selType === "SEMUA" || o.type === selType;
+                if(matchMonth && matchType) {
+                    listCount++;
+                    rows += `<tr>
+                        <td>${listCount}</td>
+                        <td>${s.name}</td>
+                        <td>${s.class}</td>
+                        <td>${o.type}</td>
+                        <td>${o.time}</td>
+                    </tr>`;
                 }
             });
         });
 
-        if(!rows) return alert("Tiada data untuk bulan ini.");
+        if(listCount === 0) return alert("Tiada data ditemui untuk tapisan ini.");
+
         document.getElementById('rptContent').innerHTML = `
+            <div style="margin-bottom:10px;"><b>JUMLAH KESELURUHAN: ${listCount}</b></div>
             <table class="rpt-table">
-                <thead><tr><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Tarikh/Masa</th><th>Operator</th></tr></thead>
+                <thead><tr><th>No</th><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Tarikh/Masa</th></tr></thead>
                 <tbody>${rows}</tbody>
             </table>
         `;
-        capture("Laporan_Bulanan_" + selMonth);
+
+        const filename = `Laporan_${selType}_${m}_${y}`;
+        capture(filename);
     };
 
-    // 2. Download Individual Profile Report
     window.downloadStudentProfile = () => {
         if(!selectedStudentForReport) return;
         const s = selectedStudentForReport;
         document.getElementById('rptSubTitle').innerText = `PROFIL DISIPLIN PELAJAR`;
         document.getElementById('rptAdminName').innerText = `Disediakan oleh: ${currentAdmin}`;
-
-        let rows = s.offences.map(o => `<tr><td>${o.time}</td><td>${o.type}</td><td>${o.by}</td></tr>`).join('');
-        
+        let rows = s.offences.map((o, i) => `<tr><td>${i+1}</td><td>${o.time}</td><td>${o.type}</td><td>${o.by}</td></tr>`).join('');
         document.getElementById('rptContent').innerHTML = `
-            <div style="margin-bottom:20px;">
-                <p><b>NAMA:</b> ${s.name}</p>
-                <p><b>KELAS:</b> ${s.class}</p>
-                <p><b>JUMLAH KESALAHAN:</b> ${s.counts}</p>
+            <div style="margin-bottom:15px; border:1px solid #000; padding:10px;">
+                <p style="margin:2px"><b>NAMA:</b> ${s.name}</p>
+                <p style="margin:2px"><b>KELAS:</b> ${s.class}</p>
+                <p style="margin:2px"><b>JUMLAH KESALAHAN TERKUMPUL:</b> ${s.counts}</p>
             </div>
             <table class="rpt-table">
-                <thead><tr><th>Tarikh/Masa</th><th>Jenis Kesalahan</th><th>Perakam</th></tr></thead>
+                <thead><tr><th>No</th><th>Tarikh/Masa</th><th>Jenis Kesalahan</th><th>Perakam</th></tr></thead>
                 <tbody>${rows}</tbody>
             </table>
         `;
@@ -339,10 +311,54 @@
         });
     }
 
-    window.closeModal = () => { document.getElementById('historyModal').style.display = "none"; };
+    // --- Search & UI ---
     window.handleSearch = () => render();
-    document.getElementById('monthPicker').addEventListener('change', updateStats);
-    window.masterReset = async () => { if(confirm("RESET SEMUA DATA?") && prompt("Taip 'RESET2026'") === "RESET2026") { const qs = await getDocs(colRef); const b = writeBatch(db); qs.forEach(d => b.delete(d.ref)); await b.commit(); alert("Data dikosongkan."); } };
+    function render() {
+        const term = document.getElementById('searchBox').value.toUpperCase();
+        const filtered = allData.filter(s => s.name.includes(term));
+        const btn = document.getElementById('btnDownloadProfile');
+        
+        if(term.length > 2 && filtered.length === 1) {
+            btn.style.display = "block";
+            selectedStudentForReport = filtered[0];
+        } else {
+            btn.style.display = "none";
+            selectedStudentForReport = null;
+        }
+
+        let html = "";
+        filtered.slice(0, 10).forEach(s => {
+            html += `<tr>
+                <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
+                <td>${s.offences.map(o => `<span class="offence-tag" onclick="viewHistory('${s.id}')">${o.type}</span>`).join('')}</td>
+                <td style="text-align:right"><button onclick="viewHistory('${s.id}')" style="background:#333; color:white; font-size:10px;">LIHAT</button></td>
+            </tr>`;
+        });
+        document.getElementById('recordBody').innerHTML = html;
+    }
+
+    window.viewHistory = (id) => {
+        const s = allData.find(x => x.id === id);
+        document.getElementById('modalTitle').innerText = s.name;
+        document.getElementById('historyList').innerHTML = s.offences.map((o, i) => `
+            <div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px;">${o.time}<br><b>${o.type}</b></span>
+                <button onclick="delEntry('${id}', ${i})" style="background:#442222; color:red; font-size:9px;">HAPUS</button>
+            </div>`).join('');
+        document.getElementById('historyModal').style.display = "flex";
+    };
+
+    window.delEntry = async (id, idx) => {
+        if(!confirm("Hapus?")) return;
+        const s = allData.find(x => x.id === id);
+        let updated = [...s.offences];
+        updated.splice(idx, 1);
+        if(updated.length === 0) await deleteDoc(doc(db, "students", id));
+        else await updateDoc(doc(db, "students", id), { offences: updated, counts: updated.length });
+        closeModal();
+    };
+
+    window.closeModal = () => document.getElementById('historyModal').style.display = "none";
 </script>
 </body>
 </html>
