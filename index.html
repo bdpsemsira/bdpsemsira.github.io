@@ -184,11 +184,11 @@
     </button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#home">Utama</a></li>
         <li class="nav-item"><a class="nav-link" href="#members">AJK</a></li>
         <li class="nav-item"><a class="nav-link" href="#rules">Peraturan</a></li>
         <li class="nav-item"><a class="nav-link" href="#stats">Statistik</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">Tentang</a></li>
         <li class="nav-item"><a class="nav-link fw-bold" style="color:var(--accent);" href="blog.html">Blog</a></li>
       </ul>
     </div>
@@ -420,7 +420,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   let myChart;
-  const colorMap = { "Late": "#f1c40f", "Skipping Class": "#e67e22", "Bullying": "#e74c3c", "Discrimination": "#e74c3c", "Contraband": "#9b59b6", "Severe Misconduct/Drugs": "#8e44ad", "Speeding": "#000000", "Plate Number": "#2C3E50", "Road Tax": "#566573", "Driving License": "#808B96", "Others": "#3498db" };
+  const colorMap = { "Lewat": "#f1c40f", "Ponteng Kelas": "#e67e22", "Buli": "#e74c3c", "Diskriminasi": "#e74c3c", "Barang Haram": "#9b59b6", "Penyalahguna Dadah / Merokok": "#8e44ad", "Memecut laju": "#000000", "Isu Numbor Kenderaan": "#2C3E50", "Isu Roadtax": "#566573", "Isu Lesen Kenderaan": "#808B96", "Lain-lain": "#3498db" };
 
   onSnapshot(collection(db, "students"), (snap) => {
       const stats = {};
