@@ -1,355 +1,48 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Disiplin | SEMSIRA BDP (24H)</title>
-    <link rel="icon" type="image/png" href="semsira.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --accent: #f1c40f; --bg: #0a0a0a; --card: #181818; --text: #ffffff;
-            --tag-late: #f1c40f; --tag-skip: #e67e22; --tag-bad: #e74c3c;
-        }
-
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
-        .navbar { background: #000; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; position: sticky; top:0; z-index:100; }
-        .nav-brand { display: flex; align-items: center; }
-        .nav-brand img { height: 45px; margin-right: 15px; }
-        
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; padding-bottom: 100px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #222; }
-        
-        .input-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-        input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; flex: 1; outline: none; }
-        
-        /* Analysis Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 15px; }
-        .stat-item { background: #111; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); transition: 0.3s; }
-        .stat-item:hover { background: #1a1a1a; transform: translateY(-2px); }
-        .stat-count { font-size: 22px; font-weight: bold; color: var(--accent); }
-        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 4px; }
-
-        .log-panel { background: #050505; border: 1px solid #222; height: 130px; overflow-y: auto; padding: 12px; font-family: monospace; font-size: 11px; border-radius: 8px; }
-        .log-entry { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #111; }
-
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        td { background: #1a1a1a; padding: 12px; border-top: 1px solid #222; border-bottom: 1px solid #222; }
-        
-        /* Offence Tag Colors */
-        .offence-tag { display: inline-block; padding: 4px 10px; margin: 2px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; color: #000; }
-        .bg-late { background-color: var(--tag-late); }
-        .bg-danger { background-color: var(--tag-bad); color: white; }
-        .bg-warn { background-color: var(--tag-skip); }
-        
-        button { background: var(--accent); color: black; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:active { transform: scale(0.95); }
-        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-        .btn-download { background: #27ae60; color: white; border: none; }
-
-        /* White Export Template */
-        #exportTemplate { position: absolute; left: -9999px; width: 850px; background: white; color: black; padding: 50px; }
-        #exportTemplate * { color: black !important; border-color: black !important; }
-        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        .rpt-table th, .rpt-table td { border: 1px solid black; padding: 10px; text-align: left; font-size: 13px; }
-        .rpt-header { display: flex; align-items: center; border-bottom: 4px double black; padding-bottom: 15px; margin-bottom: 25px; }
-        .sig-area { margin-top: 60px; display: flex; justify-content: flex-end; text-align: center; }
-
-        .modal { display:none; position:fixed; z-index:200; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; }
-        .modal-content { background:#181818; padding:25px; border-radius:16px; width:450px; border:1px solid #333; }
-    </style>
-</head>
-<body>
-
-<div class="navbar">
-    <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
-    <div style="text-align:right">
-        <div style="font-size:12px;">OPERATOR: <span id="displayAdmin" style="color:var(--accent)">...</span></div>
-        <div style="font-size:10px; color:#27ae60;">24-HOUR MODE ACTIVE</div>
-    </div>
-</div>
-
-<div class="container">
+window.downloadReport = async () => {
+    const dateInput = document.getElementById('reportDate').value;
+    if(!dateInput) return alert("Pilih tarikh!");
     
-    <div class="card">
-        <h3>1. REKOD KEMASUKAN BARU (24H)</h3>
-        <div class="input-group">
-            <div style="flex:1.5"><input type="text" id="stuName" placeholder="Nama Penuh Pelajar" style="width:100%"></div>
-            <div style="flex:0.4"><input type="text" id="stuClass" placeholder="Kelas" style="width:100%"></div>
-            <div style="flex:0.5"><input type="time" id="violationTime" style="width:100%"></div>
-            <div style="flex:1">
-                <select id="violation" style="width:100%">
-                    <option value="" disabled selected>Kesalahan...</option>
-                    <option value="Lewat">Lewat</option>
-                    <option value="Ponteng Kelas">Ponteng Kelas</option>
-                    <option value="Buli">Buli</option>
-                    <option value="Bergaduh">Bergaduh</option>
-                    <option value="Barang Larangan">Barang Larangan</option>
-                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
-                    <option value="Isu Trafik">Isu Trafik</option>
-                    <option value="Lain-lain">Lain-lain</option>
-                </select>
-            </div>
-            <button onclick="submitRecord()">SIMPAN</button>
-        </div>
-    </div>
+    const [y, m, d] = dateInput.split('-');
+    const target = `${d}/${m}/${y}`; // 匹配格式如 26/02/2026
+    const tbody = document.getElementById('reportTbody');
+    const template = document.getElementById('reportExportTemplate');
+    
+    tbody.innerHTML = "";
+    let count = 0;
 
-    <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <h3>2. ANALISIS BULANAN</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="month" id="monthPicker" style="width:160px;">
-                <button onclick="downloadMonthlyReport()" class="btn-download">MUAT TURUN PNG</button>
-            </div>
-        </div>
-        <div class="stats-grid" id="statsDisplay"></div>
-    </div>
-
-    <div class="card" style="background:transparent; border:none; padding:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0">3. CARIAN & REKOD PELAJAR</h3>
-            <button onclick="downloadStudentProfile()" id="btnDownloadProfile" class="btn-outline" style="display:none;">MUAT TURUN PROFIL PELAJAR</button>
-        </div>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama pelajar...">
-        <table>
-            <tbody id="recordBody"></tbody>
-        </table>
-    </div>
-
-    <div class="card">
-        <h3>4. LOG AKTIVITI OPERATOR</h3>
-        <div class="log-panel" id="logDisplay"></div>
-    </div>
-
-    <div style="text-align:center; opacity:0.3; font-size:10px; margin-top:30px;">
-        <span onclick="masterReset()" style="cursor:pointer">SISTEM DISIPLIN SEMSIRA BDP &copy; 2026</span>
-    </div>
-</div>
-
-<div id="exportTemplate">
-    <div class="rpt-header">
-        <img src="semsira.png" style="height:80px; margin-right:25px;">
-        <div>
-            <h1 style="margin:0; font-size:24px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
-            <p id="rptSubTitle" style="margin:5px 0; font-weight:bold; font-size:16px;"></p>
-        </div>
-    </div>
-    <div id="rptContent"></div>
-    <div class="sig-area">
-        <div>
-            <p>___________________________</p>
-            <p style="font-weight:bold; margin:0;">Tandatangan Pegawai</p>
-            <p id="rptAdminName" style="font-size:13px;"></p>
-        </div>
-    </div>
-</div>
-
-<div id="historyModal" class="modal">
-    <div class="modal-content">
-        <h4 id="modalTitle" style="margin-top:0; color:var(--accent); border-bottom:1px solid #333; padding-bottom:10px;"></h4>
-        <div id="historyList" style="max-height:350px; overflow-y:auto;"></div>
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; background:#444; color:white;">TUTUP</button>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, writeBatch, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
-        authDomain: "bdpsemsira-5c274.firebaseapp.com",
-        projectId: "bdpsemsira-5c274",
-        storageBucket: "bdpsemsira-5c274.firebasestorage.app",
-        messagingSenderId: "176946808975",
-        appId: "1:176946808975:web:ef7447a11bb57fe71b88fa"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const colRef = collection(db, "students");
-    const logRef = collection(db, "logs");
-
-    const currentAdmin = sessionStorage.getItem('admin_name') || "OPERATOR";
-    document.getElementById('displayAdmin').innerText = currentAdmin;
-    document.getElementById('monthPicker').value = new Date().toISOString().slice(0, 7);
-
-    let allData = [];
-    let selectedStudentForReport = null;
-
-    // --- Sync Data ---
-    onSnapshot(colRef, (snap) => {
-        allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        render();
-        updateStats();
+    // 筛选符合日期的数据
+    allData.forEach(s => {
+        s.offences.forEach(o => {
+            if(o.time.includes(target)) {
+                count++;
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:#000 !important; border:1px solid #000 !important;">${s.name}</td>
+                        <td style="color:#000 !important; border:1px solid #000 !important;">${s.class}</td>
+                        <td style="color:#000 !important; border:1px solid #000 !important;">${o.type}</td>
+                        <td style="color:#000 !important; border:1px solid #000 !important;">${o.time.split(', ')[1]}</td>
+                        <td style="color:#000 !important; border:1px solid #000 !important;">${o.by}</td>
+                    </tr>`;
+            }
+        });
     });
 
-    onSnapshot(query(logRef, orderBy("timestamp", "desc"), limit(12)), (snap) => {
-        let html = "";
-        snap.forEach(d => {
-            const data = d.data();
-            const t = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString('ms-MY', {hour12:false}) : "...";
-            html += `<div class="log-entry"><span style="color:#555">[${t}]</span> <span>${data.msg}</span> <span style="color:var(--accent); font-weight:bold;">@${data.admin}</span></div>`;
-        });
-        document.getElementById('logDisplay').innerHTML = html;
+    if(count === 0) return alert("Tiada data pada tarikh ini.");
+
+    // 设置报告页眉信息
+    document.getElementById('rptMeta').innerText = `TARIKH: ${target} | OPERATOR: ${currentAdmin}`;
+    document.getElementById('rptMeta').style.color = "#000";
+
+    // 执行导出
+    html2canvas(template, { 
+        scale: 2, 
+        backgroundColor: "#ffffff", // 强制白色背景
+        useCORS: true,              // 允许跨域加载图片（如 logo）
+        logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Laporan_BDP_${target}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
     });
-
-    async function sysLog(msg) { await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() }); }
-
-    // --- Logic ---
-    window.submitRecord = async () => {
-        const name = document.getElementById('stuName').value.trim().toUpperCase();
-        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
-        const type = document.getElementById('violation').value;
-        const time = document.getElementById('violationTime').value; // 24H Format from input
-        
-        if(!name || !cls || !type || !time) return alert("Sila isi maklumat dengan lengkap!");
-
-        const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const entry = { type, time: `${today}, ${time}`, by: currentAdmin, month: currentMonth };
-        
-        const q = query(colRef, where("name", "==", name), where("class", "==", cls));
-        const qs = await getDocs(q);
-        
-        if(!qs.empty) {
-            await updateDoc(doc(db, "students", qs.docs[0].id), { offences: [...qs.docs[0].data().offences, entry], counts: increment(1) });
-        } else {
-            await addDoc(colRef, { name, class: cls, offences: [entry], counts: 1 });
-        }
-        await sysLog(`INPUT: ${type} - ${name}`);
-        document.getElementById('stuName').value = "";
-        document.getElementById('violationTime').value = "";
-    };
-
-    function updateStats() {
-        const selMonth = document.getElementById('monthPicker').value;
-        const summary = {};
-        allData.forEach(s => {
-            s.offences.forEach(o => {
-                if(o.month === selMonth) summary[o.type] = (summary[o.type] || 0) + 1;
-            });
-        });
-        let html = "";
-        for(const [type, count] of Object.entries(summary)) {
-            html += `<div class="stat-item"><div class="stat-count">${count}</div><div class="stat-label">${type}</div></div>`;
-        }
-        document.getElementById('statsDisplay').innerHTML = html || "<div style='color:#555; font-size:12px;'>Tiada rekod untuk bulan ini.</div>";
-    }
-
-    function getTagClass(type) {
-        if(type === 'Lewat') return 'bg-late';
-        if(['Buli', 'Bergaduh', 'Barang Larangan'].includes(type)) return 'bg-danger';
-        return 'bg-warn';
-    }
-
-    function render() {
-        const term = document.getElementById('searchBox').value.toUpperCase();
-        const filtered = allData.filter(s => s.name.includes(term));
-        
-        const btn = document.getElementById('btnDownloadProfile');
-        if(term.length > 2 && filtered.length === 1) {
-            btn.style.display = "block";
-            selectedStudentForReport = filtered[0];
-        } else {
-            btn.style.display = "none";
-            selectedStudentForReport = null;
-        }
-
-        let html = "";
-        filtered.slice(0, 15).forEach(s => {
-            const tags = s.offences.map(o => `<span class="offence-tag ${getTagClass(o.type)}" onclick="viewHistory('${s.id}')">${o.type}</span>`).join('');
-            html += `<tr>
-                <td style="width:30%"><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
-                <td>${tags}</td>
-                <td style="text-align:right"><button onclick="viewHistory('${s.id}')" style="background:#333; color:white; font-size:10px;">SEJARAH</button></td>
-            </tr>`;
-        });
-        document.getElementById('recordBody').innerHTML = html;
-    }
-
-    window.viewHistory = (id) => {
-        const s = allData.find(x => x.id === id);
-        document.getElementById('modalTitle').innerText = s.name;
-        document.getElementById('historyList').innerHTML = s.offences.map((o, i) => `
-            <div style="padding:12px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px;">${o.time} | <b style="color:var(--accent)">${o.type}</b></span>
-                <button onclick="delEntry('${id}', ${i})" style="background:#442222; color:#ff4d4d; font-size:10px;">PADAM</button>
-            </div>
-        `).join('');
-        document.getElementById('historyModal').style.display = "flex";
-    };
-
-    window.delEntry = async (id, idx) => {
-        if(!confirm("Padam rekod ini?")) return;
-        const s = allData.find(x => x.id === id);
-        let updated = [...s.offences];
-        const removed = updated.splice(idx, 1)[0];
-        if(updated.length === 0) await deleteDoc(doc(db, "students", id));
-        else await updateDoc(doc(db, "students", id), { offences: updated, counts: updated.length });
-        await sysLog(`DELETE: ${removed.type} - ${s.name}`);
-        closeModal();
-    };
-
-    // --- Reports ---
-    window.downloadMonthlyReport = () => {
-        const selMonth = document.getElementById('monthPicker').value;
-        const [y, m] = selMonth.split('-');
-        document.getElementById('rptSubTitle').innerText = `LAPORAN KES DISIPLIN BULANAN (${m}/${y})`;
-        document.getElementById('rptAdminName').innerText = `Oleh: ${currentAdmin}`;
-        
-        let rows = ""; let count = 1;
-        allData.forEach(s => {
-            s.offences.forEach(o => {
-                if(o.month === selMonth) {
-                    rows += `<tr><td>${count++}</td><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
-                }
-            });
-        });
-
-        if(!rows) return alert("Tiada rekod pada bulan tersebut.");
-        document.getElementById('rptContent').innerHTML = `
-            <table class="rpt-table">
-                <thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Kesalahan</th><th>Tarikh/Masa (24H)</th><th>Operator</th></tr></thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-        capture(`Laporan_Bulan_${m}_${y}`);
-    };
-
-    window.downloadStudentProfile = () => {
-        if(!selectedStudentForReport) return;
-        const s = selectedStudentForReport;
-        document.getElementById('rptSubTitle').innerText = `PROFIL DISIPLIN PELAJAR (SULIT)`;
-        document.getElementById('rptAdminName').innerText = `Dicetak oleh: ${currentAdmin}`;
-        let rows = s.offences.map((o, idx) => `<tr><td>${idx+1}</td><td>${o.time}</td><td>${o.type}</td><td>${o.by}</td></tr>`).join('');
-        document.getElementById('rptContent').innerHTML = `
-            <div style="border:2px solid black; padding:15px; margin-bottom:20px;">
-                <p style="margin:2px"><b>NAMA:</b> ${s.name}</p>
-                <p style="margin:2px"><b>KELAS:</b> ${s.class}</p>
-                <p style="margin:2px"><b>JUMLAH REKOD:</b> ${s.counts}</p>
-            </div>
-            <table class="rpt-table">
-                <thead><tr><th>No</th><th>Tarikh & Masa (24H)</th><th>Jenis Kesalahan</th><th>Direkod Oleh</th></tr></thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-        capture(`Profil_${s.name.replace(/\s/g, '_')}`);
-    };
-
-    function capture(name) {
-        html2canvas(document.getElementById('exportTemplate'), { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = name + ".png";
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-    }
-
-    window.closeModal = () => document.getElementById('historyModal').style.display = "none";
-    window.handleSearch = () => render();
-    document.getElementById('monthPicker').addEventListener('change', updateStats);
-    window.masterReset = async () => { if(confirm("RESET SEMUA DATA?") && prompt("Sila taip 'RESET2026':") === "RESET2026") { const qs = await getDocs(colRef); const b = writeBatch(db); qs.forEach(d => b.delete(d.ref)); await b.commit(); alert("Data telah dikosongkan."); } };
-</script>
-</body>
-</html>
+};
