@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMKSS Dashboard | Secure Login</title>
+    <title>Dashboard SMKSS | Log Masuk Selamat</title>
     <link rel="icon" type="image/png" href="semsira.png">
     <style>
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; --input: #252525; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        /* 顶部装饰 */
+        /* Hiasan Atas */
         .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; opacity: 0.6; }
         
         .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 340px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
         .logo { width: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.3)); }
         
-        /* 表单样式 */
+        /* Gaya Borang */
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 10px; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; font-weight: bold; }
         input[type="text"], input[type="password"] {
@@ -24,7 +24,7 @@
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(230, 126, 34, 0.2); }
         
-        /* 记住密码勾选框 */
+        /* Kotak pilihan Ingat Saya */
         .remember-me { display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 20px; cursor: pointer; }
         .remember-me input { margin-right: 8px; accent-color: var(--primary); }
 
@@ -43,30 +43,30 @@
 <body>
 
 <div class="info-header">
-    <div>SYSTEM: ONLINE</div>
-    <div>ENCRYPTION: AES-256</div>
+    <div>SISTEM: DALAM TALIAN</div>
+    <div>ENKRIPSI: AES-256</div>
 </div>
 
 <div class="login-card">
     <img src="semsira.png" alt="Logo" class="logo">
-    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px; font-size: 18px;">DASHBOARD</h2>
-    <p style="font-size: 9px; color:#555; margin-bottom:25px; text-transform: uppercase;">Secure Terminal Access</p>
+    <h2 style="color:var(--primary); margin:0; letter-spacing: 2px; font-size: 18px;">PAPAN PEMUKA</h2>
+    <p style="font-size: 9px; color:#555; margin-bottom:25px; text-transform: uppercase;">Akses Terminal Selamat</p>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="input-group">
-            <label>USERNAME</label>
-            <input type="text" id="username" placeholder="Enter operator ID" required>
+            <label>NAMA PENGGUNA</label>
+            <input type="text" id="username" placeholder="Masukkan ID operator" required>
         </div>
         <div class="input-group">
-            <label>PASSWORD</label>
+            <label>KATA LALUAN</label>
             <input type="password" id="password" placeholder="••••••••" required>
         </div>
         
         <label class="remember-me">
-            <input type="checkbox" id="remember"> Remember operator credentials
+            <input type="checkbox" id="remember"> Ingat maklumat pengenalan operator
         </label>
 
-        <button type="submit" id="loginBtn" class="btn-login" disabled>Syncing Database...</button>
+        <button type="submit" id="loginBtn" class="btn-login" disabled>Menyemak Pangkalan Data...</button>
     </form>
     
     <div id="status-msg"></div>
@@ -82,11 +82,9 @@
 
     let usersDatabase = [];
 
-    // 1. 页面加载：同步数据库并填充保存的信息
     window.onload = async () => {
-        updateMsg("CONNECTING TO SERVER...", "loading");
+        updateMsg("MENYAMBUNG KE PELAYAN...", "loading");
         
-        // 尝试从本地加载“记住”的信息
         const savedUser = localStorage.getItem('rm_user');
         const savedPass = localStorage.getItem('rm_pass');
         if (savedUser && savedPass) {
@@ -98,7 +96,6 @@
         await syncDatabase();
     };
 
-    // 2. 从 keys.txt 同步账号密码（不再处理人脸特征，提速！）
     async function syncDatabase() {
         try {
             const url = `https://raw.githubusercontent.com/${CONFIG.OWNER}/${CONFIG.REPO}/main/${CONFIG.FILE}?t=${Date.now()}`;
@@ -118,30 +115,27 @@
             if (usersDatabase.length > 0) {
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = false;
-                btn.innerText = "Authorize Login";
-                updateMsg("SYSTEM READY", "success");
+                btn.innerText = "Sahkan Log Masuk";
+                updateMsg("SISTEM SEDIA", "success");
             } else {
-                updateMsg("DATABASE ERROR", "error");
+                updateMsg("RALAT PANGKALAN DATA", "error");
             }
         } catch (e) {
-            updateMsg("CONNECTION FAILED", "error");
+            updateMsg("SAMBUNGAN GAGAL", "error");
         }
     }
 
-    // 3. 登录逻辑
     async function handleLogin(event) {
         event.preventDefault();
         const userIn = document.getElementById('username').value.trim();
         const passIn = document.getElementById('password').value.trim();
         const remember = document.getElementById('remember').checked;
 
-        updateMsg("VERIFYING...", "loading");
+        updateMsg("MENGESAHKAN...", "loading");
 
-        // 在数据库中查找匹配项
         const found = usersDatabase.find(u => u.user === userIn && u.pass === passIn);
 
         if (found) {
-            // 处理“记住密码”
             if (remember) {
                 localStorage.setItem('rm_user', userIn);
                 localStorage.setItem('rm_pass', passIn);
@@ -150,16 +144,14 @@
                 localStorage.removeItem('rm_pass');
             }
 
-            updateMsg("ACCESS GRANTED", "success");
+            updateMsg("AKSES DIBENARKAN", "success");
             
-            // 设置 Session
             sessionStorage.setItem('access_granted', 'true');
             sessionStorage.setItem('admin_name', userIn);
             
-            // 跳转
             setTimeout(() => window.location.replace(CONFIG.TARGET), 1000);
         } else {
-            updateMsg("INVALID CREDENTIALS", "error");
+            updateMsg("MAKLUMAT TIDAK SAH", "error");
         }
     }
 
