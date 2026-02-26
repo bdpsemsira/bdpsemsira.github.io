@@ -133,15 +133,24 @@
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap:10px;">
             <h3>2. ANALISIS KESALAHAN BULANAN</h3>
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
                 <input type="month" id="statsMonth" style="width:160px; flex:none;">
+                <select id="filterOffence" style="width:180px; flex:none;">
+                    <option value="ALL">Semua Kesalahan</option>
+                    <option value="Lewat">Lewat</option>
+                    <option value="Ponteng Kelas">Ponteng Kelas</option>
+                    <option value="Buli">Buli</option>
+                    <option value="Bergaduh">Bergaduh</option>
+                    <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                    <option value="Isu Trafik">Isu Trafik</option>
+                </select>
                 <button onclick="downloadMonthlyReport()" style="background:#2980b9; color:white; font-size:11px;">CETAK LAPORAN BULANAN</button>
             </div>
         </div>
-        <div class="stats-grid" id="statsDisplay">
-            </div>
+        <div class="stats-grid" id="statsDisplay"></div>
     </div>
 
     <div class="card">
@@ -234,7 +243,6 @@
     const currentAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     document.getElementById('displayAdmin').innerText = currentAdmin;
 
-    // Default time & dates
     const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
@@ -247,16 +255,14 @@
     document.getElementById('statsMonth').value = monthVal;
 
     let allData = [];
-    let selectedStudent = null; // For specific student reports
+    let selectedStudent = null;
 
-    // Real-time student data
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
         updateStats();
     });
 
-    // Real-time activity logs
     const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
     onSnapshot(qLogs, (snap) => {
         let html = "";
@@ -276,13 +282,11 @@
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
     }
 
-    // Update Analysis Grid
     function updateStats() {
-        const selMonth = document.getElementById('statsMonth').value; // YYYY-MM
+        const selMonth = document.getElementById('statsMonth').value;
         if(!selMonth) return;
-        
         const [year, month] = selMonth.split('-');
-        const targetString = `/${month}/${year}`; // Match DD/MM/YYYY
+        const targetString = `/${month}/${year}`;
 
         const stats = {};
         allData.forEach(s => {
@@ -293,20 +297,16 @@
             });
         });
 
-        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Isu Trafik"];
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok"];
         let html = "";
-        
-        // Show defined types first
         types.forEach(t => {
             html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`;
         });
-        
         document.getElementById('statsDisplay').innerHTML = html;
     }
     
     document.getElementById('statsMonth').addEventListener('change', updateStats);
 
-    // Submit Record
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
@@ -336,12 +336,10 @@
         setTimeNow();
     };
 
-    // Render Table
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
         
-        // Show/Hide student report button based on selection
         const btnReport = document.getElementById('btnStudentReport');
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
@@ -373,7 +371,6 @@
         document.getElementById('recordBody').innerHTML = html;
     }
 
-    // Modal & Delete
     window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
         const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type === type);
@@ -409,18 +406,9 @@
     window.closeModal = () => document.getElementById('historyModal').style.display='none';
     window.handleSearch = () => render();
 
-    // =========================================
-    // EXPORT LOGIC
-    // =========================================
-    
-    // Core capture function
     async function captureAndDownload(filename) {
         const template = document.getElementById('reportExportTemplate');
-        return html2canvas(template, { 
-            backgroundColor: "#ffffff",
-            scale: 2,
-            useCORS: true 
-        }).then(canvas => {
+        return html2canvas(template, { backgroundColor: "#ffffff", scale: 2, useCORS: true }).then(canvas => {
             const link = document.createElement('a');
             link.download = filename;
             link.href = canvas.toDataURL();
@@ -428,17 +416,14 @@
         });
     }
 
-    // Daily Report
     window.downloadReport = async () => {
         const dInput = document.getElementById('reportDate').value;
         if(!dInput) return alert("Pilih tarikh!");
         const [y, m, d] = dInput.split('-');
         const targetDate = `${d}/${m}/${y}`;
-        
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
-
         allData.forEach(s => {
             s.offences.forEach(o => {
                 if(o.time.includes(targetDate)) {
@@ -447,16 +432,16 @@
                 }
             });
         });
-
         if(count === 0) return alert("Tiada rekod pada tarikh ini.");
         document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${targetDate}`;
         document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
         await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
     };
 
-    // Monthly Report (All Students)
+    // Updated Monthly Report with Category Filter
     window.downloadMonthlyReport = async () => {
         const selMonth = document.getElementById('statsMonth').value;
+        const filterType = document.getElementById('filterOffence').value;
         if(!selMonth) return alert("Pilih bulan!");
         const [year, month] = selMonth.split('-');
         const targetString = `/${month}/${year}`;
@@ -464,41 +449,43 @@
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
+        let studentSet = new Set();
 
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.time.includes(targetString)) {
+                const matchType = (filterType === "ALL") || (o.type === filterType) || (filterType === "Isu Trafik" && ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"].includes(o.type));
+                
+                if(o.time.includes(targetString) && matchType) {
                     count++;
+                    studentSet.add(s.name);
                     tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
                 }
             });
         });
 
-        if(count === 0) return alert("Tiada rekod pada bulan ini.");
-        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN: ${month}/${year}`;
-        document.getElementById('rptExtraInfo').innerText = `RINGKASAN KESELURUHAN BULANAN | JUMLAH KES: ${count}`;
-        await captureAndDownload(`Laporan_Bulanan_${month}_${year}.png`);
+        if(count === 0) return alert("Tiada rekod pada bulan ini untuk kategori tersebut.");
+        
+        const titleText = filterType === "ALL" ? "SEMUA KESALAHAN" : filterType.toUpperCase();
+        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN (${titleText}): ${month}/${year}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count} | JUMLAH PELAJAR TERLIBAT: ${studentSet.size}`;
+        await captureAndDownload(`Laporan_Bulanan_${filterType}_${month}_${year}.png`);
     };
 
-    // Individual Student Monthly Report
     window.downloadStudentMonthlyReport = async () => {
         if(!selectedStudent) return alert("Sila cari dan pilih seorang pelajar dahulu.");
         const selMonth = document.getElementById('statsMonth').value;
         if(!selMonth) return alert("Sila pilih bulan di bahagian analisis.");
         const [year, month] = selMonth.split('-');
         const targetString = `/${month}/${year}`;
-
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
-
         selectedStudent.offences.forEach(o => {
             if(o.time.includes(targetString)) {
                 count++;
                 tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
             }
         });
-
         if(count === 0) return alert("Tiada rekod untuk pelajar ini pada bulan yang dipilih.");
         document.getElementById('rptMeta').innerText = `LAPORAN DISIPLIN INDIVIDU`;
         document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class} | BULAN: ${month}/${year} | JUMLAH KES: ${count}`;
