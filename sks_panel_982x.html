@@ -14,7 +14,7 @@
             --text: #ffffff;
             --tag-late: #f1c40f;
             --tag-skip: #e67e22;
-            --tag-bad: #e74c3c;
+            --tag-bad: #e74c3c; /* Merah untuk Buli/Bergaduh */
             --tag-contra: #9b59b6;
             --tag-drug: #8e44ad;
             --tag-traffic: #000000; 
@@ -94,13 +94,14 @@
                 <option value="Lewat">Lewat</option>
                 <option value="Ponteng Kelas">Ponteng Kelas</option>
                 <option value="Buli">Buli</option>
-                <option value="Diskrimisasi">Diskriminasi</option>
-                <option value="Barang Haram">Barang Larangan</option>
-                <option value="Penyalaguna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                <option value="Bergaduh">Bergaduh</option>
+                <option value="Diskriminasi">Diskriminasi</option>
+                <option value="Barang Larangan">Barang Larangan</option>
+                <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
                 <option value="Memecut Laju">Memecut Laju</option>
-                <option value="Isu Nombor Kenderaan">Isu Nombor Pendaftaran</option>
-                <option value="Isu Road Tax">Isu Cukai Jalan</option>
-                <option value="Isu Lesen Kenderaan">Isu Lesen Memandu</option>
+                <option value="Isu Nombor Pendaftaran">Isu Nombor Pendaftaran</option>
+                <option value="Isu Cukai Jalan">Isu Cukai Jalan</option>
+                <option value="Isu Lesen Memandu">Isu Lesen Memandu</option>
                 <option value="Lain-lain">Lain-lain</option>
             </select>
             <button onclick="submitRecord()">SIMPAN</button>
@@ -187,7 +188,8 @@
     function getTagClass(type) {
         if(type === "Lewat") return "tag-late";
         if(type === "Ponteng Kelas") return "tag-skip";
-        if(type === "Buli" || type === "Diskriminasi") return "tag-bad";
+        // Buli, Bergaduh dan Diskriminasi menggunakan warna Merah
+        if(type === "Buli" || type === "Bergaduh" || type === "Diskriminasi") return "tag-bad";
         if(type === "Barang Larangan") return "tag-contra";
         if(type.includes("Dadah")) return "tag-drug";
         const trafficTypes = ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"];
