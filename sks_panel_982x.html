@@ -14,7 +14,7 @@
             --text: #ffffff;
             --tag-late: #f1c40f;
             --tag-skip: #e67e22;
-            --tag-bad: #e74c3c; /* Merah untuk Buli/Bergaduh */
+            --tag-bad: #e74c3c;
             --tag-contra: #9b59b6;
             --tag-drug: #8e44ad;
             --tag-traffic: #000000; 
@@ -26,70 +26,73 @@
         .nav-brand { display: flex; align-items: center; }
         .nav-brand img { height: 45px; width: auto; margin-right: 15px; object-fit: contain; }
         .nav-brand h1 { font-size: 18px; color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .status-box { text-align: right; line-height: 1.4; }
-        .status-row { font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; }
-        .status-val { color: var(--accent); margin-left: 5px; }
-
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; padding-bottom: 50px; }
+        
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; padding-bottom: 80px; }
         .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; }
         
-        /* Input & Panel Log */
+        /* Input Styles */
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; align-items: flex-end; }
         input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; min-width: 120px; }
         input[type="time"] { flex: 0.4; }
         
+        /* Log Panel */
         .log-panel { 
             background: #050505; border: 1px solid #222; border-radius: 12px; 
             height: 150px; overflow-y: auto; padding: 15px; font-family: 'Courier New', monospace; font-size: 11px; 
         }
-        .log-entry { padding: 4px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .log-entry { padding: 4px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; }
         .log-time { color: #555; }
         .log-msg { color: #bbb; flex: 1; margin: 0 15px; }
         .log-admin { color: var(--accent); font-weight: bold; }
 
         #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; }
 
+        /* Table Styles */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         th { color: #666; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; }
         td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
         .highlight-row td { background: #2c0a0a !important; border-color: #5a1010 !important; }
 
-        .offence-tag { 
-            display: inline-block; padding: 4px 8px; margin: 3px; border-radius: 4px; 
-            font-size: 10px; font-weight: bold; cursor: pointer; border-left: 3px solid #555; background: #222;
-        }
+        .offence-tag { display: inline-block; padding: 4px 8px; margin: 3px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; border-left: 3px solid #555; background: #222; }
         .tag-late { border-left-color: var(--tag-late); color: var(--tag-late); }
         .tag-skip { border-left-color: var(--tag-skip); color: var(--tag-skip); }
         .tag-bad { border-left-color: var(--tag-bad); color: var(--tag-bad); }
-        .tag-contra { border-left-color: var(--tag-contra); color: var(--tag-contra); }
-        .tag-drug { border-left-color: var(--tag-drug); color: var(--tag-drug); }
         .tag-traffic { border-left-color: var(--tag-traffic); color: #888; background: #000; border: 1px solid #333; }
-        .tag-other { border-left-color: var(--tag-other); color: var(--tag-other); }
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
         button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
-        
-        .action-bar { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 40px; padding: 20px; border-top: 1px solid #222; }
 
-        /* Modal & Export Template */
+        /* Modal */
         .modal { display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;}
         .modal-content { background:#181818; padding:20px; border-radius:12px; width:400px; border:1px solid #333; }
         .history-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #333; font-size:12px; }
-        
-        #reportExportTemplate { position: absolute; left: -9999px; width: 1000px; background: #ffffff !important; color: #000000 !important; padding: 50px; }
-        .rpt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .rpt-table th, .rpt-table td { border: 1px solid #000 !important; padding: 10px; text-align: center; color: #000 !important; }
+
+        /* =========================================
+           EXPORT TEMPLATE (WHITE BACKGROUND)
+           ========================================= */
+        #reportExportTemplate { 
+            position: absolute; 
+            left: -9999px; 
+            width: 1000px; 
+            background-color: #ffffff !important; 
+            padding: 50px; 
+            color: #000000 !important;
+        }
+        #reportExportTemplate * { color: #000000 !important; border-color: #000000 !important; }
+        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
+        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; }
+        .rpt-table th { background: #f0f0f0 !important; padding: 12px; border: 1px solid #000 !important; }
+        .rpt-table td { padding: 12px; border: 1px solid #000 !important; background: #fff !important; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
     <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
-    <div class="status-box">
-        <div class="status-row">OPERATOR: <span class="status-val" id="displayAdmin">...</span></div>
-        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">SISTEM AKTIF</span></div>
+    <div class="status-box" style="text-align:right">
+        <div style="font-size:11px; color:#666">OPERATOR: <span id="displayAdmin" style="color:var(--accent)">...</span></div>
+        <div style="font-size:11px; color:#27ae60">SISTEM DALAM TALIAN</div>
     </div>
 </div>
 
@@ -98,11 +101,11 @@
     <div class="card">
         <h3>1. REKOD KEMASUKAN BARU</h3>
         <div class="input-group">
-            <div style="flex:1"><label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label><input type="text" id="stuName" placeholder="Contoh: ALI BIN ABU"></div>
-            <div style="flex:0.5"><label style="font-size:10px; color:var(--accent)">KELAS</label><input type="text" id="stuClass" placeholder="Contoh: 5A"></div>
-            <div style="flex:0.4"><label style="font-size:10px; color:var(--accent)">MASA (PILIHAN)</label><input type="time" id="violationTime"></div>
+            <div style="flex:1.2"><label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label><input type="text" id="stuName" placeholder="Nama Penuh"></div>
+            <div style="flex:0.5"><label style="font-size:10px; color:var(--accent)">KELAS</label><input type="text" id="stuClass" placeholder="Kelas"></div>
+            <div style="flex:0.4"><label style="font-size:10px; color:var(--accent)">MASA</label><input type="time" id="violationTime"></div>
             <div style="flex:1">
-                <label style="font-size:10px; color:var(--accent)">JENIS KESALAHAN</label>
+                <label style="font-size:10px; color:var(--accent)">KESALAHAN</label>
                 <select id="violation">
                     <option value="" disabled selected>Pilih...</option>
                     <option value="Lewat">Lewat</option>
@@ -124,13 +127,13 @@
     </div>
 
     <div class="card">
-        <h3>2. LOG AKTIVITI OPERATOR (TERKINI)</h3>
-        <div class="log-panel" id="logDisplay">Memuatkan log sistem...</div>
+        <h3>2. LOG AKTIVITI (TERKINI)</h3>
+        <div class="log-panel" id="logDisplay">Memuatkan log...</div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
-        <h3>3. SENARAI REKOD DISIPLIN</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas pelajar...">
+        <h3>3. SENARAI DISIPLIN</h3>
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas...">
         <table>
             <thead>
                 <tr>
@@ -144,32 +147,48 @@
         </table>
     </div>
 
-    <div class="action-bar">
-        <span style="font-size: 11px; color: #555;">TARIKH LAPORAN:</span>
-        <input type="date" id="reportDate" style="background:#111; border:1px solid #444; padding:8px; border-radius:6px; color:white;">
-        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN LAPORAN PNG</button>
+    <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:30px;">
+        <span style="font-size:11px; color:#555">PILIH TARIKH LAPORAN:</span>
+        <input type="date" id="reportDate" style="width:150px; flex:none;">
+        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN PNG (PUTIH)</button>
         <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
 
 <div id="historyModal" class="modal">
     <div class="modal-content">
-        <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Maklumat Kesalahan</h4>
+        <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
         <div id="historyList"></div>
         <button onclick="closeModal()" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
     </div>
 </div>
 
 <div id="reportExportTemplate">
-    <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:10px;">
-        <h1 style="margin:0">LAPORAN DISIPLIN SEMSIRA BDP</h1>
-        <p id="rptMeta" style="margin:5px 0; font-weight:bold;"></p>
+    <div class="rpt-header">
+        <img src="semsira.png" style="height:60px; margin-right:20px;">
+        <div style="text-align:center">
+            <h1 style="margin:0; font-size:24px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
+            <p id="rptMeta" style="margin:5px 0; font-size:14px;"></p>
+        </div>
     </div>
     <table class="rpt-table">
-        <thead><tr><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Masa</th><th>Operator</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Nama Pelajar</th>
+                <th>Kelas</th>
+                <th>Kesalahan</th>
+                <th>Masa</th>
+                <th>Operator</th>
+            </tr>
+        </thead>
         <tbody id="reportTbody"></tbody>
     </table>
-    <div style="margin-top:50px; text-align:right;"><p>_______________________<br>Tandatangan Pegawai</p></div>
+    <div style="margin-top:60px; display:flex; justify-content:flex-end;">
+        <div style="text-align:center;">
+            <p>___________________________</p>
+            <p style="font-weight:bold; margin:0;">Tandatangan Pegawai</p>
+        </div>
+    </div>
 </div>
 
 <script type="module">
@@ -193,23 +212,23 @@
     const currentAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     document.getElementById('displayAdmin').innerText = currentAdmin;
 
-    // Set Default Time
-    const setNow = () => {
+    // Default time & date
+    const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
-    setNow();
+    setTimeNow();
     document.getElementById('reportDate').valueAsDate = new Date();
 
     let allData = [];
 
-    // 1. Listen Student Data
+    // Real-time student data
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
     });
 
-    // 2. Listen Logs (Real-time)
+    // Real-time activity logs
     const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
     onSnapshot(qLogs, (snap) => {
         let html = "";
@@ -222,77 +241,44 @@
                 <span class="log-admin">@${data.admin}</span>
             </div>`;
         });
-        document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti dikesan.";
+        document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti.";
     });
 
-    // Helper: Add Log
     async function sysLog(msg) {
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
     }
 
-    // 3. Add Record
+    // Submit Record
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
         const vTime = document.getElementById('violationTime').value;
 
-        if(!name || !cls || !type || !vTime) return alert("Sila lengkapkan maklumat!");
+        if(!name || !cls || !type || !vTime) return alert("Lengkapkan ruangan!");
 
-        const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
-        const recordTime = `${today}, ${vTime}`;
-        const logEntry = { type, time: recordTime, by: currentAdmin };
+        const today = new Date().toLocaleDateString('en-GB');
+        const fullTime = `${today}, ${vTime}`;
+        const logEntry = { type, time: fullTime, by: currentAdmin };
 
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
 
         if(!qs.empty) {
-            const docId = qs.docs[0].id;
-            const existing = qs.docs[0].data().offences;
-            await updateDoc(doc(db, "students", docId), { offences: [...existing, logEntry], counts: increment(1) });
+            await updateDoc(doc(db, "students", qs.docs[0].id), { 
+                offences: [...qs.docs[0].data().offences, logEntry], 
+                counts: increment(1) 
+            });
         } else {
             await addDoc(colRef, { name, class: cls, offences: [logEntry], counts: 1 });
         }
 
-        await sysLog(`KEY-IN: ${type} untuk ${name} (${cls})`);
+        await sysLog(`TAMBAH: ${type} - ${name}`);
         document.getElementById('stuName').value = "";
-        setNow();
+        setTimeNow();
     };
 
-    // 4. Delete Functions
-    window.deleteSingleOffence = async (studentId, index) => {
-        if(!confirm("Hapus rekod ini?")) return;
-        const s = allData.find(x => x.id === studentId);
-        const type = s.offences[index].type;
-        let newArr = [...s.offences];
-        newArr.splice(index, 1);
-
-        if(newArr.length === 0) {
-            await deleteDoc(doc(db, "students", studentId));
-        } else {
-            await updateDoc(doc(db, "students", studentId), { offences: newArr, counts: newArr.length });
-        }
-        await sysLog(`PADAM: ${type} - ${s.name}`);
-        closeModal();
-    };
-
-    window.purge = async (id) => {
-        const s = allData.find(x => x.id === id);
-        if(confirm(`Hapus keseluruhan profil ${s.name}?`)) {
-            await deleteDoc(doc(db, "students", id));
-            await sysLog(`PADAM PROFIL: ${s.name}`);
-        }
-    };
-
-    // 5. Render Table
-    function getTagClass(type) {
-        if(type === "Lewat") return "tag-late";
-        if(type === "Ponteng Kelas") return "tag-skip";
-        if(["Buli", "Bergaduh", "Diskriminasi"].includes(type)) return "tag-bad";
-        if(type.includes("Isu")) return "tag-traffic";
-        return "tag-other";
-    }
-
+    // Render Table
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
@@ -305,7 +291,8 @@
             }, {});
             let tags = "";
             for (const [type, list] of Object.entries(grouped)) {
-                tags += `<span class="offence-tag ${getTagClass(type)}" onclick="manageOffence('${s.id}', '${type}')">${type} ${list.length>1?'x'+list.length:''}</span>`;
+                let cls = (type === "Lewat") ? "tag-late" : (type === "Ponteng Kelas" ? "tag-skip" : (["Buli", "Bergaduh", "Diskriminasi"].includes(type) ? "tag-bad" : "tag-other"));
+                tags += `<span class="offence-tag ${cls}" onclick="manageOffence('${s.id}', '${type}')">${type} ${list.length>1?'x'+list.length:''}</span>`;
             }
             html += `<tr class="${s.counts >= 3 ? 'highlight-row' : ''}">
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
@@ -314,60 +301,98 @@
                 <td><button class="delete-btn" onclick="purge('${s.id}')">Hapus</button></td>
             </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html || "<tr><td colspan='4' style='text-align:center'>Tiada rekod.</td></tr>";
+        document.getElementById('recordBody').innerHTML = html;
     }
 
-    // Modal Manager
+    // Modal & Delete
     window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
         const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type === type);
-        document.getElementById('modalTitle').innerText = `Sejarah: ${type}`;
+        document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map(item => `
             <div class="history-item">
                 <span>${item.time}<br><small>Oleh: ${item.by}</small></span>
-                <button onclick="deleteSingleOffence('${id}', ${item.idx})" style="background:#ff4d4d; font-size:9px; padding:4px 8px;">HAPUS</button>
+                <button onclick="delOffence('${id}', ${item.idx})" style="background:#ff4d4d; font-size:9px; padding:4px 8px;">PADAM</button>
             </div>`).join('');
         document.getElementById('historyModal').style.display = 'flex';
+    };
+
+    window.delOffence = async (id, idx) => {
+        if(!confirm("Hapus kesalahan ini?")) return;
+        const s = allData.find(x => x.id === id);
+        const type = s.offences[idx].type;
+        let newOff = [...s.offences];
+        newOff.splice(idx, 1);
+        if(newOff.length === 0) await deleteDoc(doc(db, "students", id));
+        else await updateDoc(doc(db, "students", id), { offences: newOff, counts: newOff.length });
+        await sysLog(`PADAM: ${type} - ${s.name}`);
+        closeModal();
+    };
+
+    window.purge = async (id) => {
+        const s = allData.find(x => x.id === id);
+        if(confirm(`Hapus data ${s.name}?`)) {
+            await deleteDoc(doc(db, "students", id));
+            await sysLog(`HAPUS PROFIL: ${s.name}`);
+        }
     };
 
     window.closeModal = () => document.getElementById('historyModal').style.display='none';
     window.handleSearch = () => render();
 
-    // Report
+    // =========================================
+    // EXPORT PNG (WHITE VERSION)
+    // =========================================
     window.downloadReport = async () => {
-        const dateInput = document.getElementById('reportDate').value;
-        if(!dateInput) return alert("Pilih tarikh!");
-        const [y, m, d] = dateInput.split('-');
-        const target = `${d}/${m}/${y}`;
+        const dInput = document.getElementById('reportDate').value;
+        if(!dInput) return alert("Pilih tarikh!");
+        const [y, m, d] = dInput.split('-');
+        const targetDate = `${d}/${m}/${y}`;
+        
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
+
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.time.includes(target)) {
+                if(o.time.includes(targetDate)) {
                     count++;
-                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time.split(', ')[1]}</td><td>${o.by}</td></tr>`;
+                    tbody.innerHTML += `<tr>
+                        <td>${s.name}</td>
+                        <td>${s.class}</td>
+                        <td>${o.type}</td>
+                        <td>${o.time.split(', ')[1]}</td>
+                        <td>${o.by}</td>
+                    </tr>`;
                 }
             });
         });
-        if(count === 0) return alert("Tiada data pada tarikh ini.");
-        document.getElementById('rptMeta').innerText = `TARIKH: ${target} | OPERATOR: ${currentAdmin}`;
-        html2canvas(document.getElementById('reportExportTemplate'), { scale: 2 }).then(canvas => {
+
+        if(count === 0) return alert("Tiada rekod pada tarikh ini.");
+        
+        document.getElementById('rptMeta').innerText = `TARIKH: ${targetDate} | OPERATOR: ${currentAdmin}`;
+        
+        const template = document.getElementById('reportExportTemplate');
+        html2canvas(template, { 
+            backgroundColor: "#ffffff",
+            scale: 2,
+            useCORS: true 
+        }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `Laporan_BDP_${target}.png`;
+            link.download = `Laporan_BDP_${targetDate}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
     };
 
     window.masterReset = async () => {
-        if(confirm("AWAS: Ini akan memadam SEMUA rekod pelajar?") && prompt("Taip 'RESET2026' untuk sahkan:") === "RESET2026") {
+        if(confirm("AWAS: Padam SEMUA data?") && prompt("Taip 'RESET2026':") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            await sysLog("MASTER RESET: Pangkalan data dikosongkan.");
-            alert("Selesai.");
+            await sysLog("MASTER RESET");
+            alert("Data dikosongkan.");
         }
     };
 </script>
