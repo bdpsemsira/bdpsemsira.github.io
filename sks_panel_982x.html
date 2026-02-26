@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Panel | SEMSIRA BDP</title>
+    <title>Pengurusan Pelajar | SEMSIRA BDP</title>
     <link rel="icon" type="image/png" href="semsira.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -17,7 +17,7 @@
             --tag-bad: #e74c3c;
             --tag-contra: #9b59b6;
             --tag-drug: #8e44ad;
-            --tag-traffic: #000000; /* 交通错误黑色 */
+            --tag-traffic: #000000; 
             --tag-other: #3498db;
         }
 
@@ -50,7 +50,7 @@
         .tag-bad { border-left-color: var(--tag-bad); color: var(--tag-bad); }
         .tag-contra { border-left-color: var(--tag-contra); color: var(--tag-contra); }
         .tag-drug { border-left-color: var(--tag-drug); color: var(--tag-drug); }
-        .tag-traffic { border-left-color: var(--tag-traffic); color: #888; background: #000; border: 1px solid #333; } /* 黑色背景，灰色文字 */
+        .tag-traffic { border-left-color: var(--tag-traffic); color: #888; background: #000; border: 1px solid #333; }
         .tag-other { border-left-color: var(--tag-other); color: var(--tag-other); }
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
@@ -79,72 +79,79 @@
     <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
     <div class="status-box">
         <div class="status-row">OPERATOR: <span class="status-val" id="displayAdmin">...</span></div>
-        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">SYSTEM ONLINE</span></div>
+        <div class="status-row">STATUS: <span class="status-val" style="color:#27ae60">SISTEM DALAM TALIAN</span></div>
     </div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3>1. LOG ENTRY</h3>
+        <h3>1. REKOD KEMASUKAN</h3>
         <div class="input-group">
-            <input type="text" id="stuName" placeholder="STUDENT FULL NAME">
-            <input type="text" id="stuClass" placeholder="CLASS (E.G. 6A)">
+            <input type="text" id="stuName" placeholder="Nama Penuh Pelajar">
+            <input type="text" id="stuClass" placeholder="Kelas">
             <select id="violation">
-                <option value="" disabled selected>OFFENCE TYPE</option>
-                <option value="Late">LATE</option>
-                <option value="Skipping Class">SKIPPING CLASS</option>
-                <option value="Bullying">BULLYING</option>
-                <option value="Discrimination">DISCRIMINATION</option>
-                <option value="Contraband">CONTRABAND</option>
-                <option value="Severe Misconduct/Drugs">DRUGS/SEVERE</option>
-                <option value="Speeding">SPEEDING</option>
-                <option value="Plate Number">PLATE NUMBER</option>
-                <option value="Road Tax">ROAD TAX</option>
-                <option value="Driving License">DRIVING LICENSE</option>
-                <option value="Others">OTHERS</option>
+                <option value="" disabled selected>Pilih Kesalahan</option>
+                <option value="Lewat">Lewat</option>
+                <option value="Ponteng Kelas">Ponteng Kelas</option>
+                <option value="Buli">Buli</option>
+                <option value="Diskrimisasi">Diskriminasi</option>
+                <option value="Barang Haram">Barang Larangan</option>
+                <option value="Penyalaguna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                <option value="Memecut Laju">Memecut Laju</option>
+                <option value="Isu Nombor Kenderaan">Isu Nombor Pendaftaran</option>
+                <option value="Isu Road Tax">Isu Cukai Jalan</option>
+                <option value="Isu Lesen Kenderaan">Isu Lesen Memandu</option>
+                <option value="Lain-lain">Lain-lain</option>
             </select>
-            <button onclick="submitRecord()">COMMIT</button>
+            <button onclick="submitRecord()">SIMPAN</button>
         </div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
-        <h3>2. DISCIPLINARY RECORDS</h3>
-        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Search Name or Class...">
+        <h3>2. REKOD DISIPLIN</h3>
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari Nama atau Kelas...">
         <table>
-            <thead><tr><th width="25%">Identity</th><th width="45%">History (Manage Offence)</th><th width="15%" style="text-align:center">Total</th><th width="15%">Action</th></tr></thead>
+            <thead>
+                <tr>
+                    <th width="25%">Identiti</th>
+                    <th width="45%">Sejarah (Urus Kesalahan)</th>
+                    <th width="15%" style="text-align:center">Jumlah</th>
+                    <th width="15%">Tindakan</th>
+                </tr>
+            </thead>
             <tbody id="recordBody"></tbody>
         </table>
         <div class="pagination">
-            <button onclick="changePage(-1)" id="prevBtn">PREVIOUS</button>
-            <span id="pageDisplay" style="font-size:12px; color:#666;">PAGE 1</span>
-            <button onclick="changePage(1)" id="nextBtn">NEXT</button>
+            <button onclick="changePage(-1)" id="prevBtn">SEBELUMNYA</button>
+            <span id="pageDisplay" style="font-size:12px; color:#666;">HALAMAN 1</span>
+            <button onclick="changePage(1)" id="nextBtn">SETERUSNYA</button>
         </div>
     </div>
 
     <div class="action-bar">
-        <span style="font-size: 11px; color: #555;">REPORT DATE:</span>
+        <span style="font-size: 11px; color: #555;">TARIKH LAPORAN:</span>
         <input type="date" id="reportDate" style="background:#111; color:white; border:1px solid #444; padding:8px; border-radius:6px;">
-        <button onclick="downloadReport()" style="background:#27ae60; color:white;">DOWNLOAD PNG REPORT</button>
-        <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">ANNUAL RESET</button>
+        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN LAPORAN PNG</button>
+        <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
 
 <div id="historyModal" class="modal">
     <div class="modal-content">
-        <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">History</h4>
+        <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
         <div id="historyList"></div>
-        <button onclick="closeModal()" style="width:100%; margin-top:15px; background:#444; color:white;">CLOSE</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
     </div>
 </div>
 
 <div id="reportExportTemplate">
-    <div class="rpt-header"><img src="semsira.png" alt="Logo"><h1 style="margin: 0;">SEMSIRA BDP DISCIPLINE REPORT</h1></div>
-    <div style="display:flex; justify-content:space-between; margin: 20px 0; font-weight:bold;"><span id="rptDateSpan">DATE: --/--/----</span><span id="rptAdminSpan">OPERATOR: --</span></div>
+    <div class="rpt-header"><img src="semsira.png" alt="Logo"><h1 style="margin: 0;">LAPORAN DISIPLIN SEMSIRA BDP</h1></div>
+    <div style="display:flex; justify-content:space-between; margin: 20px 0; font-weight:bold;"><span id="rptDateSpan">TARIKH: --/--/----</span><span id="rptAdminSpan">OPERATOR: --</span></div>
     <table class="rpt-table">
-        <thead><tr><th>Student Name</th><th>Class</th><th>Offence</th><th>Time</th><th>Recorder</th></tr></thead>
+        <thead><tr><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Masa</th><th>Perakam</th></tr></thead>
         <tbody id="reportTbody"></tbody>
     </table>
-    <div class="sig-box"><div class="sig-line">Authorized Signature</div></div>
+    <div class="sig-box"><div class="sig-line">Tandatangan Pegawai</div></div>
 </div>
 
 <script type="module">
@@ -164,7 +171,7 @@
     const db = getFirestore(app);
     const colRef = collection(db, "students");
 
-    const currentAdmin = sessionStorage.getItem('admin_name') || "OFFLINE";
+    const currentAdmin = sessionStorage.getItem('admin_name') || "LUAR TALIAN";
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
 
@@ -177,18 +184,14 @@
         render();
     });
 
-    // 颜色分类逻辑
     function getTagClass(type) {
-        if(type === "Late") return "tag-late";
-        if(type === "Skipping Class") return "tag-skip";
-        if(type === "Bullying" || type === "Discrimination") return "tag-bad";
-        if(type === "Contraband") return "tag-contra";
-        if(type.includes("Drugs")) return "tag-drug";
-        
-        // 交通违规 - 黑色分类
-        const trafficTypes = ["Speeding", "Plate Number", "Road Tax", "Driving License"];
+        if(type === "Lewat") return "tag-late";
+        if(type === "Ponteng Kelas") return "tag-skip";
+        if(type === "Buli" || type === "Diskriminasi") return "tag-bad";
+        if(type === "Barang Larangan") return "tag-contra";
+        if(type.includes("Dadah")) return "tag-drug";
+        const trafficTypes = ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"];
         if(trafficTypes.includes(type)) return "tag-traffic";
-        
         return "tag-other";
     }
 
@@ -196,9 +199,10 @@
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
         const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+        if(currentPage > totalPages) currentPage = totalPages;
         const start = (currentPage - 1) * pageSize;
         const items = filtered.slice(start, start + pageSize);
-        document.getElementById('pageDisplay').innerText = `PAGE ${currentPage} OF ${totalPages}`;
+        document.getElementById('pageDisplay').innerText = `HALAMAN ${currentPage} DARIPADA ${totalPages}`;
         
         let html = "";
         items.forEach(s => {
@@ -219,21 +223,21 @@
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${tagHtml}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
-                <td><button class="delete-btn" onclick="purge('${s.id}')">Purge Student</button></td>
+                <td><button class="delete-btn" onclick="purge('${s.id}')">Padam Pelajar</button></td>
             </tr>`;
         });
-        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">No Records Found.</td></tr>';
+        document.getElementById('recordBody').innerHTML = html || '<tr><td colspan="4">Tiada Rekod Dijumpai.</td></tr>';
     }
 
     window.manageOffence = (studentId, type) => {
         const student = allData.find(s => s.id === studentId);
         const list = student.offences.map((o, idx) => ({...o, idx})).filter(o => o.type === type);
-        document.getElementById('modalTitle').innerText = `${type} Management`;
+        document.getElementById('modalTitle').innerText = `Pengurusan ${type}`;
         let html = "";
         list.forEach(item => {
             html += `<div class="history-item">
-                <span>${item.time} <br><small>By: ${item.by}</small></span>
-                <button onclick="deleteSingleOffence('${studentId}', ${item.idx})">DELETE</button>
+                <span>${item.time} <br><small>Oleh: ${item.by}</small></span>
+                <button onclick="deleteSingleOffence('${studentId}', ${item.idx})">PADAM</button>
             </div>`;
         });
         document.getElementById('historyList').innerHTML = html;
@@ -241,7 +245,7 @@
     };
 
     window.deleteSingleOffence = async (studentId, index) => {
-        if(!confirm("Delete this specific offence?")) return;
+        if(!confirm("Padam kesalahan khusus ini?")) return;
         const student = allData.find(s => s.id === studentId);
         let newOffences = [...student.offences];
         newOffences.splice(index, 1);
@@ -259,13 +263,17 @@
 
     window.closeModal = () => document.getElementById('historyModal').style.display = 'none';
     window.handleSearch = () => { currentPage = 1; render(); };
-    window.changePage = (n) => { currentPage += n; render(); };
+    window.changePage = (n) => { 
+        currentPage += n; 
+        if(currentPage < 1) currentPage = 1;
+        render(); 
+    };
 
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
-        if(!name || !cls || !type) return alert("Fill all fields!");
+        if(!name || !cls || !type) return alert("Sila isi semua ruangan!");
         const log = { type, time: new Date().toLocaleString('en-GB'), by: currentAdmin };
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
@@ -279,7 +287,7 @@
 
     window.downloadReport = async () => {
         const dateInput = document.getElementById('reportDate').value;
-        if(!dateInput) return alert("Select Date");
+        if(!dateInput) return alert("Sila pilih tarikh!");
         const [y, m, d] = dateInput.split('-');
         const target = `${d}/${m}/${y}`;
         const tbody = document.getElementById('reportTbody');
@@ -293,25 +301,25 @@
                 }
             });
         });
-        if(!found) return alert("No records for this date.");
-        document.getElementById('rptDateSpan').innerText = "DATE: " + target;
+        if(!found) return alert("Tiada rekod untuk tarikh ini.");
+        document.getElementById('rptDateSpan').innerText = "TARIKH: " + target;
         document.getElementById('rptAdminSpan').innerText = "OPERATOR: " + currentAdmin;
         html2canvas(document.getElementById('reportExportTemplate'), { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `BDP_Report_${target}.png`;
+            link.download = `Laporan_BDP_${target}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
     };
 
-    window.purge = async (id) => { if(confirm("Permanently delete student?")) await deleteDoc(doc(db, "students", id)); };
+    window.purge = async (id) => { if(confirm("Padamkan rekod pelajar ini secara kekal?")) await deleteDoc(doc(db, "students", id)); };
     window.masterReset = async () => {
-        if(confirm("DANGER: WIPE DATABASE?") && prompt("Type 'RESET2026':") === "RESET2026") {
+        if(confirm("AMARAN: Padam semua pangkalan data?") && prompt("Taip 'RESET2026' untuk sahkan:") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            alert("Database Cleared.");
+            alert("Pangkalan data telah dikosongkan.");
         }
     };
 </script>
