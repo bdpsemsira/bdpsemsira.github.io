@@ -9,32 +9,37 @@
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; --input: #252525; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        /* Hiasan Atas */
         .info-header { position: absolute; top: 20px; right: 20px; text-align: right; font-size: 11px; font-family: monospace; opacity: 0.6; }
         
         .login-card { background: var(--card); padding: 40px; border-radius: 24px; width: 340px; text-align: center; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         
         .logo { width: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.3)); }
         
-        /* Gaya Borang */
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 10px; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; font-weight: bold; }
-        input[type="text"], input[type="password"] {
+        input {
             width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: var(--input); color: white; box-sizing: border-box; outline: none; transition: 0.3s;
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(230, 126, 34, 0.2); }
         
-        /* Kotak pilihan Ingat Saya */
-        .remember-me { display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 20px; cursor: pointer; }
-        .remember-me input { margin-right: 8px; accent-color: var(--primary); }
-
         .btn-login { 
             width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--primary); 
             background: var(--primary); color: white; font-weight: bold; cursor: pointer; 
-            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
         }
         .btn-login:hover { background: transparent; color: var(--primary); }
-        .btn-login:disabled { opacity: 0.5; cursor: not-allowed; border-color: #444; background: #333; }
+
+        /* 注册链接样式 */
+        .register-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+            text-decoration: underline; /* 下划线 */
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .register-link:hover { color: var(--primary); }
 
         #status-msg { margin-top: 15px; font-size: 12px; font-weight: bold; min-height: 1.2em; }
         .loading { color: var(--primary); } .success { color: #2ecc71; } .error { color: #e74c3c; }
@@ -52,114 +57,67 @@
     <h2 style="color:var(--primary); margin:0; letter-spacing: 2px; font-size: 18px;">PAPAN PEMUKA</h2>
     <p style="font-size: 9px; color:#555; margin-bottom:25px; text-transform: uppercase;">Akses Terminal Selamat</p>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
+    <form id="loginForm">
         <div class="input-group">
-            <label>NAMA PENGGUNA</label>
-            <input type="text" id="username" placeholder="Masukkan ID operator" required>
+            <label>EMEL PENGGUNA</label>
+            <input type="email" id="email" placeholder="nama@email.com" required>
         </div>
         <div class="input-group">
             <label>KATA LALUAN</label>
             <input type="password" id="password" placeholder="••••••••" required>
         </div>
-        
-        <label class="remember-me">
-            <input type="checkbox" id="remember"> Ingat maklumat pengenalan operator
-        </label>
-
-        <button type="submit" id="loginBtn" class="btn-login" disabled>Menyemak Pangkalan Data...</button>
+        <button type="submit" id="loginBtn" class="btn-login">Sahkan Log Masuk</button>
     </form>
+    
+    <a href="register.html" class="register-link">Belum mempunyai akaun? Daftar di sini.</a>
     
     <div id="status-msg"></div>
 </div>
 
-<script>
-    const CONFIG = {
-        OWNER: "bdpsemsira",
-        REPO: "bdpsemsira.github.io",
-        FILE: "keys.txt",
-        TARGET: "sks_panel_982x.html"
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // 你的 Firebase 配置
+    const firebaseConfig = {
+        apiKey: "AIzaSyD1gmmXOCm1DotL_PSdyDmD6uQQoH60RHY",
+        authDomain: "accountsemsira.firebaseapp.com",
+        projectId: "accountsemsira",
+        storageBucket: "accountsemsira.firebasestorage.app",
+        messagingSenderId: "805477465040",
+        appId: "1:805477465040:web:431e748fe9299d1341d7d5"
     };
 
-    let usersDatabase = [];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    window.onload = async () => {
-        updateMsg("MENYAMBUNG KE PELAYAN...", "loading");
-        
-        const savedUser = localStorage.getItem('rm_user');
-        const savedPass = localStorage.getItem('rm_pass');
-        if (savedUser && savedPass) {
-            document.getElementById('username').value = savedUser;
-            document.getElementById('password').value = savedPass;
-            document.getElementById('remember').checked = true;
-        }
+    const loginForm = document.getElementById('loginForm');
+    const msg = document.getElementById('status-msg');
 
-        await syncDatabase();
-    };
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
 
-    async function syncDatabase() {
+        msg.innerText = "MENGESAHKAN...";
+        msg.className = "loading";
+
         try {
-            const url = `https://raw.githubusercontent.com/${CONFIG.OWNER}/${CONFIG.REPO}/main/${CONFIG.FILE}?t=${Date.now()}`;
-            const res = await fetch(url);
-            const text = await res.text();
+            const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+            msg.innerText = "AKSES DIBENARKAN";
+            msg.className = "success";
             
-            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 5);
-            
-            usersDatabase = lines.map(line => {
-                const parts = line.split(':');
-                return {
-                    user: parts[0] ? parts[0].trim() : "",
-                    pass: parts[1] ? parts[1].trim() : ""
-                };
-            }).filter(u => u.user !== "");
-
-            if (usersDatabase.length > 0) {
-                const btn = document.getElementById('loginBtn');
-                btn.disabled = false;
-                btn.innerText = "Sahkan Log Masuk";
-                updateMsg("SISTEM SEDIA", "success");
-            } else {
-                updateMsg("RALAT PANGKALAN DATA", "error");
-            }
-        } catch (e) {
-            updateMsg("SAMBUNGAN GAGAL", "error");
-        }
-    }
-
-    async function handleLogin(event) {
-        event.preventDefault();
-        const userIn = document.getElementById('username').value.trim();
-        const passIn = document.getElementById('password').value.trim();
-        const remember = document.getElementById('remember').checked;
-
-        updateMsg("MENGESAHKAN...", "loading");
-
-        const found = usersDatabase.find(u => u.user === userIn && u.pass === passIn);
-
-        if (found) {
-            if (remember) {
-                localStorage.setItem('rm_user', userIn);
-                localStorage.setItem('rm_pass', passIn);
-            } else {
-                localStorage.removeItem('rm_user');
-                localStorage.removeItem('rm_pass');
-            }
-
-            updateMsg("AKSES DIBENARKAN", "success");
-            
+            // 存储登录状态
             sessionStorage.setItem('access_granted', 'true');
-            sessionStorage.setItem('admin_name', userIn);
+            sessionStorage.setItem('admin_name', email.split('@')[0]); // 用邮箱前缀当名字
             
-            setTimeout(() => window.location.replace(CONFIG.TARGET), 1000);
-        } else {
-            updateMsg("MAKLUMAT TIDAK SAH", "error");
+            // 跳转到主面板
+            setTimeout(() => window.location.replace("sks_panel_982x.html"), 1000);
+        } catch (error) {
+            msg.innerText = "RALAT: MAKLUMAT TIDAK SAH";
+            msg.className = "error";
         }
-    }
-
-    function updateMsg(t, cls) {
-        const msg = document.getElementById('status-msg');
-        msg.innerText = t;
-        msg.className = cls;
-    }
+    });
 </script>
 </body>
 </html>
