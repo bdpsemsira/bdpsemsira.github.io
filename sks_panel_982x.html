@@ -30,12 +30,10 @@
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; padding-bottom: 80px; }
         .card { background: var(--card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; }
         
-        /* Input Styles */
         .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; align-items: flex-end; }
         input, select { background: #0f0f0f; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; flex: 1; outline: none; min-width: 120px; }
         input[type="time"] { flex: 0.4; }
         
-        /* Log Panel */
         .log-panel { 
             background: #050505; border: 1px solid #222; border-radius: 12px; 
             height: 150px; overflow-y: auto; padding: 15px; font-family: 'Courier New', monospace; font-size: 11px; 
@@ -47,7 +45,6 @@
 
         #searchBox { width: 100%; box-sizing: border-box; margin-bottom: 20px; padding: 15px; border-radius: 12px; background: #000; color: white; border: 1px solid #333; }
 
-        /* Table Styles */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         th { color: #666; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; }
         td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
@@ -63,33 +60,36 @@
         button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
 
-        /* Monthly Stats Style */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
         .stat-card { background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #333; text-align: center; }
         .stat-val { font-size: 20px; font-weight: bold; color: var(--accent); display: block; }
         .stat-lbl { font-size: 9px; color: #777; text-transform: uppercase; }
 
-        /* Modal */
         .modal { display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;}
         .modal-content { background:#181818; padding:20px; border-radius:12px; width:400px; border:1px solid #333; }
         .history-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #333; font-size:12px; }
 
         /* =========================================
-            EXPORT TEMPLATE (WHITE BACKGROUND)
+            A4 EXPORT TEMPLATE (FIXED RATIO)
            ========================================= */
         #reportExportTemplate { 
             position: absolute; 
             left: -9999px; 
-            width: 1000px; 
+            width: 800px;             /* 固定 A4 宽度像素 */
+            min-height: 1130px;      /* 固定 A4 高度比例 */
             background-color: #ffffff !important; 
             padding: 50px; 
             color: #000000 !important;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
         #reportExportTemplate * { color: #000000 !important; border-color: #000000 !important; }
-        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
-        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; }
-        .rpt-table th { background: #f0f0f0 !important; padding: 12px; border: 1px solid #000 !important; }
-        .rpt-table td { padding: 12px; border: 1px solid #000 !important; background: #fff !important; text-align: center; }
+        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0; }
+        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; table-layout: fixed; }
+        .rpt-table th { background: #f0f0f0 !important; padding: 10px; border: 1px solid #000 !important; font-size: 12px; }
+        .rpt-table td { padding: 10px; border: 1px solid #000 !important; background: #fff !important; text-align: center; font-size: 11px; word-wrap: break-word; }
+        .rpt-footer { margin-top: auto; padding-top: 60px; display: flex; justify-content: flex-end; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -201,20 +201,20 @@
             <p id="rptMeta" style="margin:5px 0; font-size:14px;"></p>
         </div>
     </div>
-    <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; text-align:left;"></div>
+    <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; text-align:left; font-size:13px;"></div>
     <table class="rpt-table">
         <thead>
             <tr>
-                <th>Nama Pelajar</th>
-                <th>Kelas</th>
-                <th>Kesalahan</th>
-                <th>Masa</th>
-                <th>Operator</th>
+                <th width="25%">Nama Pelajar</th>
+                <th width="15%">Kelas</th>
+                <th width="25%">Kesalahan</th>
+                <th width="20%">Masa</th>
+                <th width="15%">Operator</th>
             </tr>
         </thead>
         <tbody id="reportTbody"></tbody>
     </table>
-    <div style="margin-top:60px; display:flex; justify-content:flex-end;">
+    <div class="rpt-footer">
         <div style="text-align:center;">
             <p>___________________________</p>
             <p style="font-weight:bold; margin:0;">Tandatangan Pegawai</p>
@@ -240,8 +240,9 @@
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
 
-    // 修改点 1: 获取登录页面存储的真实用户名
-    const currentAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
+    // 逻辑优化：自动清理邮箱后缀，只提取用户名部分
+    const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
+    const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
     document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
     const setTimeNow = () => {
@@ -291,11 +292,13 @@
 
         const stats = {};
         allData.forEach(s => {
-            s.offences.forEach(o => {
-                if(o.time.includes(targetString)) {
-                    stats[o.type] = (stats[o.type] || 0) + 1;
-                }
-            });
+            if(s.offences) {
+                s.offences.forEach(o => {
+                    if(o.time && o.time.includes(targetString)) {
+                        stats[o.type] = (stats[o.type] || 0) + 1;
+                    }
+                });
+            }
         });
 
         const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok"];
@@ -345,7 +348,6 @@
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
             btnReport.style.display = 'block';
-            // 修改点 2: 更新按钮名称，表明是打印所有记录
             btnReport.innerText = `CETAK REKOD: ${selectedStudent.name}`;
         } else {
             btnReport.style.display = 'none';
@@ -410,10 +412,16 @@
 
     async function captureAndDownload(filename) {
         const template = document.getElementById('reportExportTemplate');
-        return html2canvas(template, { backgroundColor: "#ffffff", scale: 2, useCORS: true }).then(canvas => {
+        // 使用固定的 scale 2 提升清晰度，并确保背景始终为白色
+        return html2canvas(template, { 
+            backgroundColor: "#ffffff", 
+            scale: 2, 
+            useCORS: true,
+            windowWidth: 800 // 模拟 A4 宽度环境渲染
+        }).then(canvas => {
             const link = document.createElement('a');
             link.download = filename;
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL("image/png");
             link.click();
         });
     }
@@ -472,7 +480,6 @@
         await captureAndDownload(`Laporan_Bulanan_${filterType}_${month}_${year}.png`);
     };
 
-    // 修改点 3: 移除月份过滤逻辑，实现下载该学生所有记录
     window.downloadStudentMonthlyReport = async () => {
         if(!selectedStudent) return alert("Sila cari dan pilih seorang pelajar dahulu.");
         
@@ -480,7 +487,6 @@
         tbody.innerHTML = "";
         let count = 0;
 
-        // 遍历选定学生的所有 offence，不进行日期筛选
         selectedStudent.offences.forEach(o => {
             count++;
             tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
