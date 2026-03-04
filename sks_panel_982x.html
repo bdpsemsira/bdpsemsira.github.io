@@ -161,7 +161,7 @@
     <div class="card" style="background:transparent; border:none; padding:0;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3>4. SENARAI DISIPLIN</h3>
-            <button id="btnStudentReport" onclick="downloadStudentMonthlyReport()" style="background:var(--tag-contra); color:white; font-size:10px; display:none;">CETAK LAPORAN BULANAN PELAJAR</button>
+            <button id="btnStudentReport" onclick="downloadStudentMonthlyReport()" style="background:var(--tag-contra); color:white; font-size:10px; display:none;">CETAK SEMUA REKOD PELAJAR</button>
         </div>
         <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas untuk urus/cetak laporan...">
         <table>
@@ -240,8 +240,9 @@
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
 
+    // 修改点 1: 获取登录页面存储的真实用户名
     const currentAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
-    document.getElementById('displayAdmin').innerText = currentAdmin;
+    document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
     const setTimeNow = () => {
         const d = new Date();
@@ -344,7 +345,8 @@
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
             btnReport.style.display = 'block';
-            btnReport.innerText = `CETAK BULANAN: ${selectedStudent.name}`;
+            // 修改点 2: 更新按钮名称，表明是打印所有记录
+            btnReport.innerText = `CETAK REKOD: ${selectedStudent.name}`;
         } else {
             btnReport.style.display = 'none';
         }
@@ -438,7 +440,6 @@
         await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
     };
 
-    // Updated Monthly Report with Category Filter
     window.downloadMonthlyReport = async () => {
         const selMonth = document.getElementById('statsMonth').value;
         const filterType = document.getElementById('filterOffence').value;
@@ -471,25 +472,25 @@
         await captureAndDownload(`Laporan_Bulanan_${filterType}_${month}_${year}.png`);
     };
 
+    // 修改点 3: 移除月份过滤逻辑，实现下载该学生所有记录
     window.downloadStudentMonthlyReport = async () => {
         if(!selectedStudent) return alert("Sila cari dan pilih seorang pelajar dahulu.");
-        const selMonth = document.getElementById('statsMonth').value;
-        if(!selMonth) return alert("Sila pilih bulan di bahagian analisis.");
-        const [year, month] = selMonth.split('-');
-        const targetString = `/${month}/${year}`;
+        
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
+
+        // 遍历选定学生的所有 offence，不进行日期筛选
         selectedStudent.offences.forEach(o => {
-            if(o.time.includes(targetString)) {
-                count++;
-                tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
-            }
+            count++;
+            tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
         });
-        if(count === 0) return alert("Tiada rekod untuk pelajar ini pada bulan yang dipilih.");
-        document.getElementById('rptMeta').innerText = `LAPORAN DISIPLIN INDIVIDU`;
-        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class} | BULAN: ${month}/${year} | JUMLAH KES: ${count}`;
-        await captureAndDownload(`Laporan_${selectedStudent.name}_${month}_${year}.png`);
+
+        if(count === 0) return alert("Tiada sebarang rekod kesalahan untuk pelajar ini.");
+
+        document.getElementById('rptMeta').innerText = `LAPORAN DISIPLIN INDIVIDU (KESELURUHAN)`;
+        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class} | JUMLAH SEMUA KES: ${count}`;
+        await captureAndDownload(`Laporan_Penuh_${selectedStudent.name}.png`);
     };
 
     window.masterReset = async () => {
