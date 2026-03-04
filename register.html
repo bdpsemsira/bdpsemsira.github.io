@@ -68,7 +68,8 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    // 导入 updateProfile
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -84,27 +85,22 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- 核心修复：更严格的检查函数 ---
     async function checkStatus() {
         const overlay = document.getElementById('overlay');
         const formContainer = document.getElementById('formContainer');
         
         try {
-            // 使用 getTime() 产生随机数，彻底解决 GitHub Raw 文件的浏览器缓存问题
             const timestamp = new Date().getTime();
             const res = await fetch(`https://raw.githubusercontent.com/bdpsemsira/bdpsemsira.github.io/main/status.txt?v=${timestamp}`);
             
             if (!res.ok) throw new Error("Gagal mengambil fail status");
             
             const rawText = await res.text();
-            // 去掉空格和换行符
             const statusText = rawText.trim(); 
-
-            console.log("Status detected:", statusText);
 
             if (statusText.includes("register:Off")) {
                 overlay.style.display = 'flex';
-                formContainer.style.visibility = 'hidden'; // 隐藏表单容器
+                formContainer.style.visibility = 'hidden';
             } else {
                 overlay.style.display = 'none';
                 formContainer.style.visibility = 'visible';
@@ -114,15 +110,13 @@
         }
     }
 
-    // 立即执行检查
     checkStatus();
 
-    // 处理注册逻辑
     document.getElementById('regForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
-        const user = document.getElementById('regUser').value;
+        const user = document.getElementById('regUser').value; // 这里的用户名
         const ic = document.getElementById('regIC').value;
         const phone = document.getElementById('regPhone').value;
         const msg = document.getElementById('reg-msg');
@@ -132,9 +126,15 @@
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-            
-            // 存入 Firestore
-            await setDoc(doc(db, "users", userCredential.user.uid), {
+            const firebaseUser = userCredential.user;
+
+            // --- 核心修复：更新 Firebase Auth 的 Profile 名字 ---
+            await updateProfile(firebaseUser, {
+                displayName: user
+            });
+
+            // 同时存入 Firestore 数据库
+            await setDoc(doc(db, "users", firebaseUser.uid), {
                 username: user,
                 ic: ic,
                 phone: phone,
@@ -147,7 +147,6 @@
             setTimeout(() => window.location.href = "login.html", 2000);
         } catch (error) {
             msg.style.color = "#e74c3c";
-            // 翻译常见的 Firebase 错误
             if (error.code === 'auth/email-already-in-use') {
                 msg.innerText = "RALAT: Emel ini sudah berdaftar.";
             } else if (error.code === 'auth/weak-password') {
