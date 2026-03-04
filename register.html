@@ -8,12 +8,20 @@
     <style>
         :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; --input: #252525; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .register-card { background: var(--card); padding: 30px; border-radius: 24px; width: 360px; border: 1px solid #222; position: relative; }
+        .register-card { background: var(--card); padding: 30px; border-radius: 24px; width: 360px; border: 1px solid #222; position: relative; overflow: hidden; }
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 10px; color: var(--primary); margin-bottom: 5px; font-weight: bold; }
         input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: var(--input); color: white; box-sizing: border-box; outline: none; }
         .btn-reg { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); border-radius: 24px; color: #ff4d4d; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; z-index: 10; }
+        
+        /* 遮罩层样式 */
+        #overlay { 
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); border-radius: 24px; color: #ff4d4d; 
+            flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 20px; box-sizing: border-box; z-index: 99; 
+        }
+        
         .back-login { display: block; margin-top: 15px; font-size: 11px; color: #888; text-decoration: none; text-align: center; }
     </style>
 </head>
@@ -24,36 +32,38 @@
         <h3 style="margin:0;">MAAF</h3>
         <p style="font-size: 12px;">Pendaftaran kendiri belum dibuka.<br>Sila hubungi:</p>
         <p style="font-size: 13px; color:white; font-weight:bold;">WhatsApp: +60 1153789909 (Kong)</p>
-        <a href="login.html" style="color:var(--primary); font-size:12px; text-decoration:none;">Kembali ke Log Masuk</a>
+        <a href="login.html" style="color:var(--primary); font-size:12px; text-decoration:underline;">Kembali ke Log Masuk</a>
     </div>
 
-    <h2 style="color:var(--primary); margin-top:0; font-size: 18px;">DAFTAR AKAUN</h2>
-    
-    <form id="regForm">
-        <div class="input-group">
-            <label>NAMA PENGGUNA</label>
-            <input type="text" id="regUser" placeholder="Username" required>
-        </div>
-        <div class="input-group">
-            <label>NOMBOR IC</label>
-            <input type="text" id="regIC" placeholder="000000-00-0000" required>
-        </div>
-        <div class="input-group">
-            <label>NOMBOR TELEFON</label>
-            <input type="text" id="regPhone" placeholder="+60123456789" required>
-        </div>
-        <div class="input-group">
-            <label>EMEL (GUNA UNTUK LOGIN)</label>
-            <input type="email" id="regEmail" placeholder="example@mail.com" required>
-        </div>
-        <div class="input-group">
-            <label>KATA LALUAN</label>
-            <input type="password" id="regPass" placeholder="Min 6 aksara" required>
-        </div>
-        <button type="submit" class="btn-reg">Daftar Sekarang</button>
-    </form>
-    <a href="login.html" class="back-login">← Kembali ke Log Masuk</a>
-    <div id="reg-msg" style="margin-top:10px; font-size:12px; text-align:center;"></div>
+    <div id="formContainer">
+        <h2 style="color:var(--primary); margin-top:0; font-size: 18px;">DAFTAR AKAUN</h2>
+        
+        <form id="regForm">
+            <div class="input-group">
+                <label>NAMA PENGGUNA</label>
+                <input type="text" id="regUser" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <label>NOMBOR IC</label>
+                <input type="text" id="regIC" placeholder="000000-00-0000" required>
+            </div>
+            <div class="input-group">
+                <label>NOMBOR TELEFON</label>
+                <input type="text" id="regPhone" placeholder="+60123456789" required>
+            </div>
+            <div class="input-group">
+                <label>EMEL (GUNA UNTUK LOGIN)</label>
+                <input type="email" id="regEmail" placeholder="example@mail.com" required>
+            </div>
+            <div class="input-group">
+                <label>KATA LALUAN</label>
+                <input type="password" id="regPass" placeholder="Min 6 aksara" required>
+            </div>
+            <button type="submit" class="btn-reg">Daftar Sekarang</button>
+        </form>
+        <a href="login.html" class="back-login">← Kembali ke Log Masuk</a>
+        <div id="reg-msg" style="margin-top:10px; font-size:12px; text-align:center;"></div>
+    </div>
 </div>
 
 <script type="module">
@@ -74,22 +84,40 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 检查注册状态
+    // --- 核心修复：更严格的检查函数 ---
     async function checkStatus() {
+        const overlay = document.getElementById('overlay');
+        const formContainer = document.getElementById('formContainer');
+        
         try {
-            const res = await fetch('https://raw.githubusercontent.com/bdpsemsira/bdpsemsira.github.io/main/status.txt?t=' + Date.now());
-            const text = await res.text();
-            if (text.includes("register:Off")) {
-                document.getElementById('overlay').style.display = 'flex';
+            // 使用 getTime() 产生随机数，彻底解决 GitHub Raw 文件的浏览器缓存问题
+            const timestamp = new Date().getTime();
+            const res = await fetch(`https://raw.githubusercontent.com/bdpsemsira/bdpsemsira.github.io/main/status.txt?v=${timestamp}`);
+            
+            if (!res.ok) throw new Error("Gagal mengambil fail status");
+            
+            const rawText = await res.text();
+            // 去掉空格和换行符
+            const statusText = rawText.trim(); 
+
+            console.log("Status detected:", statusText);
+
+            if (statusText.includes("register:Off")) {
+                overlay.style.display = 'flex';
+                formContainer.style.visibility = 'hidden'; // 隐藏表单容器
+            } else {
+                overlay.style.display = 'none';
+                formContainer.style.visibility = 'visible';
             }
         } catch (e) {
-            console.error("Status check failed");
+            console.error("Status check failed:", e);
         }
     }
 
+    // 立即执行检查
     checkStatus();
 
-    // 处理注册
+    // 处理注册逻辑
     document.getElementById('regForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('regEmail').value;
@@ -99,22 +127,34 @@
         const phone = document.getElementById('regPhone').value;
         const msg = document.getElementById('reg-msg');
 
+        msg.innerText = "Mendaftarkan...";
+        msg.style.color = "var(--primary)";
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-            // 将额外信息存入 Firestore (可选)
+            
+            // 存入 Firestore
             await setDoc(doc(db, "users", userCredential.user.uid), {
                 username: user,
                 ic: ic,
                 phone: phone,
-                email: email
+                email: email,
+                createdAt: new Date().toISOString()
             });
 
             msg.style.color = "#2ecc71";
-            msg.innerText = "DAFTAR BERJAYA! Sila log masuk.";
+            msg.innerText = "DAFTAR BERJAYA! Mengalih ke Log Masuk...";
             setTimeout(() => window.location.href = "login.html", 2000);
         } catch (error) {
             msg.style.color = "#e74c3c";
-            msg.innerText = "RALAT: " + error.message;
+            // 翻译常见的 Firebase 错误
+            if (error.code === 'auth/email-already-in-use') {
+                msg.innerText = "RALAT: Emel ini sudah berdaftar.";
+            } else if (error.code === 'auth/weak-password') {
+                msg.innerText = "RALAT: Kata laluan terlalu lemah (Min 6 aksara).";
+            } else {
+                msg.innerText = "RALAT: " + error.message;
+            }
         }
     });
 </script>
