@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akaun | SMKSS</title>
+    <link rel="icon" type="image/png" href="semsira.png">
+    <style>
+        :root { --primary: #e67e22; --bg: #0a0a0a; --card: #181818; --input: #252525; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .register-card { background: var(--card); padding: 30px; border-radius: 24px; width: 360px; border: 1px solid #222; position: relative; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 10px; color: var(--primary); margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: var(--input); color: white; box-sizing: border-box; outline: none; }
+        .btn-reg { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); border-radius: 24px; color: #ff4d4d; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; z-index: 10; }
+        .back-login { display: block; margin-top: 15px; font-size: 11px; color: #888; text-decoration: none; text-align: center; }
+    </style>
+</head>
+<body>
 
+<div class="register-card">
+    <div id="overlay">
+        <h3 style="margin:0;">MAAF</h3>
+        <p style="font-size: 12px;">Pendaftaran kendiri belum dibuka.<br>Sila hubungi:</p>
+        <p style="font-size: 13px; color:white; font-weight:bold;">WhatsApp: +60 1153789909 (Kong)</p>
+        <a href="login.html" style="color:var(--primary); font-size:12px; text-decoration:none;">Kembali ke Log Masuk</a>
+    </div>
+
+    <h2 style="color:var(--primary); margin-top:0; font-size: 18px;">DAFTAR AKAUN</h2>
+    
+    <form id="regForm">
+        <div class="input-group">
+            <label>NAMA PENGGUNA</label>
+            <input type="text" id="regUser" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <label>NOMBOR IC</label>
+            <input type="text" id="regIC" placeholder="000000-00-0000" required>
+        </div>
+        <div class="input-group">
+            <label>NOMBOR TELEFON</label>
+            <input type="text" id="regPhone" placeholder="+60123456789" required>
+        </div>
+        <div class="input-group">
+            <label>EMEL (GUNA UNTUK LOGIN)</label>
+            <input type="email" id="regEmail" placeholder="example@mail.com" required>
+        </div>
+        <div class="input-group">
+            <label>KATA LALUAN</label>
+            <input type="password" id="regPass" placeholder="Min 6 aksara" required>
+        </div>
+        <button type="submit" class="btn-reg">Daftar Sekarang</button>
+    </form>
+    <a href="login.html" class="back-login">← Kembali ke Log Masuk</a>
+    <div id="reg-msg" style="margin-top:10px; font-size:12px; text-align:center;"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD1gmmXOCm1DotL_PSdyDmD6uQQoH60RHY",
+        authDomain: "accountsemsira.firebaseapp.com",
+        projectId: "accountsemsira",
+        storageBucket: "accountsemsira.firebasestorage.app",
+        messagingSenderId: "805477465040",
+        appId: "1:805477465040:web:431e748fe9299d1341d7d5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 检查注册状态
+    async function checkStatus() {
+        try {
+            const res = await fetch('https://raw.githubusercontent.com/bdpsemsira/bdpsemsira.github.io/main/status.txt?t=' + Date.now());
+            const text = await res.text();
+            if (text.includes("register:Off")) {
+                document.getElementById('overlay').style.display = 'flex';
+            }
+        } catch (e) {
+            console.error("Status check failed");
+        }
+    }
+
+    checkStatus();
+
+    // 处理注册
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        const user = document.getElementById('regUser').value;
+        const ic = document.getElementById('regIC').value;
+        const phone = document.getElementById('regPhone').value;
+        const msg = document.getElementById('reg-msg');
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+            // 将额外信息存入 Firestore (可选)
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                username: user,
+                ic: ic,
+                phone: phone,
+                email: email
+            });
+
+            msg.style.color = "#2ecc71";
+            msg.innerText = "DAFTAR BERJAYA! Sila log masuk.";
+            setTimeout(() => window.location.href = "login.html", 2000);
+        } catch (error) {
+            msg.style.color = "#e74c3c";
+            msg.innerText = "RALAT: " + error.message;
+        }
+    });
+</script>
+</body>
+</html>
