@@ -29,13 +29,12 @@
         }
         .btn-login:hover { background: transparent; color: var(--primary); }
 
-        /* 注册链接样式 */
         .register-link {
             display: inline-block;
             margin-top: 20px;
             font-size: 12px;
             color: #888;
-            text-decoration: underline; /* 下划线 */
+            text-decoration: underline; 
             cursor: pointer;
             transition: 0.3s;
         }
@@ -78,7 +77,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // 你的 Firebase 配置
     const firebaseConfig = {
         apiKey: "AIzaSyD1gmmXOCm1DotL_PSdyDmD6uQQoH60RHY",
         authDomain: "accountsemsira.firebaseapp.com",
@@ -104,18 +102,23 @@
 
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+            const user = userCredential.user;
+            
             msg.innerText = "AKSES DIBENARKAN";
             msg.className = "success";
             
-            // 存储登录状态
-            sessionStorage.setItem('access_granted', 'true');
-            sessionStorage.setItem('admin_name', email.split('@')[0]); // 用邮箱前缀当名字
+            // --- 核心修复：优先获取真实姓名 ---
+            // 如果 displayName 存在就用它，否则才退而求其次用邮箱前缀
+            const finalDisplayName = user.displayName || email.split('@')[0];
             
-            // 跳转到主面板
+            sessionStorage.setItem('access_granted', 'true');
+            sessionStorage.setItem('admin_name', finalDisplayName);
+            
             setTimeout(() => window.location.replace("sks_panel_982x.html"), 1000);
         } catch (error) {
             msg.innerText = "RALAT: MAKLUMAT TIDAK SAH";
             msg.className = "error";
+            console.error(error);
         }
     });
 </script>
