@@ -69,6 +69,11 @@
         .modal-content { background:#181818; padding:20px; border-radius:12px; width:400px; border:1px solid #333; }
         .history-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #333; font-size:12px; }
 
+        /* 新增：Sebab Modal 样式 */
+        .sebab-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 15px; }
+        .sebab-btn { background: #222; color: #fff; text-align: left; padding: 12px; border: 1px solid #333; border-radius: 8px; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .sebab-btn:hover { background: var(--accent); color: #000; }
+
         /* =========================================
             A4 EXPORT TEMPLATE (FIXED RATIO)
            ========================================= */
@@ -129,6 +134,22 @@
                 </select>
             </div>
             <button onclick="submitRecord()">SIMPAN</button>
+        </div>
+    </div>
+
+    <div id="sebabModal" class="modal">
+        <div class="modal-content">
+            <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
+            <div class="sebab-grid">
+                <button class="sebab-btn" onclick="confirmLewat('Bangun Lewat')">1. Bangun Lewat</button>
+                <button class="sebab-btn" onclick="confirmLewat('Sakit Perut')">2. Sakit Perut</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Kesihatan')">3. Masalah Kesihatan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Keluarga')">4. Masalah Keluarga</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Kenderaan')">5. Masalah Kenderaan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Pengangkutan')">6. Masalah Pengangkutan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Lain-lain')">7. Lain-lain</button>
+            </div>
+            <button onclick="document.getElementById('sebabModal').style.display='none'" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
         </div>
     </div>
 
@@ -240,7 +261,6 @@
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
 
-    // 逻辑优化：自动清理邮箱后缀，只提取用户名部分
     const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
     document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
@@ -294,8 +314,10 @@
         allData.forEach(s => {
             if(s.offences) {
                 s.offences.forEach(o => {
+                    // 兼容带有 Sebab 的 Lewat 统计
+                    const baseType = o.type.split(' (')[0];
                     if(o.time && o.time.includes(targetString)) {
-                        stats[o.type] = (stats[o.type] || 0) + 1;
+                        stats[baseType] = (stats[baseType] || 0) + 1;
                     }
                 });
             }
@@ -311,6 +333,7 @@
     
     document.getElementById('statsMonth').addEventListener('change', updateStats);
 
+    // 修改后的提交逻辑
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
@@ -319,6 +342,29 @@
 
         if(!name || !cls || !type || !vTime) return alert("Lengkapkan ruangan!");
 
+        // 如果选择 Lewat，拦截并弹出原因框
+        if (type === "Lewat") {
+            document.getElementById('sebabModal').style.display = 'flex';
+            return;
+        }
+
+        // 普通流程
+        executeSubmit(name, cls, type, vTime);
+    };
+
+    // 新增：确认 Lewat 原因并提交
+    window.confirmLewat = (sebab) => {
+        const name = document.getElementById('stuName').value.trim().toUpperCase();
+        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
+        const vTime = document.getElementById('violationTime').value;
+        const fullType = `Lewat (${sebab})`;
+
+        document.getElementById('sebabModal').style.display = 'none';
+        executeSubmit(name, cls, fullType, vTime);
+    };
+
+    // 核心提交执行函数
+    async function executeSubmit(name, cls, type, vTime) {
         const today = new Date().toLocaleDateString('en-GB');
         const fullTime = `${today}, ${vTime}`;
         const logEntry = { type, time: fullTime, by: currentAdmin };
@@ -338,7 +384,7 @@
         await sysLog(`TAMBAH: ${type} - ${name}`);
         document.getElementById('stuName').value = "";
         setTimeNow();
-    };
+    }
 
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
@@ -356,8 +402,10 @@
         let html = "";
         filtered.forEach(s => {
             const grouped = s.offences.reduce((acc, curr, i) => {
-                acc[curr.type] = acc[curr.type] || [];
-                acc[curr.type].push({...curr, i});
+                // 渲染标签时提取主类别
+                const baseType = curr.type.split(' (')[0];
+                acc[baseType] = acc[baseType] || [];
+                acc[baseType].push({...curr, i});
                 return acc;
             }, {});
             let tags = "";
@@ -377,11 +425,12 @@
 
     window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
-        const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type === type);
+        // 这里匹配包含主类别的错误
+        const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type.startsWith(type));
         document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map(item => `
             <div class="history-item">
-                <span>${item.time}<br><small>Oleh: ${item.by}</small></span>
+                <span><b>${item.type}</b><br>${item.time}<br><small>Oleh: ${item.by}</small></span>
                 <button onclick="delOffence('${id}', ${item.idx})" style="background:#ff4d4d; font-size:9px; padding:4px 8px;">PADAM</button>
             </div>`).join('');
         document.getElementById('historyModal').style.display = 'flex';
@@ -412,12 +461,11 @@
 
     async function captureAndDownload(filename) {
         const template = document.getElementById('reportExportTemplate');
-        // 使用固定的 scale 2 提升清晰度，并确保背景始终为白色
         return html2canvas(template, { 
             backgroundColor: "#ffffff", 
             scale: 2, 
             useCORS: true,
-            windowWidth: 800 // 模拟 A4 宽度环境渲染
+            windowWidth: 800 
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = filename;
@@ -462,7 +510,8 @@
 
         allData.forEach(s => {
             s.offences.forEach(o => {
-                const matchType = (filterType === "ALL") || (o.type === filterType) || (filterType === "Isu Trafik" && ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"].includes(o.type));
+                const baseType = o.type.split(' (')[0];
+                const matchType = (filterType === "ALL") || (baseType === filterType) || (filterType === "Isu Trafik" && ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"].includes(baseType));
                 
                 if(o.time.includes(targetString) && matchType) {
                     count++;
