@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BDP Semsira | Official Blog</title>
+    <title>Blog Rasmi | BDP Semsira</title>
     
     <link rel="icon" type="image/png" href="semsira.png">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -11,105 +11,101 @@
     
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: #111111;
+            --bg-color: #000000;
+            --card-bg: #0d0d0f;
             --text-main: #ffffff;
-            --text-dim: #88888d;
-            --accent: #007aff;
-            --border: rgba(255, 255, 255, 0.1);
-            --max-width: 1250px;
+            --text-dim: #71717a;
+            --accent: #e67e22; /* 延续登录页的橙色 */
+            --border: #1f1f23;
+            --max-width: 1200px;
         }
 
         img { max-width: 100%; height: auto; display: block; }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0; padding: 0; color: var(--text-main); background: var(--bg-color);
             overflow-x: hidden;
         }
 
         .page-wrapper {
             display: grid;
-            grid-template-columns: 260px 1fr 320px;
-            gap: 20px;
+            grid-template-columns: 280px 1fr 340px;
+            gap: 0;
             max-width: var(--max-width);
             margin: 0 auto;
-            padding: 0 20px;
         }
 
-        /* --- 左侧导航栏 --- */
+        /* --- Sidebar Kiri --- */
         .left-sidebar {
             position: sticky; top: 0; height: 100vh;
-            display: flex; flex-direction: column; padding: 40px 20px;
+            display: flex; flex-direction: column; padding: 50px 30px;
             border-right: 1px solid var(--border);
         }
         .nav-logo { 
-            width: 48px !important; height: 48px !important; 
-            border-radius: 12px; margin-bottom: 40px; 
-            object-fit: contain;
+            width: 60px !important; height: 60px !important; 
+            border-radius: 15px; margin-bottom: 50px; 
+            object-fit: contain; box-shadow: 0 5px 15px rgba(230,126,34,0.2);
         }
         .nav-item {
             display: flex; align-items: center; gap: 15px;
-            padding: 14px 12px; font-size: 1.05rem; color: var(--text-dim);
-            text-decoration: none; transition: 0.2s; cursor: pointer;
-            border-radius: 10px;
+            padding: 16px 15px; font-size: 1rem; color: var(--text-dim);
+            text-decoration: none; transition: 0.3s; cursor: pointer;
+            border-radius: 12px; font-weight: 500;
         }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item:hover, .nav-item.active { background: #161618; color: var(--accent); }
 
-        /* --- 中间主信息流 --- */
-        .main-feed { padding: 40px 0; min-height: 100vh; }
+        /* --- Kandungan Utama --- */
+        .main-feed { padding: 40px; border-right: 1px solid var(--border); min-height: 100vh; }
         
-        /* 修正：搜索框容器现在与帖子内容宽度严格一致 */
         .search-container { 
-            margin-bottom: 30px; 
-            position: sticky; 
-            top: 20px; 
-            z-index: 10;
-            width: 100%; /* 确保不超过父级容器宽度 */
+            margin-bottom: 40px; position: sticky; top: 20px; z-index: 10;
         }
         .search-input {
-            width: 100%; 
-            background: #161618; 
-            border: 1px solid var(--border);
-            border-radius: 12px; 
-            padding: 14px 20px; 
-            color: #fff; 
-            font-size: 15px;
-            box-sizing: border-box; /* 关键：防止 padding 撑开宽度导致重叠 */
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            width: 100%; background: #161618; border: 1px solid var(--border);
+            border-radius: 14px; padding: 16px 24px; color: #fff; font-size: 15px;
+            box-sizing: border-box; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+        .search-input:focus { border-color: var(--accent); outline: none; background: #1c1c1f; }
 
         .post { 
             background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 20px; padding: 35px; margin-bottom: 30px;
-            transition: border 0.3s;
+            border-radius: 24px; padding: 40px; margin-bottom: 40px;
+            transition: transform 0.3s, border 0.3s;
         }
-        .post:hover { border-color: #333; }
-        .post h2 { margin: 0 0 12px 0; font-size: 1.7rem; font-weight: 700; }
-        .post small { color: var(--text-dim); font-size: 0.85rem; display: block; margin-bottom: 25px; letter-spacing: 0.5px; }
+        .post:hover { border-color: #333; transform: translateY(-2px); }
+        .post h2 { margin: 0 0 14px 0; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; }
+        .post small { color: var(--text-dim); font-size: 0.8rem; display: block; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; }
         
-        .content { color: #e2e2e7; line-height: 1.8; font-size: 1.05rem; }
-        .content img { border-radius: 12px; margin: 25px 0; border: 1px solid var(--border); width: 100%; }
+        .content { color: #d4d4d8; line-height: 1.8; font-size: 1.1rem; }
+        .content img { border-radius: 16px; margin: 30px 0; border: 1px solid var(--border); width: 100%; }
 
-        /* --- 右侧信息卡片 --- */
-        .right-sidebar { padding: 40px 0; position: sticky; top: 0; }
+        /* --- Sidebar Kanan --- */
+        .right-sidebar { padding: 50px 30px; position: sticky; top: 0; }
         .info-card {
-            background: linear-gradient(145deg, #1a1a1c, #111111);
-            border-radius: 20px; padding: 25px; border: 1px solid var(--border);
+            background: #0d0d0f; border-radius: 24px; padding: 30px; 
+            border: 1px solid var(--border);
         }
-        .info-card h3 { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 1px; }
-        .info-card p { font-size: 0.95rem; line-height: 1.6; color: #ccc; margin: 0; }
+        .info-card h3 { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; margin: 0 0 20px 0; letter-spacing: 2px; }
+        .info-card p { font-size: 0.95rem; line-height: 1.7; color: #a1a1aa; margin: 0; }
+
+        .btn-discuss {
+            background: var(--accent); border: none; color: #fff; padding: 12px 24px; 
+            border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 13px;
+            transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-discuss:hover { opacity: 0.9; transform: scale(0.98); }
 
         .comment-container { 
-            margin-top: 30px; padding: 25px; background: #0a0a0a; 
-            border-radius: 16px; border: 1px solid var(--border); 
+            margin-top: 30px; padding: 30px; background: #050505; 
+            border-radius: 20px; border: 1px solid var(--border); 
         }
 
-        /* --- 移动端 --- */
-        .mobile-header { display: none; }
-        .mobile-nav { display: none; }
+        /* --- Responsif --- */
+        .mobile-header, .mobile-nav { display: none; }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .page-wrapper { grid-template-columns: 80px 1fr; }
             .right-sidebar, .nav-text { display: none; }
             .left-sidebar { align-items: center; padding: 40px 0; }
@@ -118,23 +114,25 @@
         @media (max-width: 768px) {
             .page-wrapper { display: block; padding-top: 60px; padding-bottom: 100px; }
             .left-sidebar, .right-sidebar { display: none; }
+            .main-feed { padding: 20px; border: none; }
             
             .mobile-header {
                 display: flex; position: fixed; top: 0; left: 0; right: 0; height: 60px;
-                background: rgba(5,5,5,0.8); backdrop-filter: blur(20px);
+                background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
                 border-bottom: 1px solid var(--border); z-index: 1000;
                 justify-content: center; align-items: center;
             }
-            .mobile-header img { height: 32px; width: 32px; border-radius: 6px; }
+            .mobile-header img { height: 35px; }
 
             .mobile-nav {
-                display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
-                background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
+                display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+                background: rgba(13, 13, 15, 0.95); backdrop-filter: blur(20px);
                 border-top: 1px solid var(--border); z-index: 1000;
                 justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
             }
-            .mobile-nav-item { font-size: 1.4rem; color: var(--text-dim); cursor: pointer; }
-            .post { padding: 25px; border-radius: 0; border-left: none; border-right: none; margin-bottom: 15px; }
+            .mobile-nav-item { font-size: 1.5rem; color: var(--text-dim); }
+            .post { padding: 30px 20px; border-radius: 0; border-left: none; border-right: none; margin-bottom: 10px; }
+            .post h2 { font-size: 1.5rem; }
         }
 
         .hidden { display: none; }
@@ -149,36 +147,38 @@
     <div class="page-wrapper">
         <aside class="left-sidebar">
             <img src="semsira.png" alt="Logo" class="nav-logo">
-            <a href="#" class="nav-item active">
-                <span>🏠</span> <span class="nav-text">Home</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>📑</span> <span class="nav-text">Feed</span>
+            <a href="index.html" class="nav-item active">
+                <span>🏠</span> <span class="nav-text">Utama</span>
             </a>
             <div class="nav-item" onclick="location.reload()">
-                <span>🔄</span> <span class="nav-text">Refresh</span>
+                <span>🔄</span> <span class="nav-text">Segarkan</span>
             </div>
+            <a href="login.html" class="nav-item" style="margin-top: auto;">
+                <span>🔐</span> <span class="nav-text">Admin</span>
+            </a>
         </aside>
 
         <main class="main-feed">
             <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search insights...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari info atau pengumuman...">
             </div>
             
             <div id="posts-container">
-                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">Syncing with GitHub...</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">Menyambung ke pangkalan data...</div>
             </div>
         </main>
 
         <aside class="right-sidebar">
             <div class="info-card">
-                <h3>About BDP Semsira</h3>
-                <p>Official portal for BDP Semsira. We document campus life, academic milestones, and student leadership highlights.</p>
+                <h3>Mengenai BDP Semsira</h3>
+                <p>Portal rasmi BDP Semsira. Kami mendokumentasikan kehidupan kampus, pencapaian akademik, dan aktiviti kepimpinan pelajar.</p>
             </div>
-            <p style="font-size: 0.7rem; color: #444; margin-top: 25px; text-align: center; letter-spacing: 1px; line-height: 1.5;">
-                © 2026 BDP SEMSIRA<br>
-                POWERED BY SEMSIRA SUPER SIX
-            </p>
+            <div style="padding: 30px; text-align: center;">
+                <p style="font-size: 0.65rem; color: #444; letter-spacing: 1px; line-height: 1.8;">
+                    © 2026 BDP SEMSIRA<br>
+                    DIBANGUNKAN OLEH SEMSIRA SUPER SIX
+                </p>
+            </div>
         </aside>
     </div>
 
@@ -204,14 +204,14 @@
                 const issues = await res.json();
                 
                 if (issues.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">No articles found.</div>';
+                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">Tiada artikel dijumpai.</div>';
                     return;
                 }
 
                 container.innerHTML = '';
                 issues.forEach(issue => {
-                    const date = new Date(issue.created_at).toLocaleDateString('en-GB', {
-                        year: 'numeric', month: 'short', day: '2-digit'
+                    const date = new Date(issue.created_at).toLocaleDateString('ms-MY', {
+                        year: 'numeric', month: 'long', day: '2-digit'
                     });
 
                     const postEl = document.createElement('article');
@@ -219,12 +219,11 @@
                     
                     postEl.innerHTML = `
                         <h2>${issue.title}</h2>
-                        <small>ADMIN • ${date}</small>
+                        <small>DIKIRIM OLEH ADMIN • ${date}</small>
                         <div class="content">${marked.parse(issue.body || "")}</div>
-                        <div style="margin-top:25px;">
-                            <button onclick="toggleComments('${issue.id}')" 
-                                style="background:#fff; border:none; color:#000; padding:10px 20px; border-radius:30px; cursor:pointer; font-weight:600; font-size:12px;">
-                                DISCUSS
+                        <div style="margin-top:30px;">
+                            <button class="btn-discuss" onclick="toggleComments('${issue.id}')">
+                                Ruang Diskusi
                             </button>
                         </div>
                         <div id="comment-box-${issue.id}" class="hidden comment-container">
@@ -241,7 +240,7 @@
                     container.appendChild(postEl);
                 });
             } catch (err) {
-                container.innerHTML = '<div style="text-align:center;padding:100px 0;">Connection Error.</div>';
+                container.innerHTML = '<div style="text-align:center;padding:100px 0;">Ralat sambungan.</div>';
             }
         }
 
