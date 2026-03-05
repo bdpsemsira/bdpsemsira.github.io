@@ -15,7 +15,7 @@
             --card-bg: #0d0d0f;
             --text-main: #ffffff;
             --text-dim: #71717a;
-            --accent: #e67e22; /* 延续登录页的橙色 */
+            --accent: #e67e22; /* 延续系统的橙色配色 */
             --border: #1f1f23;
             --max-width: 1200px;
         }
@@ -43,8 +43,8 @@
             border-right: 1px solid var(--border);
         }
         .nav-logo { 
-            width: 60px !important; height: 60px !important; 
-            border-radius: 15px; margin-bottom: 50px; 
+            width: 55px !important; height: 55px !important; 
+            border-radius: 14px; margin-bottom: 50px; 
             object-fit: contain; box-shadow: 0 5px 15px rgba(230,126,34,0.2);
         }
         .nav-item {
@@ -75,7 +75,7 @@
             transition: transform 0.3s, border 0.3s;
         }
         .post:hover { border-color: #333; transform: translateY(-2px); }
-        .post h2 { margin: 0 0 14px 0; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; }
+        .post h2 { margin: 0 0 14px 0; font-size: 1.8rem; font-weight: 800; line-height: 1.3; }
         .post small { color: var(--text-dim); font-size: 0.8rem; display: block; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; }
         
         .content { color: #d4d4d8; line-height: 1.8; font-size: 1.1rem; }
@@ -95,10 +95,9 @@
             border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 13px;
             transition: 0.3s; text-transform: uppercase;
         }
-        .btn-discuss:hover { opacity: 0.9; transform: scale(0.98); }
 
         .comment-container { 
-            margin-top: 30px; padding: 30px; background: #050505; 
+            margin-top: 30px; padding: 20px; background: #050505; 
             border-radius: 20px; border: 1px solid var(--border); 
         }
 
@@ -131,8 +130,7 @@
                 justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
             }
             .mobile-nav-item { font-size: 1.5rem; color: var(--text-dim); }
-            .post { padding: 30px 20px; border-radius: 0; border-left: none; border-right: none; margin-bottom: 10px; }
-            .post h2 { font-size: 1.5rem; }
+            .post { padding: 30px 20px; border-radius: 0; margin-bottom: 10px; border-left:none; border-right:none; }
         }
 
         .hidden { display: none; }
@@ -154,29 +152,29 @@
                 <span>🔄</span> <span class="nav-text">Segarkan</span>
             </div>
             <a href="login.html" class="nav-item" style="margin-top: auto;">
-                <span>🔐</span> <span class="nav-text">Admin</span>
+                <span>🔐</span> <span class="nav-text">Log Masuk Admin</span>
             </a>
         </aside>
 
         <main class="main-feed">
             <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Cari info atau pengumuman...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari info atau berita...">
             </div>
             
             <div id="posts-container">
-                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">Menyambung ke pangkalan data...</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 100px 0;">Menyemak pangkalan data...</div>
             </div>
         </main>
 
         <aside class="right-sidebar">
             <div class="info-card">
                 <h3>Mengenai BDP Semsira</h3>
-                <p>Portal rasmi BDP Semsira. Kami mendokumentasikan kehidupan kampus, pencapaian akademik, dan aktiviti kepimpinan pelajar.</p>
+                <p>Portal maklumat rasmi BDP Semsira. Kami berkongsi berita kampus, akademik dan aktiviti kepimpinan pelajar.</p>
             </div>
             <div style="padding: 30px; text-align: center;">
-                <p style="font-size: 0.65rem; color: #444; letter-spacing: 1px; line-height: 1.8;">
+                <p style="font-size: 0.65rem; color: #444; letter-spacing: 1px;">
                     © 2026 BDP SEMSIRA<br>
-                    DIBANGUNKAN OLEH SEMSIRA SUPER SIX
+                    POWERED BY SEMSIRA SUPER SIX
                 </p>
             </div>
         </aside>
@@ -203,8 +201,8 @@
                 const res = await fetch(url);
                 const issues = await res.json();
                 
-                if (issues.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">Tiada artikel dijumpai.</div>';
+                if (!issues || issues.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:#444;padding:100px 0;">Tiada artikel ditemui.</div>';
                     return;
                 }
 
@@ -222,16 +220,16 @@
                         <small>DIKIRIM OLEH ADMIN • ${date}</small>
                         <div class="content">${marked.parse(issue.body || "")}</div>
                         <div style="margin-top:30px;">
-                            <button class="btn-discuss" onclick="toggleComments('${issue.id}')">
+                            <button class="btn-discuss" onclick="toggleComments('${issue.number}')">
                                 Ruang Diskusi
                             </button>
                         </div>
-                        <div id="comment-box-${issue.id}" class="hidden comment-container">
+                        <div id="comment-box-${issue.number}" class="hidden comment-container">
                             <div id="cusdis_thread" 
                                 data-host="https://cusdis.com" 
                                 data-app-id="${CONFIG.CUSDIS_APP_ID}" 
-                                data-page-id="${issue.id}" 
-                                data-page-url="${window.location.href}#${issue.id}" 
+                                data-page-id="${issue.number}" 
+                                data-page-url="${window.location.href}#${issue.number}" 
                                 data-page-title="${issue.title}"
                                 data-theme="dark">
                             </div>
@@ -240,16 +238,21 @@
                     container.appendChild(postEl);
                 });
             } catch (err) {
-                container.innerHTML = '<div style="text-align:center;padding:100px 0;">Ralat sambungan.</div>';
+                container.innerHTML = '<div style="text-align:center;padding:100px 0;">Ralat sambungan pangkalan data.</div>';
             }
         }
 
+        // 核心修复：点击时强制 Cusdis 渲染
         function toggleComments(id) {
             const el = document.getElementById(`comment-box-${id}`);
+            const thread = el.querySelector('#cusdis_thread');
             const isHidden = el.classList.contains('hidden');
+            
             el.classList.toggle('hidden');
-            if (!isHidden && window.renderCusdis) {
-                window.renderCusdis(el.querySelector('#cusdis_thread'));
+            
+            // 如果展示评论区且脚本已加载，则手动触发渲染
+            if (isHidden && window.renderCusdis) {
+                window.renderCusdis(thread);
             }
         }
 
