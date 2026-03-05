@@ -1,229 +1,310 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDP Admin | All-in-One Editor</title>
+    <title>BDP Semsira | 全功能后台管理</title>
     <link rel="icon" type="image/png" href="semsira.png">
     <style>
-        :root { --primary: #e67e22; --bg: #050505; --card: #121212; --border: #222; --text: #eee; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        :root { 
+            --primary: #e67e22; 
+            --bg: #050505; 
+            --card: #121212; 
+            --border: #222; 
+            --text-main: #eee;
+            --text-dim: #888;
+        }
         
-        .admin-container { max-width: 1000px; margin: 0 auto; background: var(--card); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Segoe UI', -apple-system, sans-serif; 
+            margin: 0; padding: 20px; 
+        }
 
-        /* Tab Navigation */
+        .admin-container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: var(--card); 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+        }
+
+        /* 顶部选项卡 */
         .tab-nav { display: flex; background: #181818; border-bottom: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 18px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); background: rgba(230,126,34,0.05); }
+        .tab-btn { 
+            flex: 1; padding: 20px; border: none; background: none; color: var(--text-dim); 
+            cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px;
+            letter-spacing: 1px;
+        }
+        .tab-btn.active { 
+            color: var(--primary); 
+            border-bottom: 3px solid var(--primary); 
+            background: rgba(230,126,34,0.05); 
+        }
 
-        .tab-content { padding: 35px; display: none; }
+        .tab-content { padding: 40px; display: none; }
         .tab-content.active { display: block; }
 
-        /* Form Elements */
-        label { display: block; font-size: 11px; color: #888; margin: 20px 0 8px 5px; text-transform: uppercase; letter-spacing: 1.5px; }
-        input, textarea, select { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid var(--border); color: white; border-radius: 12px; box-sizing: border-box; outline: none; }
-        input:focus, textarea:focus { border-color: var(--primary); }
+        /* 表单样式 */
+        label { display: block; font-size: 11px; color: var(--text-dim); margin: 20px 0 8px 5px; text-transform: uppercase; letter-spacing: 1.5px; }
+        input, textarea, select { 
+            width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid var(--border); 
+            color: white; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); background: #1f1f1f; }
 
-        /* Editor Specific */
+        /* 编辑器增强 */
         .editor-wrapper { position: relative; margin-top: 10px; }
-        .drop-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(230, 126, 34, 0.15); border: 2px dashed var(--primary); border-radius: 12px; z-index: 10; pointer-events: none; justify-content: center; align-items: center; font-weight: bold; }
+        .drop-overlay { 
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(230, 126, 34, 0.2); border: 2px dashed var(--primary); 
+            border-radius: 12px; z-index: 10; pointer-events: none; 
+            justify-content: center; align-items: center; font-weight: bold; color: white;
+        }
         
-        /* Post List Specific */
-        .post-item { background: #181818; border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 18px; margin-top: 20px; font-size: 16px; }
-        .btn-edit { background: #3498db; color: white; margin-right: 8px; }
+        /* 文章管理列表 */
+        .post-item { 
+            background: #181818; border: 1px solid var(--border); padding: 20px; 
+            border-radius: 16px; margin-bottom: 15px; display: flex; 
+            justify-content: space-between; align-items: center; transition: 0.3s;
+        }
+        .post-item:hover { border-color: #444; transform: translateX(5px); }
+        
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-submit { background: var(--primary); color: white; width: 100%; padding: 18px; margin-top: 25px; font-size: 16px; }
+        .btn-edit { background: #3498db; color: white; margin-right: 10px; }
         .btn-close { background: #e74c3c; color: white; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-box { background: var(--card); width: 90%; max-width: 700px; padding: 30px; border-radius: 20px; border: 1px solid var(--border); }
+        /* 修改弹窗 */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; 
+        }
+        .modal-box { 
+            background: var(--card); width: 90%; max-width: 800px; padding: 40px; 
+            border-radius: 24px; border: 1px solid var(--border); 
+        }
+
+        #statusMsg { text-align: center; margin-top: 20px; font-weight: bold; min-height: 1.2em; }
+        .tag-badge { font-size: 10px; padding: 2px 8px; border-radius: 5px; background: #333; color: var(--primary); margin-right: 8px; }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
     <nav class="tab-nav">
-        <button class="tab-btn active" onclick="showTab('write-tab')">✍️ Tulis Baru</button>
-        <button class="tab-btn" onclick="showTab('manage-tab'); loadPosts();">📂 Urus Artikel</button>
+        <button class="tab-btn active" onclick="switchTab('write-tab')">✍️ 发布新内容</button>
+        <button class="tab-btn" onclick="switchTab('manage-tab'); fetchAllPosts();">📂 管理已发布</button>
     </nav>
 
     <div id="write-tab" class="tab-content active">
-        <label>GitHub Access Token</label>
-        <input type="password" id="ghToken" placeholder="Masukkan ghp_ token anda...">
+        <label>GitHub Access Token (PAT)</label>
+        <input type="password" id="ghToken" placeholder="粘贴你的 ghp_ 开头的 Token (浏览器将自动记忆)">
 
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
             <div>
-                <label>Tajuk Post</label>
-                <input type="text" id="postTitle" placeholder="Contoh: Kejohanan Sukan 2026">
+                <label>文章标题</label>
+                <input type="text" id="postTitle" placeholder="输入文章标题...">
             </div>
             <div>
-                <label>Kategori</label>
+                <label>发布位置 (Label)</label>
                 <select id="postLabel">
-                    <option value="post">Blog (Post)</option>
-                    <option value="poster">Poster (Hebahan)</option>
+                    <option value="post">博客文章 (post)</option>
+                    <option value="poster">海报通知 (poster)</option>
                 </select>
             </div>
         </div>
 
-        <label>Kandungan (Seret gambar/video ke sini)</label>
-        <div class="editor-wrapper" id="dropZone">
-            <textarea id="postBody" rows="12" placeholder="Tulis artikel anda..."></textarea>
-            <div class="drop-overlay" id="dropOverlay">LEPASKAN FAIL</div>
+        <label>内容正文 (支持拖拽图片/视频文件)</label>
+        <div class="editor-wrapper" id="dropArea">
+            <textarea id="postBody" rows="15" placeholder="在此输入 Markdown 或 HTML 内容..."></textarea>
+            <div class="drop-overlay" id="dropIndicator">检测到文件：请松开鼠标</div>
         </div>
-        <button class="btn btn-primary" onclick="publishPost()">Terbitkan Sekarang</button>
-        <div id="writeStatus" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        
+        <button class="btn btn-submit" onclick="submitPost()">立即发布到 GitHub</button>
+        <div id="statusMsg"></div>
     </div>
 
     <div id="manage-tab" class="tab-content">
-        <div id="loading" style="text-align:center; padding:40px; color:#555;">Memuatkan data dari GitHub...</div>
-        <div id="postList"></div>
+        <div id="loadIndicator" style="text-align:center; padding:50px; color:#666;">正在连接 GitHub 数据库...</div>
+        <div id="issueList"></div>
     </div>
 </div>
 
-<div id="editModal" class="modal">
+<div id="editPopup" class="modal">
     <div class="modal-box">
-        <h3 style="color:var(--primary); margin-top:0;">Kemaskini Artikel</h3>
-        <input type="text" id="editTitle" style="margin-bottom:15px;">
-        <textarea id="editBody" rows="10"></textarea>
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-            <button class="btn" onclick="closeModal()" style="background:#444; color:white;">Batal</button>
-            <button class="btn" onclick="saveEdit()" style="background:#2ecc71; color:white;">Simpan</button>
+        <h2 style="color:var(--primary); margin-top:0;">编辑文章内容</h2>
+        <input type="text" id="editSubject" style="margin-bottom:20px;">
+        <textarea id="editMainBody" rows="12"></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:30px;">
+            <button class="btn" onclick="closePopup()" style="background:#444; color:white;">取消</button>
+            <button class="btn" onclick="updatePost()" style="background:#2ecc71; color:white;">保存修改</button>
         </div>
     </div>
 </div>
 
 <script>
-    const repo = "bdpsemsira/bdpsemsira.github.io";
-    let currentEditId = null;
+    // 配置信息
+    const GITHUB_REPO = "bdpsemsira/bdpsemsira.github.io";
+    let editingIssueNumber = null;
 
-    // --- Tab Switching Logic ---
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    // 1. 初始化：读取本地存储
+    window.onload = () => {
+        const savedToken = localStorage.getItem('bdp_token_secure');
+        if (savedToken) document.getElementById('ghToken').value = savedToken;
+    };
+
+    // 2. 选项卡切换
+    function switchTab(id) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // --- Memory & Initialization ---
-    window.onload = () => {
-        const saved = localStorage.getItem('bdp_admin_token');
-        if (saved) document.getElementById('ghToken').value = saved;
-    };
+    // 3. 发布逻辑 (核心修复点)
+    async function submitPost() {
+        const token = document.getElementById('ghToken').value.trim();
+        const title = document.getElementById('postTitle').value.trim();
+        const body = document.getElementById('postBody').value.trim();
+        const label = document.getElementById('postLabel').value.toLowerCase(); // 强制小写
+        const status = document.getElementById('statusMsg');
 
-    // --- Post Logic (Write) ---
-    async function publishPost() {
-        const token = document.getElementById('ghToken').value;
-        const title = document.getElementById('postTitle').value;
-        const body = document.getElementById('postBody').value;
-        const label = document.getElementById('postLabel').value;
-        const status = document.getElementById('writeStatus');
+        if(!token || !title || !body) { alert("请填写所有字段！"); return; }
+        
+        // 保存 Token 到本地浏览器
+        localStorage.setItem('bdp_token_secure', token);
 
-        if(!token || !title || !body) { alert("Sila isi semua info!"); return; }
-        localStorage.setItem('bdp_admin_token', token);
+        status.innerText = "🚀 正在发布中...";
+        status.style.color = var(--primary);
 
-        status.innerText = "⏳ Menghantar...";
         try {
-            const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
                 method: 'POST',
-                headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ title, body, labels: [label] })
+                headers: { 
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    title: title, 
+                    body: body, 
+                    labels: [label] // 确保是全小写数组
+                })
             });
-            if(res.ok) {
-                status.innerText = "✅ Berjaya Diterbitkan!";
+
+            if (response.ok) {
+                status.innerText = `✅ 发布成功！标签已设为: ${label}`;
                 status.style.color = "#2ecc71";
                 document.getElementById('postTitle').value = "";
                 document.getElementById('postBody').value = "";
+            } else {
+                const errData = await response.json();
+                status.innerText = "❌ 发布失败: " + errData.message;
+                status.style.color = "#e74c3c";
             }
-        } catch(e) { status.innerText = "❌ Gagal sambungan."; }
+        } catch (e) {
+            status.innerText = "❌ 网络错误，请检查连接。";
+        }
     }
 
-    // --- Manage Logic (List & Edit) ---
-    async function loadPosts() {
-        const token = document.getElementById('ghToken').value;
-        const listDiv = document.getElementById('postList');
-        const loading = document.getElementById('loading');
+    // 4. 管理逻辑：获取列表
+    async function fetchAllPosts() {
+        const token = document.getElementById('ghToken').value.trim();
+        const listDiv = document.getElementById('issueList');
+        const loader = document.getElementById('loadIndicator');
         
-        if(!token) { alert("Sila masukkan Token di tab 'Tulis Baru' dahulu."); return; }
+        if(!token) { alert("请先在发布页面输入有效的 Token。"); return; }
         
-        loading.style.display = "block";
+        loader.style.display = "block";
         listDiv.innerHTML = "";
 
         try {
-            const res = await fetch(`https://api.github.com/repos/${repo}/issues?state=open`, {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues?state=open&labels=post,poster`, {
                 headers: { 'Authorization': `token ${token}` }
             });
-            const issues = await res.json();
-            loading.style.display = "none";
+            const issues = await response.json();
+            loader.style.display = "none";
 
             issues.forEach(issue => {
-                if(!issue.labels.some(l => l.name === 'post' || l.name === 'poster')) return;
-                
                 const item = document.createElement('div');
                 item.className = 'post-item';
                 item.innerHTML = `
                     <div>
-                        <small style="color:var(--primary)">#${issue.number} ${issue.labels[0].name.toUpperCase()}</small>
-                        <div style="font-weight:bold; margin-top:4px;">${issue.title}</div>
+                        <span class="tag-badge">${issue.labels[0].name.toUpperCase()}</span>
+                        <strong style="font-size:16px;">${issue.title}</strong>
+                        <div style="font-size:12px; color:#555; margin-top:5px;">ID: #${issue.number} | 创建于: ${new Date(issue.created_at).toLocaleDateString()}</div>
                     </div>
                     <div>
-                        <button class="btn btn-edit" onclick="openEdit(${issue.number}, \`${encodeURIComponent(issue.title)}\`, \`${encodeURIComponent(issue.body)}\`)">Edit</button>
-                        <button class="btn btn-close" onclick="closePost(${issue.number})">Close</button>
+                        <button class="btn btn-edit" onclick="setupEdit(${issue.number}, \`${encodeURIComponent(issue.title)}\`, \`${encodeURIComponent(issue.body)}\`)">编辑</button>
+                        <button class="btn btn-close" onclick="terminatePost(${issue.number})">隐藏</button>
                     </div>
                 `;
                 listDiv.appendChild(item);
             });
-        } catch(e) { loading.innerText = "Ralat memuatkan data."; }
+        } catch(e) { loader.innerText = "获取失败，请确认 Token 权限。"; }
     }
 
-    // Modal Control
-    function openEdit(id, title, body) {
-        currentEditId = id;
-        document.getElementById('editTitle').value = decodeURIComponent(title);
-        document.getElementById('editBody').value = decodeURIComponent(body);
-        document.getElementById('editModal').style.display = 'flex';
+    // 编辑与更新
+    function setupEdit(num, t, b) {
+        editingIssueNumber = num;
+        document.getElementById('editSubject').value = decodeURIComponent(t);
+        document.getElementById('editMainBody').value = decodeURIComponent(b);
+        document.getElementById('editPopup').style.display = 'flex';
     }
-    function closeModal() { document.getElementById('editModal').style.display = 'none'; }
 
-    async function saveEdit() {
-        const token = document.getElementById('ghToken').value;
-        const title = document.getElementById('editTitle').value;
-        const body = document.getElementById('editBody').value;
+    function closePopup() { document.getElementById('editPopup').style.display = 'none'; }
+
+    async function updatePost() {
+        const token = document.getElementById('ghToken').value.trim();
+        const t = document.getElementById('editSubject').value;
+        const b = document.getElementById('editMainBody').value;
         
-        const res = await fetch(`https://api.github.com/repos/${repo}/issues/${currentEditId}`, {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues/${editingIssueNumber}`, {
             method: 'PATCH',
-            headers: { 'Authorization': `token ${token}` },
-            body: JSON.stringify({ title, body })
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: t, body: b })
         });
-        if(res.ok) { closeModal(); loadPosts(); }
+        if(res.ok) { closePopup(); fetchAllPosts(); }
     }
 
-    async function closePost(id) {
-        if(!confirm("Padam artikel ini dari blog?")) return;
-        const token = document.getElementById('ghToken').value;
-        await fetch(`https://api.github.com/repos/${repo}/issues/${id}`, {
+    async function terminatePost(num) {
+        if(!confirm("确定要将此文章从博客中移除（关闭）吗？")) return;
+        const token = document.getElementById('ghToken').value.trim();
+        await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues/${num}`, {
             method: 'PATCH',
-            headers: { 'Authorization': `token ${token}` },
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ state: 'closed' })
         });
-        loadPosts();
+        fetchAllPosts();
     }
 
-    // --- Drag & Drop ---
-    const dropZone = document.getElementById('dropZone');
-    const dropOverlay = document.getElementById('dropOverlay');
-    dropZone.addEventListener('dragenter', (e) => { e.preventDefault(); dropOverlay.style.display = 'flex'; });
-    dropZone.addEventListener('dragleave', () => dropOverlay.style.display = 'none');
-    dropZone.addEventListener('dragover', (e) => e.preventDefault());
-    dropZone.addEventListener('drop', (e) => {
+    // 5. 拖拽文件辅助功能
+    const dropArea = document.getElementById('dropArea');
+    const indicator = document.getElementById('dropIndicator');
+
+    dropArea.addEventListener('dragenter', (e) => { e.preventDefault(); indicator.style.display = 'flex'; });
+    dropArea.addEventListener('dragleave', () => indicator.style.display = 'none');
+    dropArea.addEventListener('dragover', (e) => e.preventDefault());
+    dropArea.addEventListener('drop', (e) => {
         e.preventDefault();
-        dropOverlay.style.display = 'none';
+        indicator.style.display = 'none';
         const file = e.dataTransfer.files[0];
-        const url = prompt(`Fail: ${file.name}\nSila masukkan URL (Upload ke GitHub dahulu):`);
+        const url = prompt(`检测到文件: ${file.name}\n\n请输入该文件的托管 URL (请先手动上传到 GitHub/图床):`);
         if(url) {
-            let tag = file.type.startsWith('video/') ? `\n<video controls style="width:100%"><source src="${url}"></video>\n` : `![${file.name}](${url})`;
-            const body = document.getElementById('postBody');
-            body.setRangeText(tag, body.selectionStart, body.selectionEnd, 'end');
+            let markdown = "";
+            if(file.type.startsWith('video/')) {
+                markdown = `\n<video controls style="width:100%; border-radius:12px;"><source src="${url}"></video>\n`;
+            } else if(file.type.startsWith('audio/')) {
+                markdown = `\n<audio controls style="width:100%;" src="${url}"></audio>\n`;
+            } else {
+                markdown = `![${file.name}](${url})`;
+            }
+            const textarea = document.getElementById('postBody');
+            textarea.setRangeText(markdown, textarea.selectionStart, textarea.selectionEnd, 'end');
         }
     });
 </script>
