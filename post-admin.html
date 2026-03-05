@@ -8,58 +8,35 @@
         :root { --primary: #e67e22; --bg: #050505; --card: #121212; --border: #222; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
         .admin-container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        h2 { color: var(--primary); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h2 { color: var(--primary); margin-top: 0; }
         label { display: block; font-size: 11px; color: #888; margin: 15px 0 5px 5px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        input, textarea, select { 
-            width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid var(--border); 
-            color: white; border-radius: 10px; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 14px;
-        }
-        input:focus, textarea:focus { border-color: var(--primary); background: #1f1f1f; }
-
-        /* 媒体工具栏 */
-        .media-tools { 
-            display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
-            background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
-        }
-        .tool-btn { 
-            background: #252525; border: 1px solid #333; color: #eee; 
-            padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: 0.2s;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .tool-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
-
-        .submit-btn { 
-            background: var(--primary); color: white; border: none; padding: 16px; 
-            border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; 
-            margin-top: 25px; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 15px rgba(230,126,34,0.3);
-        }
-        .submit-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        
-        #status { margin-top: 20px; text-align: center; font-weight: bold; font-size: 14px; min-height: 1.2em; }
-        
-        .tip { font-size: 11px; color: #555; margin-top: 10px; line-height: 1.4; }
+        input, textarea, select { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid var(--border); color: white; border-radius: 10px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        .media-tools { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
+        .tool-btn { background: #252525; border: 1px solid #333; color: #eee; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .tool-btn:hover { background: var(--primary); color: white; }
+        .submit-btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 25px; font-size: 16px; }
+        #status { margin-top: 20px; text-align: center; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
-    <h2><span>📝</span> Pengurus Blog BDP</h2>
+    <h2>📝 Pengurus Blog BDP</h2>
     
-    <label>GitHub Access Token (PAT)</label>
-    <input type="password" id="secretToken" placeholder="Masukkan token akses anda...">
+    <label>GitHub Access Token (Simpanan Pelayar)</label>
+    <input type="password" id="secretToken" placeholder="Masukkan Token sekali sahaja, pelayar akan ingat...">
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div>
             <label>Tajuk Artikel</label>
-            <input type="text" id="postTitle" placeholder="Tajuk utama post...">
+            <input type="text" id="postTitle" placeholder="Tajuk utama...">
         </div>
         <div>
-            <label>Destinasi (Label)</label>
+            <label>Kategori (Label)</label>
             <select id="postLabel">
-                <option value="post">Blog (Label: post)</option>
-                <option value="poster">Poster (Label: poster)</option>
+                <option value="post">Blog (post)</option>
+                <option value="poster">Poster (poster)</option>
             </select>
         </div>
     </div>
@@ -69,39 +46,35 @@
         <button class="tool-btn" onclick="insertMedia('img')">🖼️ Gambar</button>
         <button class="tool-btn" onclick="insertMedia('vid')">🎥 Video</button>
         <button class="tool-btn" onclick="insertMedia('aud')">🎵 Audio</button>
-        <button class="tool-btn" onclick="insertMedia('link')">🔗 Pautan</button>
     </div>
     
-    <textarea id="postBody" rows="12" placeholder="Tulis kandungan artikel dalam Markdown atau HTML..."></textarea>
+    <textarea id="postBody" rows="12" placeholder="Tulis di sini..."></textarea>
     
-    <p class="tip">Tip: Gunakan pautan (URL) yang sah untuk media. Video dan Audio akan dimainkan terus dalam blog.</p>
-
-    <button class="submit-btn" onclick="publishIssue()">Terbitkan Sekarang</button>
+    <button class="submit-btn" onclick="publishPost()">Terbitkan Sekarang</button>
     <div id="status"></div>
 </div>
 
 <script>
-    // 插入媒体代码
+    // --- 记忆功能：页面加载时自动读取 ---
+    window.onload = () => {
+        const savedToken = localStorage.getItem('bdp_github_token');
+        if (savedToken) {
+            document.getElementById('secretToken').value = savedToken;
+        }
+    };
+
     function insertMedia(type) {
         const body = document.getElementById('postBody');
-        const url = prompt(`Masukkan URL untuk ${type}:`);
+        const url = prompt(`Masukkan URL ${type}:`);
         if (!url) return;
-
         let snippet = "";
-        switch(type) {
-            case 'img': snippet = `![Keterangan Gambar](${url})`; break;
-            case 'vid': snippet = `\n<video controls style="width:100%; border-radius:12px; margin:15px 0;">\n  <source src="${url}" type="video/mp4">\n  Browser anda tidak menyokong video.\n</video>\n`; break;
-            case 'aud': snippet = `\n<audio controls style="width:100%; margin:15px 0;" src="${url}"></audio>\n`; break;
-            case 'link': snippet = `[Nama Pautan](${url})`; break;
-        }
-        
-        const start = body.selectionStart;
-        const end = body.selectionEnd;
-        body.value = body.value.substring(0, start) + snippet + body.value.substring(end);
-        body.focus();
+        if(type==='img') snippet = `![Imej](${url})`;
+        if(type==='vid') snippet = `\n<video controls style="width:100%; border-radius:12px;"><source src="${url}"></video>\n`;
+        if(type==='aud') snippet = `\n<audio controls style="width:100%;" src="${url}"></audio>\n`;
+        body.setRangeText(snippet, body.selectionStart, body.selectionEnd, 'end');
     }
 
-    async function publishIssue() {
+    async function publishPost() {
         const token = document.getElementById('secretToken').value;
         const title = document.getElementById('postTitle').value;
         const content = document.getElementById('postBody').value;
@@ -109,11 +82,14 @@
         const status = document.getElementById('status');
 
         if (!token || !title || !content) {
-            alert("Maaf, sila lengkapkan tajuk dan kandungan!");
+            alert("Sila isi semua info!");
             return;
         }
 
-        status.innerText = "⏳ Sedang menghantar ke GitHub...";
+        // --- 记忆功能：点击发布时自动保存 ---
+        localStorage.setItem('bdp_github_token', token);
+
+        status.innerText = "⏳ Sedang menghantar...";
         status.style.color = "#e67e22";
 
         try {
@@ -121,29 +97,22 @@
                 method: 'POST',
                 headers: {
                     'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
+                    'Accept': 'application/vnd.github.v3+json'
                 },
-                body: JSON.stringify({
-                    title: title,
-                    body: content,
-                    labels: [label]
-                })
+                body: JSON.stringify({ title: title, body: content, labels: [label] })
             });
 
             if (response.ok) {
-                status.innerText = "✅ BERJAYA! Artikel telah dipaparkan.";
+                status.innerText = "✅ BERJAYA! Artikel telah terbit.";
                 status.style.color = "#2ecc71";
                 document.getElementById('postTitle').value = '';
                 document.getElementById('postBody').value = '';
             } else {
-                const data = await response.json();
-                status.innerText = "❌ GAGAL: " + (data.message || "Ralat tidak diketahui");
+                status.innerText = "❌ GAGAL: Token mungkin salah.";
                 status.style.color = "#e74c3c";
             }
         } catch (e) {
-            status.innerText = "❌ Ralat Rangkaian. Sila cuba lagi.";
-            status.style.color = "#e74c3c";
+            status.innerText = "❌ Ralat Rangkaian.";
         }
     }
 </script>
