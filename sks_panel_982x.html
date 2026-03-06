@@ -228,13 +228,15 @@
     let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // --- 强制日期解析函数 (解决 DD/MM/YYYY 排序失败的关键) ---
+    // --- 极致修复：日期解析函数 (解决 DD/MM/YYYY 排序的关键) ---
     const getUnixTime = (str) => {
         try {
+            // str 格式: "26/02/2026, 07:56"
             const [datePart, timePart] = str.split(', ');
             const [d, m, y] = datePart.split('/');
             const [hh, mm] = timePart.split(':');
-            return new Date(y, parseInt(m) - 1, d, hh, mm).getTime();
+            // 手动传入数值，确保 100% 兼容性 (月份需减1)
+            return new Date(parseInt(y), parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm)).getTime();
         } catch(e) { return 0; }
     };
 
@@ -353,9 +355,9 @@
 
         let html = "";
         filtered.forEach(s => {
-            // --- 排序逻辑：深拷贝并倒序 ---
+            // --- 强制排序：最新的记录在最前面 ---
             let sortedOffences = [];
-            if (s.offences) {
+            if (s.offences && Array.isArray(s.offences)) {
                 sortedOffences = [...s.offences].sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
             }
 
@@ -398,9 +400,11 @@
     const openHistory = (id, type) => {
         const s = allData.find(x => x.id === id);
         if(!s || !s.offences) return;
-        const list = s.offences
+
+        // --- 弹窗内部也进行强制倒序排序 ---
+        const list = [...s.offences]
             .filter(o => o.type.startsWith(type))
-            .sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time)); // 弹窗内部也排序
+            .sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
 
         document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map((item) => `
@@ -462,7 +466,10 @@
                 if(o.time.includes(target)) dailyRecords.push({ name: s.name, class: s.class, ...o });
             });
         });
+        
+        // --- 导出预览也进行强制排序 ---
         dailyRecords.sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
+        
         if(dailyRecords.length === 0) return alert("Tiada data.");
         dailyRecords.forEach(r => {
             tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
