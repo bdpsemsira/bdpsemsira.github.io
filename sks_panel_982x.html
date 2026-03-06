@@ -222,9 +222,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, writeBatch, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase 配置 (保持不变)
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
         authDomain: "bdpsemsira-5c274.firebaseapp.com",
@@ -246,17 +245,25 @@
     let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // 初始化界面
+    // 解析日期字符串为可比较的毫秒数 (格式: "DD/MM/YYYY, HH:mm")
+    const getTimeVal = (str) => {
+        try {
+            const [datePart, timePart] = str.split(', ');
+            const [day, month, year] = datePart.split('/');
+            return new Date(`${year}-${month}-${day}T${timePart}`).getTime();
+        } catch(e) { return 0; }
+    };
+
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('reportDate').valueAsDate = new Date();
     document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
+    
     const setTime = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
     setTime();
 
-    // 1. RTDB 数据加载 (学生名单)
     onValue(ref(rtdb, "/"), (snap) => {
         rtdbData = snap.val() || {};
         const selClass = document.getElementById('selClass');
@@ -270,7 +277,6 @@
         const val = e.target.value;
         const selName = document.getElementById('selName');
         const stuClass = document.getElementById('stuClass');
-        
         if(val === "MANUAL") {
             stuClass.style.display = 'block';
             selName.innerHTML = '<option value="MANUAL">-- Input Manual --</option>';
@@ -292,15 +298,12 @@
         if(!isManual) document.getElementById('stuName').value = e.target.value;
     };
 
-    // 2. 数据提交
     const executeSubmit = async (name, cls, type, time) => {
         const today = new Date().toLocaleDateString('en-GB');
         const fullTime = `${today}, ${time}`;
         const entry = { type, time: fullTime, by: currentAdmin };
-        
         const q = query(colRef, where("name", "==", name.toUpperCase()), where("class", "==", cls.toUpperCase()));
         const snap = await getDocs(q);
-        
         if(!snap.empty) {
             const d = snap.docs[0];
             const oldOffences = d.data().offences || [];
@@ -321,9 +324,7 @@
         const cls = document.getElementById('stuClass').value.trim();
         const type = document.getElementById('violation').value;
         const time = document.getElementById('violationTime').value;
-        
         if(!name || !cls || !type) return alert("Lengkapkan data!");
-        
         if(type === "Lewat") {
             document.getElementById('sebabModal').style.display = 'flex';
         } else {
@@ -331,7 +332,6 @@
         }
     };
 
-    // Sebab Lewat Buttons
     const sebabList = ["Bangun Lewat", "Sakit Perut", "Masalah Kesihatan", "Masalah Kenderaan", "Lain-lain"];
     document.getElementById('sebabButtons').innerHTML = sebabList.map(s => `<button class="sebab-btn">${s}</button>`).join('');
     document.querySelectorAll('.sebab-btn').forEach(btn => {
@@ -343,7 +343,6 @@
         };
     });
 
-    // 3. 实时监听与渲染
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderTable();
@@ -363,8 +362,6 @@
     const renderTable = () => {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
-        
-        // 个人报表按钮
         const btnInd = document.getElementById('btnStudentReport');
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
@@ -376,6 +373,9 @@
 
         let html = "";
         filtered.forEach(s => {
+            // 对每位学生的 offences 数组进行内部排序（倒序）
+            if(s.offences) s.offences.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
+
             let tags = "";
             const countsByType = (s.offences || []).reduce((acc, curr) => {
                 const base = curr.type.split(' (')[0];
@@ -397,7 +397,6 @@
         });
         document.getElementById('recordBody').innerHTML = html;
 
-        // 绑定事件 (Delegate)
         document.querySelectorAll('.offence-tag').forEach(t => {
             t.onclick = () => openHistory(t.dataset.id, t.dataset.type);
         });
@@ -412,20 +411,23 @@
 
     const openHistory = (id, type) => {
         const s = allData.find(x => x.id === id);
+        // 过滤出该类别的违规并再次确保排序
         const list = s.offences.filter(o => o.type.startsWith(type));
+        list.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
+
         document.getElementById('modalTitle').innerText = type;
-        document.getElementById('historyList').innerHTML = list.map((item, idx) => `
+        document.getElementById('historyList').innerHTML = list.map((item) => `
             <div class="history-item">
                 <span>${item.time}<br><small>Oleh: ${item.by}</small></span>
-                <button style="background:red; color:white; font-size:10px;" class="btn-del-single" data-id="${id}" data-idx="${s.offences.indexOf(item)}">PADAM</button>
+                <button style="background:red; color:white; font-size:10px;" class="btn-del-single" data-id="${id}" data-time="${item.time}">PADAM</button>
             </div>`).join('');
         document.getElementById('historyModal').style.display = 'flex';
         
         document.querySelectorAll('.btn-del-single').forEach(b => {
             b.onclick = async () => {
                 const student = allData.find(x => x.id === b.dataset.id);
-                let newArr = [...student.offences];
-                newArr.splice(parseInt(b.dataset.idx), 1);
+                // 根据时间戳精确删除
+                let newArr = student.offences.filter(o => o.time !== b.dataset.time);
                 if(newArr.length === 0) await deleteDoc(doc(db, "students", student.id));
                 else await updateDoc(doc(db, "students", student.id), { offences: newArr, counts: newArr.length });
                 document.getElementById('historyModal').style.display = 'none';
@@ -454,7 +456,6 @@
         document.getElementById('statsDisplay').innerHTML = html;
     };
 
-    // 4. 报表导出逻辑
     const capture = async (filename) => {
         const el = document.getElementById('reportExportTemplate');
         const canvas = await html2canvas(el, { scale: 2 });
@@ -471,29 +472,36 @@
         const target = `${day}/${month}/${year}`;
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
-        let count = 0;
+        
+        // 收集当日所有记录并排序
+        let dailyRecords = [];
         allData.forEach(s => {
             s.offences.forEach(o => {
                 if(o.time.includes(target)) {
-                    count++;
-                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+                    dailyRecords.push({ name: s.name, class: s.class, ...o });
                 }
             });
         });
-        if(count === 0) return alert("Tiada data.");
+
+        dailyRecords.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
+
+        if(dailyRecords.length === 0) return alert("Tiada data.");
+
+        dailyRecords.forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
+        });
+
         document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${target}`;
-        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${dailyRecords.length}`;
         await capture(`Laporan_Harian_${target}.png`);
     };
 
-    // 其他关闭按钮
     document.getElementById('btnCloseHistory').onclick = () => document.getElementById('historyModal').style.display='none';
     document.getElementById('btnCancelSebab').onclick = () => document.getElementById('sebabModal').style.display='none';
     document.getElementById('btnManualToggle').onclick = () => {
         document.getElementById('selClass').value = "MANUAL";
         document.getElementById('selClass').dispatchEvent(new Event('change'));
     };
-
 </script>
 </body>
 </html>
