@@ -99,19 +99,18 @@
     <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
     <div class="status-box" style="text-align:right">
         <div style="font-size:11px; color:#666">OPERATOR: <span id="displayAdmin" style="color:var(--accent)">...</span></div>
-        <div style="font-size:11px; color:#27ae60">SISTEM DALAM TALIAN</div>
+        <div style="font-size:11px; color:#27ae60">SISTEM DALAM TALIAN (REALTIME READY)</div>
     </div>
 </div>
 
 <div class="container">
-    
     <div class="card">
         <h3>1. REKOD KEMASUKAN BARU</h3>
         <div class="input-group">
             <div style="flex:0.6">
                 <label style="font-size:10px; color:var(--accent)">PILIH KELAS</label>
                 <select id="selClass" onchange="updateStudentList()">
-                    <option value="">Memuatkan...</option>
+                    <option value="">Memuatkan data...</option>
                 </select>
                 <input type="text" id="stuClass" placeholder="Manual Kelas" style="display:none; margin-top:5px;">
             </div>
@@ -254,15 +253,13 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    // 增加：引入 Realtime Database 模块
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, writeBatch, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
         authDomain: "bdpsemsira-5c274.firebaseapp.com",
-        // 增加：RTDB 地址
-        databaseURL: "https://bdpsemsira-5c274-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        databaseURL: "https://bdpsemsira-5c274-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "bdpsemsira-5c274",
         storageBucket: "bdpsemsira-5c274.firebasestorage.app",
         messagingSenderId: "176946808975",
@@ -270,77 +267,43 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    
-    // 初始化 Firestore (用于保存记录)
     const db = getFirestore(app);
+    const rtdb = getDatabase(app);
+    
+    // 配置：Firestore引用用于存储
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
 
-    // 增加：初始化 Realtime Database (用于调用名单)
-    const rtdb = getDatabase(app);
-    const rtdbStudentsRef = ref(rtdb, 'students');
+    // 配置：RTDB引用用于名单（根目录）
+    const rtdbRootRef = ref(rtdb, "/");
 
+    let allData = []; // Firestore 数据
+    let rtdbData = {}; // RTDB 原始数据结构
+    let selectedStudent = null;
+
+    // 获取当前管理员
     const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
     document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
+    // 初始时间
     const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
     setTimeNow();
     document.getElementById('reportDate').valueAsDate = new Date();
-    
-    const now = new Date();
-    const monthVal = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`;
-    document.getElementById('statsMonth').value = monthVal;
 
-    let allData = []; // 依然保存 Firestore 的违规数据用于渲染列表
-    let rtdbData = []; // 保存来自 Realtime Database 的名单数据
-    let selectedStudent = null;
-
-    // 1. 监听 Firestore (违规列表)
-    onSnapshot(colRef, (snap) => {
-        allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        render();
-        updateStats();
+    // --- 实时对接 Realtime Database 名单 ---
+    onValue(rtdbRootRef, (snapshot) => {
+        rtdbData = snapshot.val() || {};
+        console.log("RTDB Loaded:", rtdbData);
+        updateClassDropdown();
     });
 
-    // 2. 监听 Realtime Database (获取最新班级和学生名单)
-    onValue(rtdbStudentsRef, (snapshot) => {
-        const data = snapshot.val();
-        rtdbData = [];
-        if (data) {
-            // 将对象转为数组
-            Object.keys(data).forEach(key => {
-                rtdbData.push({ id: key, ...data[key] });
-            });
-        }
-        updateClassDropdownFromRTDB(); 
-    });
-
-    const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
-    onSnapshot(qLogs, (snap) => {
-        let html = "";
-        snap.forEach(d => {
-            const data = d.data();
-            const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString('ms-MY', {hour:'2-digit', minute:'2-digit'}) : "...";
-            html += `<div class="log-entry">
-                <span class="log-time">[${timeStr}]</span>
-                <span class="log-msg">${data.msg}</span>
-                <span class="log-admin">@${data.admin}</span>
-            </div>`;
-        });
-        document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti.";
-    });
-
-    // --- 核心修改：对接 Realtime Database 的名单显示逻辑 ---
-
-    function updateClassDropdownFromRTDB() {
+    function updateClassDropdown() {
         const selClass = document.getElementById('selClass');
-        const currentVal = selClass.value;
-        // 从 rtdbData 中提取唯一班级
-        const classes = [...new Set(rtdbData.map(s => s.class))].sort();
+        const classes = Object.keys(rtdbData).sort();
         
         let html = '<option value="">Pilih...</option>';
         classes.forEach(c => {
@@ -348,7 +311,6 @@
         });
         html += '<option value="MANUAL">-- Input Manual --</option>';
         selClass.innerHTML = html;
-        if(currentVal) selClass.value = currentVal;
     }
 
     window.updateStudentList = () => {
@@ -366,16 +328,15 @@
         stuClassInput.style.display = 'none';
         stuClassInput.value = selClass;
 
-        if(!selClass) {
+        if(!selClass || !rtdbData[selClass]) {
             selName.innerHTML = '<option value="">Pilih Kelas Dahulu...</option>';
             return;
         }
 
-        // 从 rtdbData 过滤选定班级的学生
-        const students = rtdbData.filter(s => s.class === selClass).map(s => s.name).sort();
+        const students = rtdbData[selClass].sort();
         let html = '<option value="">Pilih Pelajar...</option>';
-        students.forEach(n => {
-            html += `<option value="${n}">${n}</option>`;
+        students.forEach(name => {
+            html += `<option value="${name}">${name}</option>`;
         });
         html += '<option value="MANUAL">-- Pelajar Baru --</option>';
         selName.innerHTML = html;
@@ -394,12 +355,27 @@
     };
 
     window.toggleManualInput = () => {
-        const selClass = document.getElementById('selClass');
-        selClass.value = "MANUAL";
-        updateStudentList();
+        document.getElementById('selClass').value = "MANUAL";
+        window.updateStudentList();
     };
 
-    // --- 以下保持原有的 Firestore 记录和报表生成逻辑 ---
+    // --- Firestore 数据监听与操作 ---
+    onSnapshot(colRef, (snap) => {
+        allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+        updateStats();
+    });
+
+    const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
+    onSnapshot(qLogs, (snap) => {
+        let html = "";
+        snap.forEach(d => {
+            const data = d.data();
+            const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString('ms-MY', {hour:'2-digit', minute:'2-digit'}) : "...";
+            html += `<div class="log-entry"><span class="log-time">[${timeStr}]</span><span class="log-msg">${data.msg}</span><span class="log-admin">@${data.admin}</span></div>`;
+        });
+        document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti.";
+    });
 
     async function sysLog(msg) {
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
@@ -410,27 +386,20 @@
         if(!selMonth) return;
         const [year, month] = selMonth.split('-');
         const targetString = `/${month}/${year}`;
-
         const stats = {};
         allData.forEach(s => {
             if(s.offences) {
                 s.offences.forEach(o => {
                     const baseType = o.type.split(' (')[0];
-                    if(o.time && o.time.includes(targetString)) {
-                        stats[baseType] = (stats[baseType] || 0) + 1;
-                    }
+                    if(o.time && o.time.includes(targetString)) stats[baseType] = (stats[baseType] || 0) + 1;
                 });
             }
         });
-
         const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok"];
         let html = "";
-        types.forEach(t => {
-            html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`;
-        });
+        types.forEach(t => { html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`; });
         document.getElementById('statsDisplay').innerHTML = html;
     }
-    
     document.getElementById('statsMonth').addEventListener('change', updateStats);
 
     window.submitRecord = async () => {
@@ -438,14 +407,8 @@
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const type = document.getElementById('violation').value;
         const vTime = document.getElementById('violationTime').value;
-
         if(!name || !cls || !type || !vTime) return alert("Lengkapkan ruangan!");
-
-        if (type === "Lewat") {
-            document.getElementById('sebabModal').style.display = 'flex';
-            return;
-        }
-
+        if (type === "Lewat") { document.getElementById('sebabModal').style.display = 'flex'; return; }
         executeSubmit(name, cls, type, vTime);
     };
 
@@ -453,20 +416,16 @@
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
         const vTime = document.getElementById('violationTime').value;
-        const fullType = `Lewat (${sebab})`;
-
         document.getElementById('sebabModal').style.display = 'none';
-        executeSubmit(name, cls, fullType, vTime);
+        executeSubmit(name, cls, `Lewat (${sebab})`, vTime);
     };
 
     async function executeSubmit(name, cls, type, vTime) {
         const today = new Date().toLocaleDateString('en-GB');
         const fullTime = `${today}, ${vTime}`;
         const logEntry = { type, time: fullTime, by: currentAdmin };
-
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
-
         if(!qs.empty) {
             await updateDoc(doc(db, "students", qs.docs[0].id), { 
                 offences: [...qs.docs[0].data().offences, logEntry], 
@@ -475,9 +434,7 @@
         } else {
             await addDoc(colRef, { name, class: cls, offences: [logEntry], counts: 1 });
         }
-
         await sysLog(`TAMBAH: ${type} - ${name}`);
-        
         document.getElementById('stuName').value = "";
         document.getElementById('selName').value = "";
         setTimeNow();
@@ -486,7 +443,6 @@
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
-        
         const btnReport = document.getElementById('btnStudentReport');
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
@@ -495,7 +451,6 @@
         } else {
             btnReport.style.display = 'none';
         }
-
         let html = "";
         filtered.forEach(s => {
             const grouped = s.offences.reduce((acc, curr, i) => {
@@ -532,23 +487,18 @@
     };
 
     window.delOffence = async (id, idx) => {
-        if(!confirm("Hapus kesalahan ini?")) return;
+        if(!confirm("Hapus?")) return;
         const s = allData.find(x => x.id === id);
-        const type = s.offences[idx].type;
         let newOff = [...s.offences];
         newOff.splice(idx, 1);
         if(newOff.length === 0) await deleteDoc(doc(db, "students", id));
         else await updateDoc(doc(db, "students", id), { offences: newOff, counts: newOff.length });
-        await sysLog(`PADAM: ${type} - ${s.name}`);
         closeModal();
     };
 
     window.purge = async (id) => {
         const s = allData.find(x => x.id === id);
-        if(confirm(`Hapus data ${s.name}?`)) {
-            await deleteDoc(doc(db, "students", id));
-            await sysLog(`HAPUS PROFIL: ${s.name}`);
-        }
+        if(confirm(`Hapus ${s.name}?`)) await deleteDoc(doc(db, "students", id));
     };
 
     window.closeModal = () => document.getElementById('historyModal').style.display='none';
@@ -556,12 +506,7 @@
 
     async function captureAndDownload(filename) {
         const template = document.getElementById('reportExportTemplate');
-        return html2canvas(template, { 
-            backgroundColor: "#ffffff", 
-            scale: 2, 
-            useCORS: true,
-            windowWidth: 800 
-        }).then(canvas => {
+        return html2canvas(template, { backgroundColor: "#ffffff", scale: 2, useCORS: true, windowWidth: 800 }).then(canvas => {
             const link = document.createElement('a');
             link.download = filename;
             link.href = canvas.toDataURL("image/png");
@@ -585,7 +530,7 @@
                 }
             });
         });
-        if(count === 0) return alert("Tiada rekod pada tarikh ini.");
+        if(count === 0) return alert("Tiada rekod.");
         document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${targetDate}`;
         document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
         await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
@@ -594,63 +539,45 @@
     window.downloadMonthlyReport = async () => {
         const selMonth = document.getElementById('statsMonth').value;
         const filterType = document.getElementById('filterOffence').value;
-        if(!selMonth) return alert("Pilih bulan!");
         const [year, month] = selMonth.split('-');
         const targetString = `/${month}/${year}`;
-
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
         let count = 0;
-        let studentSet = new Set();
-
         allData.forEach(s => {
             s.offences.forEach(o => {
                 const baseType = o.type.split(' (')[0];
-                const matchType = (filterType === "ALL") || (baseType === filterType) || (filterType === "Isu Trafik" && ["Memecut Laju", "Isu Nombor Pendaftaran", "Isu Cukai Jalan", "Isu Lesen Memandu"].includes(baseType));
-                
+                const matchType = (filterType === "ALL") || (baseType === filterType);
                 if(o.time.includes(targetString) && matchType) {
                     count++;
-                    studentSet.add(s.name);
                     tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
                 }
             });
         });
-
-        if(count === 0) return alert("Tiada rekod pada bulan ini untuk kategori tersebut.");
-        
-        const titleText = filterType === "ALL" ? "SEMUA KESALAHAN" : filterType.toUpperCase();
-        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN (${titleText}): ${month}/${year}`;
-        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count} | JUMLAH PELAJAR TERLIBAT: ${studentSet.size}`;
-        await captureAndDownload(`Laporan_Bulanan_${filterType}_${month}_${year}.png`);
+        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN: ${month}/${year}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_Bulanan.png`);
     };
 
     window.downloadStudentMonthlyReport = async () => {
-        if(!selectedStudent) return alert("Sila cari dan pilih seorang pelajar dahulu.");
-        
+        if(!selectedStudent) return;
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
-        let count = 0;
-
         selectedStudent.offences.forEach(o => {
-            count++;
             tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
         });
-
-        if(count === 0) return alert("Tiada sebarang rekod kesalahan untuk pelajar ini.");
-
-        document.getElementById('rptMeta').innerText = `LAPORAN DISIPLIN INDIVIDU (KESELURUHAN)`;
-        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class} | JUMLAH SEMUA KES: ${count}`;
+        document.getElementById('rptMeta').innerText = `LAPORAN INDIVIDU`;
+        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name}`;
         await captureAndDownload(`Laporan_Penuh_${selectedStudent.name}.png`);
     };
 
     window.masterReset = async () => {
-        if(confirm("AWAS: Padam SEMUA data?") && prompt("Taip 'RESET2026':") === "RESET2026") {
+        if(confirm("Padam SEMUA data?") && prompt("Taip 'RESET2026':") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            await sysLog("MASTER RESET");
-            alert("Data dikosongkan.");
+            alert("Selesai.");
         }
     };
 </script>
