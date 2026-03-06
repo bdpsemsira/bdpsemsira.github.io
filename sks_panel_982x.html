@@ -57,8 +57,7 @@
         .tag-traffic { border-left-color: var(--tag-traffic); color: #888; background: #000; border: 1px solid #333; }
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
-        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
+        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
@@ -75,14 +74,23 @@
         .sebab-btn:hover { background: var(--accent); color: #000; }
 
         #reportExportTemplate { 
-            position: absolute; left: -9999px; width: 800px; background-color: #ffffff !important; 
-            padding: 50px; color: #000000 !important; box-sizing: border-box;
+            position: absolute; 
+            left: -9999px; 
+            width: 800px; 
+            min-height: 1130px; 
+            background-color: #ffffff !important; 
+            padding: 50px; 
+            color: #000000 !important;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
         #reportExportTemplate * { color: #000000 !important; border-color: #000000 !important; }
-        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
-        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; }
+        .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0; }
+        .rpt-table { width: 100%; border-collapse: collapse; background: #fff !important; table-layout: fixed; }
         .rpt-table th { background: #f0f0f0 !important; padding: 10px; border: 1px solid #000 !important; font-size: 12px; }
-        .rpt-table td { padding: 10px; border: 1px solid #000 !important; background: #fff !important; text-align: center; font-size: 11px; }
+        .rpt-table td { padding: 10px; border: 1px solid #000 !important; background: #fff !important; text-align: center; font-size: 11px; word-wrap: break-word; }
+        .rpt-footer { margin-top: auto; padding-top: 60px; display: flex; justify-content: flex-end; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -91,7 +99,7 @@
     <div class="nav-brand"><img src="semsira.png" alt="Logo"><h1>SEMSIRA BDP</h1></div>
     <div class="status-box" style="text-align:right">
         <div style="font-size:11px; color:#666">OPERATOR: <span id="displayAdmin" style="color:var(--accent)">...</span></div>
-        <div style="font-size:11px; color:#27ae60">SISTEM AKTIF (2026 REALTIME)</div>
+        <div style="font-size:11px; color:#27ae60">SISTEM DALAM TALIAN (REALTIME READY)</div>
     </div>
 </div>
 
@@ -101,13 +109,17 @@
         <div class="input-group">
             <div style="flex:0.6">
                 <label style="font-size:10px; color:var(--accent)">PILIH KELAS</label>
-                <select id="selClass"><option value="">Memuatkan...</option></select>
+                <select id="selClass" onchange="updateStudentList()">
+                    <option value="">Memuatkan data...</option>
+                </select>
                 <input type="text" id="stuClass" placeholder="Manual Kelas" style="display:none; margin-top:5px;">
             </div>
             <div style="flex:1.2">
                 <label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label>
-                <select id="selName"><option value="">Pilih Kelas Dahulu...</option></select>
-                <input type="text" id="stuName" placeholder="Manual Nama" style="display:none; margin-top:5px;">
+                <select id="selName" onchange="checkManualName()">
+                    <option value="">Pilih Kelas Dahulu...</option>
+                </select>
+                <input type="text" id="stuName" placeholder="Manual Nama Penuh" style="display:none; margin-top:5px;">
             </div>
             <div style="flex:0.4"><label style="font-size:10px; color:var(--accent)">MASA</label><input type="time" id="violationTime"></div>
             <div style="flex:1">
@@ -118,50 +130,74 @@
                     <option value="Ponteng Kelas">Ponteng Kelas</option>
                     <option value="Buli">Buli</option>
                     <option value="Bergaduh">Bergaduh</option>
+                    <option value="Diskriminasi">Diskriminasi</option>
                     <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                    <option value="Memecut Laju">Memecut Laju</option>
+                    <option value="Isu Nombor Pendaftaran">Isu Nombor Pendaftaran</option>
+                    <option value="Isu Cukai Jalan">Isu Cukai Jalan</option>
+                    <option value="Isu Lesen Memandu">Isu Lesen Memandu</option>
                     <option value="Lain-lain">Lain-lain</option>
                 </select>
             </div>
-            <button id="btnSubmit">SIMPAN</button>
+            <button onclick="submitRecord()">SIMPAN</button>
         </div>
-        <small style="color:#555; cursor:pointer" id="btnManualToggle">* Klik sini untuk input manual (Pelajar Baru)</small>
+        <small style="color:#555; cursor:pointer" onclick="toggleManualInput()">* Klik sini untuk input manual (Pelajar Baru)</small>
     </div>
 
     <div id="sebabModal" class="modal">
         <div class="modal-content">
             <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
-            <div class="sebab-grid" id="sebabButtons"></div>
-            <button id="btnCancelSebab" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
+            <div class="sebab-grid">
+                <button class="sebab-btn" onclick="confirmLewat('Bangun Lewat')">1. Bangun Lewat</button>
+                <button class="sebab-btn" onclick="confirmLewat('Sakit Perut')">2. Sakit Perut</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Kesihatan')">3. Masalah Kesihatan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Keluarga')">4. Masalah Keluarga</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Kenderaan')">5. Masalah Kenderaan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Masalah Pengangkutan')">6. Masalah Pengangkutan</button>
+                <button class="sebab-btn" onclick="confirmLewat('Lain-lain')">7. Lain-lain</button>
+            </div>
+            <button onclick="document.getElementById('sebabModal').style.display='none'" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
         </div>
     </div>
 
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap:10px;">
             <h3>2. ANALISIS KESALAHAN BULANAN</h3>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <input type="month" id="statsMonth" style="width:160px;">
-                <button id="btnPrintMonthly" style="background:#2980b9; color:white; font-size:11px;">CETAK BULANAN</button>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+                <input type="month" id="statsMonth" style="width:160px; flex:none;">
+                <select id="filterOffence" style="width:180px; flex:none;">
+                    <option value="ALL">Semua Kesalahan</option>
+                    <option value="Lewat">Lewat</option>
+                    <option value="Ponteng Kelas">Ponteng Kelas</option>
+                    <option value="Buli">Buli</option>
+                    <option value="Bergaduh">Bergaduh</option>
+                    <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                    <option value="Isu Trafik">Isu Trafik</option>
+                </select>
+                <button onclick="downloadMonthlyReport()" style="background:#2980b9; color:white; font-size:11px;">CETAK LAPORAN BULANAN</button>
             </div>
         </div>
         <div class="stats-grid" id="statsDisplay"></div>
     </div>
 
     <div class="card">
-        <h3>3. LOG AKTIVITI</h3>
+        <h3>3. LOG AKTIVITI (TERKINI)</h3>
         <div class="log-panel" id="logDisplay">Memuatkan log...</div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3>4. SENARAI DISIPLIN</h3>
-            <button id="btnStudentReport" style="background:var(--tag-contra); color:white; font-size:10px; display:none;"></button>
+            <button id="btnStudentReport" onclick="downloadStudentMonthlyReport()" style="background:var(--tag-contra); color:white; font-size:10px; display:none;">CETAK SEMUA REKOD PELAJAR</button>
         </div>
-        <input type="text" id="searchBox" placeholder="Cari nama atau kelas...">
+        <input type="text" id="searchBox" onkeyup="handleSearch()" placeholder="Cari nama atau kelas untuk urus/cetak laporan...">
         <table>
             <thead>
                 <tr>
                     <th width="25%">Identiti</th>
-                    <th width="45%">Kesalahan</th>
+                    <th width="45%">Kesalahan (Klik untuk urus)</th>
                     <th width="15%" style="text-align:center">Jumlah</th>
                     <th width="15%">Tindakan</th>
                 </tr>
@@ -171,9 +207,10 @@
     </div>
 
     <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:30px;">
-        <input type="date" id="reportDate" style="width:150px;">
-        <button id="btnPrintDaily" style="background:#27ae60; color:white;">MUAT TURUN HARIAN</button>
-        <button id="btnMasterReset" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
+        <span style="font-size:11px; color:#555">PILIH TARIKH LAPORAN HARIAN:</span>
+        <input type="date" id="reportDate" style="width:150px; flex:none;">
+        <button onclick="downloadReport()" style="background:#27ae60; color:white;">MUAT TURUN PNG HARIAN</button>
+        <button onclick="masterReset()" style="background:#1a0000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
 
@@ -181,7 +218,7 @@
     <div class="modal-content">
         <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
         <div id="historyList"></div>
-        <button id="btnCloseHistory" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
     </div>
 </div>
 
@@ -193,19 +230,31 @@
             <p id="rptMeta" style="margin:5px 0; font-size:14px;"></p>
         </div>
     </div>
-    <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; font-size:13px;"></div>
+    <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; text-align:left; font-size:13px;"></div>
     <table class="rpt-table">
         <thead>
-            <tr><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Masa/Tarikh</th><th>Operator</th></tr>
+            <tr>
+                <th width="25%">Nama Pelajar</th>
+                <th width="15%">Kelas</th>
+                <th width="25%">Kesalahan</th>
+                <th width="20%">Masa</th>
+                <th width="15%">Operator</th>
+            </tr>
         </thead>
         <tbody id="reportTbody"></tbody>
     </table>
+    <div class="rpt-footer">
+        <div style="text-align:center;">
+            <p>___________________________</p>
+            <p style="font-weight:bold; margin:0;">Tandatangan Pegawai</p>
+        </div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, writeBatch, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
@@ -220,270 +269,316 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const rtdb = getDatabase(app);
+    
+    // 配置：Firestore引用用于存储
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
 
-    let allData = [];
-    let rtdbData = {};
+    // 配置：RTDB引用用于名单（根目录）
+    const rtdbRootRef = ref(rtdb, "/");
+
+    let allData = []; // Firestore 数据
+    let rtdbData = {}; // RTDB 原始数据结构
     let selectedStudent = null;
-    const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // --- 极致修复：日期解析函数 (解决 DD/MM/YYYY 排序的关键) ---
-    const getUnixTime = (str) => {
-        try {
-            // str 格式: "26/02/2026, 07:56"
-            const [datePart, timePart] = str.split(', ');
-            const [d, m, y] = datePart.split('/');
-            const [hh, mm] = timePart.split(':');
-            // 手动传入数值，确保 100% 兼容性 (月份需减1)
-            return new Date(parseInt(y), parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm)).getTime();
-        } catch(e) { return 0; }
-    };
+    // 获取当前管理员
+    const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
+    const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
+    document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
-    document.getElementById('displayAdmin').innerText = currentAdmin;
-    document.getElementById('reportDate').valueAsDate = new Date();
-    document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
-    
-    const setTime = () => {
+    // 初始时间
+    const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
-    setTime();
+    setTimeNow();
+    document.getElementById('reportDate').valueAsDate = new Date();
 
-    onValue(ref(rtdb, "/"), (snap) => {
-        rtdbData = snap.val() || {};
+    // --- 实时对接 Realtime Database 名单 ---
+    onValue(rtdbRootRef, (snapshot) => {
+        rtdbData = snapshot.val() || {};
+        console.log("RTDB Loaded:", rtdbData);
+        updateClassDropdown();
+    });
+
+    function updateClassDropdown() {
         const selClass = document.getElementById('selClass');
+        const classes = Object.keys(rtdbData).sort();
+        
         let html = '<option value="">Pilih...</option>';
-        Object.keys(rtdbData).sort().forEach(c => html += `<option value="${c}">${c}</option>`);
+        classes.forEach(c => {
+            html += `<option value="${c}">${c}</option>`;
+        });
         html += '<option value="MANUAL">-- Input Manual --</option>';
         selClass.innerHTML = html;
-    });
+    }
 
-    document.getElementById('selClass').onchange = (e) => {
-        const val = e.target.value;
+    window.updateStudentList = () => {
+        const selClass = document.getElementById('selClass').value;
         const selName = document.getElementById('selName');
-        const stuClass = document.getElementById('stuClass');
-        if(val === "MANUAL") {
-            stuClass.style.display = 'block';
+        const stuClassInput = document.getElementById('stuClass');
+
+        if(selClass === "MANUAL") {
+            stuClassInput.style.display = 'block';
             selName.innerHTML = '<option value="MANUAL">-- Input Manual --</option>';
-            document.getElementById('stuName').style.display = 'block';
+            checkManualName();
+            return;
+        }
+
+        stuClassInput.style.display = 'none';
+        stuClassInput.value = selClass;
+
+        if(!selClass || !rtdbData[selClass]) {
+            selName.innerHTML = '<option value="">Pilih Kelas Dahulu...</option>';
+            return;
+        }
+
+        const students = rtdbData[selClass].sort();
+        let html = '<option value="">Pilih Pelajar...</option>';
+        students.forEach(name => {
+            html += `<option value="${name}">${name}</option>`;
+        });
+        html += '<option value="MANUAL">-- Pelajar Baru --</option>';
+        selName.innerHTML = html;
+        checkManualName();
+    };
+
+    window.checkManualName = () => {
+        const selName = document.getElementById('selName').value;
+        const stuNameInput = document.getElementById('stuName');
+        if(selName === "MANUAL") {
+            stuNameInput.style.display = 'block';
         } else {
-            stuClass.style.display = 'none';
-            stuClass.value = val;
-            const students = rtdbData[val] || [];
-            let html = '<option value="">Pilih Pelajar...</option>';
-            students.sort().forEach(n => html += `<option value="${n}">${n}</option>`);
-            html += '<option value="MANUAL">-- Pelajar Baru --</option>';
-            selName.innerHTML = html;
+            stuNameInput.style.display = 'none';
+            stuNameInput.value = selName;
         }
     };
 
-    document.getElementById('selName').onchange = (e) => {
-        const isManual = e.target.value === "MANUAL";
-        document.getElementById('stuName').style.display = isManual ? 'block' : 'none';
-        if(!isManual) document.getElementById('stuName').value = e.target.value;
+    window.toggleManualInput = () => {
+        document.getElementById('selClass').value = "MANUAL";
+        window.updateStudentList();
     };
 
-    const executeSubmit = async (name, cls, type, time) => {
-        const today = new Date().toLocaleDateString('en-GB');
-        const fullTime = `${today}, ${time}`;
-        const entry = { type, time: fullTime, by: currentAdmin };
-        const q = query(colRef, where("name", "==", name.toUpperCase()), where("class", "==", cls.toUpperCase()));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            const d = snap.docs[0];
-            const oldOffences = d.data().offences || [];
-            await updateDoc(doc(db, "students", d.id), {
-                offences: [entry, ...oldOffences],
-                counts: increment(1)
-            });
-        } else {
-            await addDoc(colRef, { name: name.toUpperCase(), class: cls.toUpperCase(), offences: [entry], counts: 1 });
-        }
-        await addDoc(logRef, { msg: `TAMBAH: ${type} - ${name}`, admin: currentAdmin, timestamp: serverTimestamp() });
-        alert("Berjaya disimpan!");
-        location.reload(); 
-    };
-
-    document.getElementById('btnSubmit').onclick = () => {
-        const name = document.getElementById('stuName').value.trim();
-        const cls = document.getElementById('stuClass').value.trim();
-        const type = document.getElementById('violation').value;
-        const time = document.getElementById('violationTime').value;
-        if(!name || !cls || !type) return alert("Lengkapkan data!");
-        if(type === "Lewat") {
-            document.getElementById('sebabModal').style.display = 'flex';
-        } else { executeSubmit(name, cls, type, time); }
-    };
-
-    const sebabList = ["Bangun Lewat", "Sakit Perut", "Masalah Kesihatan", "Masalah Kenderaan", "Lain-lain"];
-    document.getElementById('sebabButtons').innerHTML = sebabList.map(s => `<button class="sebab-btn">${s}</button>`).join('');
-    document.querySelectorAll('.sebab-btn').forEach(btn => {
-        btn.onclick = () => {
-            const name = document.getElementById('stuName').value;
-            const cls = document.getElementById('stuClass').value;
-            const time = document.getElementById('violationTime').value;
-            executeSubmit(name, cls, `Lewat (${btn.innerText})`, time);
-        };
-    });
-
+    // --- Firestore 数据监听与操作 ---
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderTable();
+        render();
         updateStats();
     });
 
-    onSnapshot(query(logRef, orderBy("timestamp", "desc"), limit(10)), (snap) => {
+    const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
+    onSnapshot(qLogs, (snap) => {
         let html = "";
         snap.forEach(d => {
             const data = d.data();
-            const t = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : "...";
-            html += `<div class="log-entry"><span>[${t}]</span><span class="log-msg">${data.msg}</span><span class="log-admin">@${data.admin}</span></div>`;
+            const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString('ms-MY', {hour:'2-digit', minute:'2-digit'}) : "...";
+            html += `<div class="log-entry"><span class="log-time">[${timeStr}]</span><span class="log-msg">${data.msg}</span><span class="log-admin">@${data.admin}</span></div>`;
         });
-        document.getElementById('logDisplay').innerHTML = html;
+        document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti.";
     });
 
-    const renderTable = () => {
+    async function sysLog(msg) {
+        await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
+    }
+
+    function updateStats() {
+        const selMonth = document.getElementById('statsMonth').value;
+        if(!selMonth) return;
+        const [year, month] = selMonth.split('-');
+        const targetString = `/${month}/${year}`;
+        const stats = {};
+        allData.forEach(s => {
+            if(s.offences) {
+                s.offences.forEach(o => {
+                    const baseType = o.type.split(' (')[0];
+                    if(o.time && o.time.includes(targetString)) stats[baseType] = (stats[baseType] || 0) + 1;
+                });
+            }
+        });
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok"];
+        let html = "";
+        types.forEach(t => { html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`; });
+        document.getElementById('statsDisplay').innerHTML = html;
+    }
+    document.getElementById('statsMonth').addEventListener('change', updateStats);
+
+    window.submitRecord = async () => {
+        const name = document.getElementById('stuName').value.trim().toUpperCase();
+        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
+        const type = document.getElementById('violation').value;
+        const vTime = document.getElementById('violationTime').value;
+        if(!name || !cls || !type || !vTime) return alert("Lengkapkan ruangan!");
+        if (type === "Lewat") { document.getElementById('sebabModal').style.display = 'flex'; return; }
+        executeSubmit(name, cls, type, vTime);
+    };
+
+    window.confirmLewat = (sebab) => {
+        const name = document.getElementById('stuName').value.trim().toUpperCase();
+        const cls = document.getElementById('stuClass').value.trim().toUpperCase();
+        const vTime = document.getElementById('violationTime').value;
+        document.getElementById('sebabModal').style.display = 'none';
+        executeSubmit(name, cls, `Lewat (${sebab})`, vTime);
+    };
+
+    async function executeSubmit(name, cls, type, vTime) {
+        const today = new Date().toLocaleDateString('en-GB');
+        const fullTime = `${today}, ${vTime}`;
+        const logEntry = { type, time: fullTime, by: currentAdmin };
+        const q = query(colRef, where("name", "==", name), where("class", "==", cls));
+        const qs = await getDocs(q);
+        if(!qs.empty) {
+            await updateDoc(doc(db, "students", qs.docs[0].id), { 
+                offences: [...qs.docs[0].data().offences, logEntry], 
+                counts: increment(1) 
+            });
+        } else {
+            await addDoc(colRef, { name, class: cls, offences: [logEntry], counts: 1 });
+        }
+        await sysLog(`TAMBAH: ${type} - ${name}`);
+        document.getElementById('stuName').value = "";
+        document.getElementById('selName').value = "";
+        setTimeNow();
+    }
+
+    function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
-        const btnInd = document.getElementById('btnStudentReport');
+        const btnReport = document.getElementById('btnStudentReport');
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
-            btnInd.style.display = 'block';
-            btnInd.innerText = `CETAK REKOD: ${selectedStudent.name}`;
-        } else { btnInd.style.display = 'none'; }
-
+            btnReport.style.display = 'block';
+            btnReport.innerText = `CETAK REKOD: ${selectedStudent.name}`;
+        } else {
+            btnReport.style.display = 'none';
+        }
         let html = "";
         filtered.forEach(s => {
-            // --- 强制排序：最新的记录在最前面 ---
-            let sortedOffences = [];
-            if (s.offences && Array.isArray(s.offences)) {
-                sortedOffences = [...s.offences].sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
-            }
-
-            let tags = "";
-            const countsByType = sortedOffences.reduce((acc, curr) => {
-                const base = curr.type.split(' (')[0];
-                acc[base] = (acc[base] || 0) + 1;
+            const grouped = s.offences.reduce((acc, curr, i) => {
+                const baseType = curr.type.split(' (')[0];
+                acc[baseType] = acc[baseType] || [];
+                acc[baseType].push({...curr, i});
                 return acc;
             }, {});
-
-            for (const [type, count] of Object.entries(countsByType)) {
-                let cName = type === "Lewat" ? "tag-late" : (type === "Buli" ? "tag-bad" : "tag-other");
-                tags += `<span class="offence-tag ${cName}" data-id="${s.id}" data-type="${type}">${type} ${count>1?'x'+count:''}</span>`;
+            let tags = "";
+            for (const [type, list] of Object.entries(grouped)) {
+                let cls = (type === "Lewat") ? "tag-late" : (type === "Ponteng Kelas" ? "tag-skip" : (["Buli", "Bergaduh", "Diskriminasi"].includes(type) ? "tag-bad" : "tag-other"));
+                tags += `<span class="offence-tag ${cls}" onclick="manageOffence('${s.id}', '${type}')">${type} ${list.length>1?'x'+list.length:''}</span>`;
             }
-
             html += `<tr class="${s.counts >= 3 ? 'highlight-row' : ''}">
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${tags}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
-                <td><button class="delete-btn" data-id="${s.id}">Hapus</button></td>
+                <td><button class="delete-btn" onclick="purge('${s.id}')">Hapus</button></td>
             </tr>`;
         });
         document.getElementById('recordBody').innerHTML = html;
-        attachRowEvents();
-    };
+    }
 
-    const attachRowEvents = () => {
-        document.querySelectorAll('.offence-tag').forEach(t => {
-            t.onclick = () => openHistory(t.dataset.id, t.dataset.type);
-        });
-        document.querySelectorAll('.delete-btn').forEach(b => {
-            b.onclick = async () => {
-                if(confirm("Hapus semua rekod pelajar ini?")) await deleteDoc(doc(db, "students", b.dataset.id));
-            };
-        });
-    };
-
-    document.getElementById('searchBox').onkeyup = renderTable;
-
-    const openHistory = (id, type) => {
+    window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
-        if(!s || !s.offences) return;
-
-        // --- 弹窗内部也进行强制倒序排序 ---
-        const list = [...s.offences]
-            .filter(o => o.type.startsWith(type))
-            .sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
-
+        const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type.startsWith(type));
         document.getElementById('modalTitle').innerText = type;
-        document.getElementById('historyList').innerHTML = list.map((item) => `
+        document.getElementById('historyList').innerHTML = list.map(item => `
             <div class="history-item">
-                <span>${item.time}<br><small>Oleh: ${item.by}</small></span>
-                <button style="background:red; color:white; font-size:10px;" class="btn-del-single" data-id="${id}" data-time="${item.time}">PADAM</button>
+                <span><b>${item.type}</b><br>${item.time}<br><small>Oleh: ${item.by}</small></span>
+                <button onclick="delOffence('${id}', ${item.idx})" style="background:#ff4d4d; font-size:9px; padding:4px 8px;">PADAM</button>
             </div>`).join('');
         document.getElementById('historyModal').style.display = 'flex';
-        
-        document.querySelectorAll('.btn-del-single').forEach(b => {
-            b.onclick = async () => {
-                const student = allData.find(x => x.id === b.dataset.id);
-                let newArr = student.offences.filter(o => o.time !== b.dataset.time);
-                if(newArr.length === 0) await deleteDoc(doc(db, "students", student.id));
-                else await updateDoc(doc(db, "students", student.id), { offences: newArr, counts: newArr.length });
-                document.getElementById('historyModal').style.display = 'none';
-            };
-        });
     };
 
-    const updateStats = () => {
-        const selM = document.getElementById('statsMonth').value;
-        if(!selM) return;
-        const [y, m] = selM.split('-');
-        const target = `/${m}/${y}`;
-        const stats = {};
+    window.delOffence = async (id, idx) => {
+        if(!confirm("Hapus?")) return;
+        const s = allData.find(x => x.id === id);
+        let newOff = [...s.offences];
+        newOff.splice(idx, 1);
+        if(newOff.length === 0) await deleteDoc(doc(db, "students", id));
+        else await updateDoc(doc(db, "students", id), { offences: newOff, counts: newOff.length });
+        closeModal();
+    };
+
+    window.purge = async (id) => {
+        const s = allData.find(x => x.id === id);
+        if(confirm(`Hapus ${s.name}?`)) await deleteDoc(doc(db, "students", id));
+    };
+
+    window.closeModal = () => document.getElementById('historyModal').style.display='none';
+    window.handleSearch = () => render();
+
+    async function captureAndDownload(filename) {
+        const template = document.getElementById('reportExportTemplate');
+        return html2canvas(template, { backgroundColor: "#ffffff", scale: 2, useCORS: true, windowWidth: 800 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+
+    window.downloadReport = async () => {
+        const dInput = document.getElementById('reportDate').value;
+        if(!dInput) return alert("Pilih tarikh!");
+        const [y, m, d] = dInput.split('-');
+        const targetDate = `${d}/${m}/${y}`;
+        const tbody = document.getElementById('reportTbody');
+        tbody.innerHTML = "";
+        let count = 0;
         allData.forEach(s => {
-            s.offences?.forEach(o => {
-                if(o.time.includes(target)) {
-                    const base = o.type.split(' (')[0];
-                    stats[base] = (stats[base] || 0) + 1;
+            s.offences.forEach(o => {
+                if(o.time.includes(targetDate)) {
+                    count++;
+                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time.split(', ')[1]}</td><td>${o.by}</td></tr>`;
                 }
             });
         });
-        let html = "";
-        ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan"].forEach(t => {
-            html += `<div class="stat-card"><span class="stat-val">${stats[t] || 0}</span><span class="stat-lbl">${t}</span></div>`;
-        });
-        document.getElementById('statsDisplay').innerHTML = html;
+        if(count === 0) return alert("Tiada rekod.");
+        document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${targetDate}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
     };
 
-    const capture = async (filename) => {
-        const el = document.getElementById('reportExportTemplate');
-        const canvas = await html2canvas(el, { scale: 2 });
-        const link = document.createElement('a');
-        link.download = filename; link.href = canvas.toDataURL(); link.click();
-    };
-
-    document.getElementById('btnPrintDaily').onclick = async () => {
-        const d = document.getElementById('reportDate').value;
-        if(!d) return;
-        const [year, month, day] = d.split('-');
-        const target = `${day}/${month}/${year}`;
+    window.downloadMonthlyReport = async () => {
+        const selMonth = document.getElementById('statsMonth').value;
+        const filterType = document.getElementById('filterOffence').value;
+        const [year, month] = selMonth.split('-');
+        const targetString = `/${month}/${year}`;
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
-        let dailyRecords = [];
+        let count = 0;
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.time.includes(target)) dailyRecords.push({ name: s.name, class: s.class, ...o });
+                const baseType = o.type.split(' (')[0];
+                const matchType = (filterType === "ALL") || (baseType === filterType);
+                if(o.time.includes(targetString) && matchType) {
+                    count++;
+                    tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+                }
             });
         });
-        
-        // --- 导出预览也进行强制排序 ---
-        dailyRecords.sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
-        
-        if(dailyRecords.length === 0) return alert("Tiada data.");
-        dailyRecords.forEach(r => {
-            tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
-        });
-        document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${target}`;
-        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${dailyRecords.length}`;
-        await capture(`Laporan_Harian_${target}.png`);
+        document.getElementById('rptMeta').innerText = `LAPORAN BULANAN: ${month}/${year}`;
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
+        await captureAndDownload(`Laporan_Bulanan.png`);
     };
 
-    document.getElementById('btnCloseHistory').onclick = () => document.getElementById('historyModal').style.display='none';
-    document.getElementById('btnCancelSebab').onclick = () => document.getElementById('sebabModal').style.display='none';
-    document.getElementById('btnManualToggle').onclick = () => {
-        document.getElementById('selClass').value = "MANUAL";
-        document.getElementById('selClass').dispatchEvent(new Event('change'));
+    window.downloadStudentMonthlyReport = async () => {
+        if(!selectedStudent) return;
+        const tbody = document.getElementById('reportTbody');
+        tbody.innerHTML = "";
+        selectedStudent.offences.forEach(o => {
+            tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
+        });
+        document.getElementById('rptMeta').innerText = `LAPORAN INDIVIDU`;
+        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name}`;
+        await captureAndDownload(`Laporan_Penuh_${selectedStudent.name}.png`);
+    };
+
+    window.masterReset = async () => {
+        if(confirm("Padam SEMUA data?") && prompt("Taip 'RESET2026':") === "RESET2026") {
+            const qs = await getDocs(colRef);
+            const batch = writeBatch(db);
+            qs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            alert("Selesai.");
+        }
     };
 </script>
 </body>
