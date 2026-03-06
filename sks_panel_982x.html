@@ -270,23 +270,18 @@
     const db = getFirestore(app);
     const rtdb = getDatabase(app);
     
-    // 配置：Firestore引用用于存储
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
-
-    // 配置：RTDB引用用于名单（根目录）
     const rtdbRootRef = ref(rtdb, "/");
 
-    let allData = []; // Firestore 数据
-    let rtdbData = {}; // RTDB 原始数据结构
+    let allData = []; 
+    let rtdbData = {}; 
     let selectedStudent = null;
 
-    // 获取当前管理员
     const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
     document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
-    // 初始时间
     const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
@@ -294,17 +289,14 @@
     setTimeNow();
     document.getElementById('reportDate').valueAsDate = new Date();
 
-    // --- 实时对接 Realtime Database 名单 ---
     onValue(rtdbRootRef, (snapshot) => {
         rtdbData = snapshot.val() || {};
-        console.log("RTDB Loaded:", rtdbData);
         updateClassDropdown();
     });
 
     function updateClassDropdown() {
         const selClass = document.getElementById('selClass');
         const classes = Object.keys(rtdbData).sort();
-        
         let html = '<option value="">Pilih...</option>';
         classes.forEach(c => {
             html += `<option value="${c}">${c}</option>`;
@@ -317,22 +309,18 @@
         const selClass = document.getElementById('selClass').value;
         const selName = document.getElementById('selName');
         const stuClassInput = document.getElementById('stuClass');
-
         if(selClass === "MANUAL") {
             stuClassInput.style.display = 'block';
             selName.innerHTML = '<option value="MANUAL">-- Input Manual --</option>';
             checkManualName();
             return;
         }
-
         stuClassInput.style.display = 'none';
         stuClassInput.value = selClass;
-
         if(!selClass || !rtdbData[selClass]) {
             selName.innerHTML = '<option value="">Pilih Kelas Dahulu...</option>';
             return;
         }
-
         const students = rtdbData[selClass].sort();
         let html = '<option value="">Pilih Pelajar...</option>';
         students.forEach(name => {
@@ -359,7 +347,6 @@
         window.updateStudentList();
     };
 
-    // --- Firestore 数据监听与操作 ---
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
@@ -420,6 +407,7 @@
         executeSubmit(name, cls, `Lewat (${sebab})`, vTime);
     };
 
+    // --- 修改点：使用 unshift 确保最新记录在数组首位 ---
     async function executeSubmit(name, cls, type, vTime) {
         const today = new Date().toLocaleDateString('en-GB');
         const fullTime = `${today}, ${vTime}`;
@@ -427,8 +415,11 @@
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
         const qs = await getDocs(q);
         if(!qs.empty) {
+            let currentOffences = qs.docs[0].data().offences || [];
+            // 使用 unshift 把最新的记录放在最上面
+            currentOffences.unshift(logEntry); 
             await updateDoc(doc(db, "students", qs.docs[0].id), { 
-                offences: [...qs.docs[0].data().offences, logEntry], 
+                offences: currentOffences, 
                 counts: increment(1) 
             });
         } else {
