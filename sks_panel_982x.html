@@ -57,7 +57,8 @@
         .tag-traffic { border-left-color: var(--tag-traffic); color: #888; background: #000; border: 1px solid #333; }
 
         .count-badge { color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: bold; }
-        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button { background: var(--accent); color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
         .delete-btn { background: #221111; color: #ff4d4d; border: 1px solid #442222; font-size: 9px; padding: 5px 10px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
@@ -73,6 +74,7 @@
         .sebab-btn { background: #222; color: #fff; text-align: left; padding: 12px; border: 1px solid #333; border-radius: 8px; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .sebab-btn:hover { background: var(--accent); color: #000; }
 
+        /* 报表导出模板（隐藏在屏幕外） */
         #reportExportTemplate { 
             position: absolute; 
             left: -9999px; 
@@ -174,7 +176,6 @@
                     <option value="Bergaduh">Bergaduh</option>
                     <option value="Barang Larangan">Barang Larangan</option>
                     <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
-                    <option value="Isu Trafik">Isu Trafik</option>
                 </select>
                 <button onclick="downloadMonthlyReport()" style="background:#2980b9; color:white; font-size:11px;">CETAK LAPORAN BULANAN</button>
             </div>
@@ -278,17 +279,21 @@
     let rtdbData = {}; 
     let selectedStudent = null;
 
+    // 获取管理员名称
     const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
     document.getElementById('displayAdmin').innerText = currentAdmin.toUpperCase();
 
+    // 初始化日期和时间
     const setTimeNow = () => {
         const d = new Date();
         document.getElementById('violationTime').value = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
     };
     setTimeNow();
     document.getElementById('reportDate').valueAsDate = new Date();
+    document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
 
+    // 实时监听 RTDB 获取学生名单
     onValue(rtdbRootRef, (snapshot) => {
         rtdbData = snapshot.val() || {};
         updateClassDropdown();
@@ -298,9 +303,7 @@
         const selClass = document.getElementById('selClass');
         const classes = Object.keys(rtdbData).sort();
         let html = '<option value="">Pilih...</option>';
-        classes.forEach(c => {
-            html += `<option value="${c}">${c}</option>`;
-        });
+        classes.forEach(c => { html += `<option value="${c}">${c}</option>`; });
         html += '<option value="MANUAL">-- Input Manual --</option>';
         selClass.innerHTML = html;
     }
@@ -323,9 +326,7 @@
         }
         const students = rtdbData[selClass].sort();
         let html = '<option value="">Pilih Pelajar...</option>';
-        students.forEach(name => {
-            html += `<option value="${name}">${name}</option>`;
-        });
+        students.forEach(name => { html += `<option value="${name}">${name}</option>`; });
         html += '<option value="MANUAL">-- Pelajar Baru --</option>';
         selName.innerHTML = html;
         checkManualName();
@@ -347,12 +348,14 @@
         window.updateStudentList();
     };
 
+    // 实时监听 Firestore 数据
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
         updateStats();
     });
 
+    // 实时监听日志
     const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
     onSnapshot(qLogs, (snap) => {
         let html = "";
@@ -368,6 +371,7 @@
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
     }
 
+    // 更新月度统计
     function updateStats() {
         const selMonth = document.getElementById('statsMonth').value;
         if(!selMonth) return;
@@ -389,6 +393,7 @@
     }
     document.getElementById('statsMonth').addEventListener('change', updateStats);
 
+    // 提交记录逻辑
     window.submitRecord = async () => {
         const name = document.getElementById('stuName').value.trim().toUpperCase();
         const cls = document.getElementById('stuClass').value.trim().toUpperCase();
@@ -408,7 +413,7 @@
     };
 
     async function executeSubmit(name, cls, type, vTime) {
-        const today = new Date().toLocaleDateString('en-GB');
+        const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
         const fullTime = `${today}, ${vTime}`;
         const logEntry = { type, time: fullTime, by: currentAdmin };
         const q = query(colRef, where("name", "==", name), where("class", "==", cls));
@@ -429,9 +434,12 @@
         setTimeNow();
     }
 
+    // 渲染主表格
     function render() {
         const term = document.getElementById('searchBox').value.toUpperCase();
         const filtered = allData.filter(s => s.name.includes(term) || s.class.includes(term));
+        
+        // 个人报告打印按钮逻辑
         const btnReport = document.getElementById('btnStudentReport');
         if(term.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
@@ -440,10 +448,10 @@
         } else {
             btnReport.style.display = 'none';
         }
+
         let html = "";
         filtered.forEach(s => {
-            // --- 强制按时间排序逻辑 ---
-            // 将违规记录按时间字符串解析后倒序排列
+            // 对违规记录按时间字符串解析后倒序排列 (解析 DD/MM/YYYY, HH:mm)
             s.offences.sort((a, b) => {
                 const parseDate = (str) => {
                     const parts = str.split(', ');
@@ -453,17 +461,20 @@
                 return parseDate(b.time) - parseDate(a.time);
             });
 
-            const grouped = s.offences.reduce((acc, curr, i) => {
+            // 分类汇总显示标签
+            const grouped = s.offences.reduce((acc, curr) => {
                 const baseType = curr.type.split(' (')[0];
                 acc[baseType] = acc[baseType] || [];
-                acc[baseType].push({...curr, i});
+                acc[baseType].push(curr);
                 return acc;
             }, {});
+
             let tags = "";
             for (const [type, list] of Object.entries(grouped)) {
                 let cls = (type === "Lewat") ? "tag-late" : (type === "Ponteng Kelas" ? "tag-skip" : (["Buli", "Bergaduh", "Diskriminasi"].includes(type) ? "tag-bad" : "tag-other"));
                 tags += `<span class="offence-tag ${cls}" onclick="manageOffence('${s.id}', '${type}')">${type} ${list.length>1?'x'+list.length:''}</span>`;
             }
+
             html += `<tr class="${s.counts >= 3 ? 'highlight-row' : ''}">
                 <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${tags}</td>
@@ -474,9 +485,9 @@
         document.getElementById('recordBody').innerHTML = html;
     }
 
+    // 管理具体某种类型的违规记录
     window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
-        // 这里再次确保显示在 Modal 里的也是倒序
         const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type.startsWith(type));
         document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map(item => `
@@ -488,7 +499,7 @@
     };
 
     window.delOffence = async (id, idx) => {
-        if(!confirm("Hapus?")) return;
+        if(!confirm("Hapus rekod ini?")) return;
         const s = allData.find(x => x.id === id);
         let newOff = [...s.offences];
         newOff.splice(idx, 1);
@@ -499,12 +510,16 @@
 
     window.purge = async (id) => {
         const s = allData.find(x => x.id === id);
-        if(confirm(`Hapus ${s.name}?`)) await deleteDoc(doc(db, "students", id));
+        if(confirm(`Hapus SEMUA rekod untuk ${s.name}?`)) {
+            await deleteDoc(doc(db, "students", id));
+            await sysLog(`PADAM PROFIL: ${s.name}`);
+        }
     };
 
     window.closeModal = () => document.getElementById('historyModal').style.display='none';
     window.handleSearch = () => render();
 
+    // 截图导出逻辑
     async function captureAndDownload(filename) {
         const template = document.getElementById('reportExportTemplate');
         return html2canvas(template, { backgroundColor: "#ffffff", scale: 2, useCORS: true, windowWidth: 800 }).then(canvas => {
@@ -531,7 +546,7 @@
                 }
             });
         });
-        if(count === 0) return alert("Tiada rekod.");
+        if(count === 0) return alert("Tiada rekod pada tarikh tersebut.");
         document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${targetDate}`;
         document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
         await captureAndDownload(`Laporan_Harian_${targetDate}.png`);
@@ -540,6 +555,7 @@
     window.downloadMonthlyReport = async () => {
         const selMonth = document.getElementById('statsMonth').value;
         const filterType = document.getElementById('filterOffence').value;
+        if(!selMonth) return alert("Pilih bulan!");
         const [year, month] = selMonth.split('-');
         const targetString = `/${month}/${year}`;
         const tbody = document.getElementById('reportTbody');
@@ -555,9 +571,10 @@
                 }
             });
         });
+        if(count === 0) return alert("Tiada rekod untuk bulan ini.");
         document.getElementById('rptMeta').innerText = `LAPORAN BULANAN: ${month}/${year}`;
-        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count}`;
-        await captureAndDownload(`Laporan_Bulanan.png`);
+        document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${count} (${filterType})`;
+        await captureAndDownload(`Laporan_Bulanan_${month}_${year}.png`);
     };
 
     window.downloadStudentMonthlyReport = async () => {
@@ -567,18 +584,19 @@
         selectedStudent.offences.forEach(o => {
             tbody.innerHTML += `<tr><td>${selectedStudent.name}</td><td>${selectedStudent.class}</td><td>${o.type}</td><td>${o.time}</td><td>${o.by}</td></tr>`;
         });
-        document.getElementById('rptMeta').innerText = `LAPORAN INDIVIDU`;
-        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name}`;
+        document.getElementById('rptMeta').innerText = `LAPORAN INDIVIDU (KESELURUHAN)`;
+        document.getElementById('rptExtraInfo').innerText = `NAMA: ${selectedStudent.name} | KELAS: ${selectedStudent.class}`;
         await captureAndDownload(`Laporan_Penuh_${selectedStudent.name}.png`);
     };
 
     window.masterReset = async () => {
-        if(confirm("Padam SEMUA data?") && prompt("Taip 'RESET2026':") === "RESET2026") {
+        if(confirm("AWAS! Ini akan memadam SEMUA data disiplin. Teruskan?") && prompt("Sila taip 'RESET2026' untuk sahkan:") === "RESET2026") {
             const qs = await getDocs(colRef);
             const batch = writeBatch(db);
             qs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            alert("Selesai.");
+            await sysLog("MASTER RESET DILAKUKAN");
+            alert("Semua data telah dikosongkan.");
         }
     };
 </script>
