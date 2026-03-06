@@ -74,15 +74,9 @@
         .sebab-btn { background: #222; color: #fff; text-align: left; padding: 12px; border: 1px solid #333; border-radius: 8px; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .sebab-btn:hover { background: var(--accent); color: #000; }
 
-        /* Template Export */
         #reportExportTemplate { 
-            position: absolute; 
-            left: -9999px; 
-            width: 800px; 
-            background-color: #ffffff !important; 
-            padding: 50px; 
-            color: #000000 !important;
-            box-sizing: border-box;
+            position: absolute; left: -9999px; width: 800px; background-color: #ffffff !important; 
+            padding: 50px; color: #000000 !important; box-sizing: border-box;
         }
         #reportExportTemplate * { color: #000000 !important; border-color: #000000 !important; }
         .rpt-header { display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 15px; margin-bottom: 20px; }
@@ -107,16 +101,12 @@
         <div class="input-group">
             <div style="flex:0.6">
                 <label style="font-size:10px; color:var(--accent)">PILIH KELAS</label>
-                <select id="selClass">
-                    <option value="">Memuatkan...</option>
-                </select>
+                <select id="selClass"><option value="">Memuatkan...</option></select>
                 <input type="text" id="stuClass" placeholder="Manual Kelas" style="display:none; margin-top:5px;">
             </div>
             <div style="flex:1.2">
                 <label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label>
-                <select id="selName">
-                    <option value="">Pilih Kelas Dahulu...</option>
-                </select>
+                <select id="selName"><option value="">Pilih Kelas Dahulu...</option></select>
                 <input type="text" id="stuName" placeholder="Manual Nama" style="display:none; margin-top:5px;">
             </div>
             <div style="flex:0.4"><label style="font-size:10px; color:var(--accent)">MASA</label><input type="time" id="violationTime"></div>
@@ -140,8 +130,7 @@
     <div id="sebabModal" class="modal">
         <div class="modal-content">
             <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
-            <div class="sebab-grid" id="sebabButtons">
-                </div>
+            <div class="sebab-grid" id="sebabButtons"></div>
             <button id="btnCancelSebab" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
         </div>
     </div>
@@ -207,13 +196,7 @@
     <div id="rptExtraInfo" style="margin-bottom:15px; font-weight:bold; font-size:13px;"></div>
     <table class="rpt-table">
         <thead>
-            <tr>
-                <th>Nama Pelajar</th>
-                <th>Kelas</th>
-                <th>Kesalahan</th>
-                <th>Masa/Tarikh</th>
-                <th>Operator</th>
-            </tr>
+            <tr><th>Nama Pelajar</th><th>Kelas</th><th>Kesalahan</th><th>Masa/Tarikh</th><th>Operator</th></tr>
         </thead>
         <tbody id="reportTbody"></tbody>
     </table>
@@ -245,12 +228,13 @@
     let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // 解析日期字符串为可比较的毫秒数 (格式: "DD/MM/YYYY, HH:mm")
-    const getTimeVal = (str) => {
+    // --- 强制日期解析函数 (解决 DD/MM/YYYY 排序失败的关键) ---
+    const getUnixTime = (str) => {
         try {
             const [datePart, timePart] = str.split(', ');
-            const [day, month, year] = datePart.split('/');
-            return new Date(`${year}-${month}-${day}T${timePart}`).getTime();
+            const [d, m, y] = datePart.split('/');
+            const [hh, mm] = timePart.split(':');
+            return new Date(y, parseInt(m) - 1, d, hh, mm).getTime();
         } catch(e) { return 0; }
     };
 
@@ -327,9 +311,7 @@
         if(!name || !cls || !type) return alert("Lengkapkan data!");
         if(type === "Lewat") {
             document.getElementById('sebabModal').style.display = 'flex';
-        } else {
-            executeSubmit(name, cls, type, time);
-        }
+        } else { executeSubmit(name, cls, type, time); }
     };
 
     const sebabList = ["Bangun Lewat", "Sakit Perut", "Masalah Kesihatan", "Masalah Kenderaan", "Lain-lain"];
@@ -367,17 +349,18 @@
             selectedStudent = filtered[0];
             btnInd.style.display = 'block';
             btnInd.innerText = `CETAK REKOD: ${selectedStudent.name}`;
-        } else {
-            btnInd.style.display = 'none';
-        }
+        } else { btnInd.style.display = 'none'; }
 
         let html = "";
         filtered.forEach(s => {
-            // 对每位学生的 offences 数组进行内部排序（倒序）
-            if(s.offences) s.offences.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
+            // --- 排序逻辑：深拷贝并倒序 ---
+            let sortedOffences = [];
+            if (s.offences) {
+                sortedOffences = [...s.offences].sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
+            }
 
             let tags = "";
-            const countsByType = (s.offences || []).reduce((acc, curr) => {
+            const countsByType = sortedOffences.reduce((acc, curr) => {
                 const base = curr.type.split(' (')[0];
                 acc[base] = (acc[base] || 0) + 1;
                 return acc;
@@ -396,7 +379,10 @@
             </tr>`;
         });
         document.getElementById('recordBody').innerHTML = html;
+        attachRowEvents();
+    };
 
+    const attachRowEvents = () => {
         document.querySelectorAll('.offence-tag').forEach(t => {
             t.onclick = () => openHistory(t.dataset.id, t.dataset.type);
         });
@@ -411,9 +397,10 @@
 
     const openHistory = (id, type) => {
         const s = allData.find(x => x.id === id);
-        // 过滤出该类别的违规并再次确保排序
-        const list = s.offences.filter(o => o.type.startsWith(type));
-        list.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
+        if(!s || !s.offences) return;
+        const list = s.offences
+            .filter(o => o.type.startsWith(type))
+            .sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time)); // 弹窗内部也排序
 
         document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map((item) => `
@@ -426,7 +413,6 @@
         document.querySelectorAll('.btn-del-single').forEach(b => {
             b.onclick = async () => {
                 const student = allData.find(x => x.id === b.dataset.id);
-                // 根据时间戳精确删除
                 let newArr = student.offences.filter(o => o.time !== b.dataset.time);
                 if(newArr.length === 0) await deleteDoc(doc(db, "students", student.id));
                 else await updateDoc(doc(db, "students", student.id), { offences: newArr, counts: newArr.length });
@@ -460,9 +446,7 @@
         const el = document.getElementById('reportExportTemplate');
         const canvas = await html2canvas(el, { scale: 2 });
         const link = document.createElement('a');
-        link.download = filename;
-        link.href = canvas.toDataURL();
-        link.click();
+        link.download = filename; link.href = canvas.toDataURL(); link.click();
     };
 
     document.getElementById('btnPrintDaily').onclick = async () => {
@@ -472,25 +456,17 @@
         const target = `${day}/${month}/${year}`;
         const tbody = document.getElementById('reportTbody');
         tbody.innerHTML = "";
-        
-        // 收集当日所有记录并排序
         let dailyRecords = [];
         allData.forEach(s => {
             s.offences.forEach(o => {
-                if(o.time.includes(target)) {
-                    dailyRecords.push({ name: s.name, class: s.class, ...o });
-                }
+                if(o.time.includes(target)) dailyRecords.push({ name: s.name, class: s.class, ...o });
             });
         });
-
-        dailyRecords.sort((a, b) => getTimeVal(b.time) - getTimeVal(a.time));
-
+        dailyRecords.sort((a, b) => getUnixTime(b.time) - getUnixTime(a.time));
         if(dailyRecords.length === 0) return alert("Tiada data.");
-
         dailyRecords.forEach(r => {
             tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
         });
-
         document.getElementById('rptMeta').innerText = `LAPORAN HARIAN: ${target}`;
         document.getElementById('rptExtraInfo').innerText = `JUMLAH KES: ${dailyRecords.length}`;
         await capture(`Laporan_Harian_${target}.png`);
