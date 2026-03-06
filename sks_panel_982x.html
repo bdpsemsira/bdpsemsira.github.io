@@ -407,7 +407,6 @@
         executeSubmit(name, cls, `Lewat (${sebab})`, vTime);
     };
 
-    // --- 修改点：使用 unshift 确保最新记录在数组首位 ---
     async function executeSubmit(name, cls, type, vTime) {
         const today = new Date().toLocaleDateString('en-GB');
         const fullTime = `${today}, ${vTime}`;
@@ -416,7 +415,6 @@
         const qs = await getDocs(q);
         if(!qs.empty) {
             let currentOffences = qs.docs[0].data().offences || [];
-            // 使用 unshift 把最新的记录放在最上面
             currentOffences.unshift(logEntry); 
             await updateDoc(doc(db, "students", qs.docs[0].id), { 
                 offences: currentOffences, 
@@ -444,6 +442,17 @@
         }
         let html = "";
         filtered.forEach(s => {
+            // --- 强制按时间排序逻辑 ---
+            // 将违规记录按时间字符串解析后倒序排列
+            s.offences.sort((a, b) => {
+                const parseDate = (str) => {
+                    const parts = str.split(', ');
+                    const dParts = parts[0].split('/');
+                    return new Date(`${dParts[2]}-${dParts[1]}-${dParts[0]}T${parts[1]}`);
+                };
+                return parseDate(b.time) - parseDate(a.time);
+            });
+
             const grouped = s.offences.reduce((acc, curr, i) => {
                 const baseType = curr.type.split(' (')[0];
                 acc[baseType] = acc[baseType] || [];
@@ -467,6 +476,7 @@
 
     window.manageOffence = (id, type) => {
         const s = allData.find(x => x.id === id);
+        // 这里再次确保显示在 Modal 里的也是倒序
         const list = s.offences.map((o, idx) => ({...o, idx})).filter(o => o.type.startsWith(type));
         document.getElementById('modalTitle').innerText = type;
         document.getElementById('historyList').innerHTML = list.map(item => `
