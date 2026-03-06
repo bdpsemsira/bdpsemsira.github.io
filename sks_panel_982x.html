@@ -111,7 +111,7 @@
             <div style="flex:0.6">
                 <label style="font-size:10px; color:var(--accent)">PILIH KELAS</label>
                 <select id="selClass" onchange="updateStudentList()">
-                    <option value="">Pilih...</option>
+                    <option value="">Memuatkan...</option>
                 </select>
                 <input type="text" id="stuClass" placeholder="Manual Kelas" style="display:none; margin-top:5px;">
             </div>
@@ -254,11 +254,15 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    // 增加：引入 Realtime Database 模块
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, writeBatch, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCqY9ADs8oy1Uvh3-7eVCQLYfyTijm8lo4",
         authDomain: "bdpsemsira-5c274.firebaseapp.com",
+        // 增加：RTDB 地址
+        databaseURL: "https://bdpsemsira-5c274-default-rtdb.asia-southeast1.firebasedatabase.app/",
         projectId: "bdpsemsira-5c274",
         storageBucket: "bdpsemsira-5c274.firebasestorage.app",
         messagingSenderId: "176946808975",
@@ -266,9 +270,15 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    
+    // 初始化 Firestore (用于保存记录)
     const db = getFirestore(app);
     const colRef = collection(db, "students");
     const logRef = collection(db, "logs");
+
+    // 增加：初始化 Realtime Database (用于调用名单)
+    const rtdb = getDatabase(app);
+    const rtdbStudentsRef = ref(rtdb, 'students');
 
     const rawAdmin = sessionStorage.getItem('admin_name') || "TIADA NAMA";
     const currentAdmin = rawAdmin.includes('@') ? rawAdmin.split('@')[0] : rawAdmin;
@@ -285,14 +295,28 @@
     const monthVal = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`;
     document.getElementById('statsMonth').value = monthVal;
 
-    let allData = [];
+    let allData = []; // 依然保存 Firestore 的违规数据用于渲染列表
+    let rtdbData = []; // 保存来自 Realtime Database 的名单数据
     let selectedStudent = null;
 
+    // 1. 监听 Firestore (违规列表)
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
         updateStats();
-        updateClassDropdown(); // 数据更新时同步更新班级列表
+    });
+
+    // 2. 监听 Realtime Database (获取最新班级和学生名单)
+    onValue(rtdbStudentsRef, (snapshot) => {
+        const data = snapshot.val();
+        rtdbData = [];
+        if (data) {
+            // 将对象转为数组
+            Object.keys(data).forEach(key => {
+                rtdbData.push({ id: key, ...data[key] });
+            });
+        }
+        updateClassDropdownFromRTDB(); 
     });
 
     const qLogs = query(logRef, orderBy("timestamp", "desc"), limit(15));
@@ -310,11 +334,13 @@
         document.getElementById('logDisplay').innerHTML = html || "Tiada aktiviti.";
     });
 
-    // 新增：更新班级下拉框
-    function updateClassDropdown() {
+    // --- 核心修改：对接 Realtime Database 的名单显示逻辑 ---
+
+    function updateClassDropdownFromRTDB() {
         const selClass = document.getElementById('selClass');
         const currentVal = selClass.value;
-        const classes = [...new Set(allData.map(s => s.class))].sort();
+        // 从 rtdbData 中提取唯一班级
+        const classes = [...new Set(rtdbData.map(s => s.class))].sort();
         
         let html = '<option value="">Pilih...</option>';
         classes.forEach(c => {
@@ -322,15 +348,13 @@
         });
         html += '<option value="MANUAL">-- Input Manual --</option>';
         selClass.innerHTML = html;
-        selClass.value = currentVal;
+        if(currentVal) selClass.value = currentVal;
     }
 
-    // 新增：根据班级更新学生列表
     window.updateStudentList = () => {
         const selClass = document.getElementById('selClass').value;
         const selName = document.getElementById('selName');
         const stuClassInput = document.getElementById('stuClass');
-        const stuNameInput = document.getElementById('stuName');
 
         if(selClass === "MANUAL") {
             stuClassInput.style.display = 'block';
@@ -347,7 +371,8 @@
             return;
         }
 
-        const students = allData.filter(s => s.class === selClass).map(s => s.name).sort();
+        // 从 rtdbData 过滤选定班级的学生
+        const students = rtdbData.filter(s => s.class === selClass).map(s => s.name).sort();
         let html = '<option value="">Pilih Pelajar...</option>';
         students.forEach(n => {
             html += `<option value="${n}">${n}</option>`;
@@ -357,7 +382,6 @@
         checkManualName();
     };
 
-    // 新增：检查是否需要显示手动输入框
     window.checkManualName = () => {
         const selName = document.getElementById('selName').value;
         const stuNameInput = document.getElementById('stuName');
@@ -369,12 +393,13 @@
         }
     };
 
-    // 新增：切换手动输入模式
     window.toggleManualInput = () => {
         const selClass = document.getElementById('selClass');
         selClass.value = "MANUAL";
         updateStudentList();
     };
+
+    // --- 以下保持原有的 Firestore 记录和报表生成逻辑 ---
 
     async function sysLog(msg) {
         await addDoc(logRef, { msg, admin: currentAdmin, timestamp: serverTimestamp() });
@@ -453,7 +478,6 @@
 
         await sysLog(`TAMBAH: ${type} - ${name}`);
         
-        // 重置
         document.getElementById('stuName').value = "";
         document.getElementById('selName').value = "";
         setTimeNow();
