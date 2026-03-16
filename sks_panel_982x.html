@@ -64,34 +64,27 @@
         .sebab-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 15px; }
         .sebab-btn { background: #222; color: #fff; text-align: left; padding: 12px; border: 1px solid #333; border-radius: 8px; font-size: 13px; cursor: pointer; }
 
-        /* 打印样式优化 - 强制 A4 并去除浏览器页眉页脚 */
+        /* PRINT CONFIGURATION */
         @media print {
-            @page {
-                size: A4;
-                margin: 0; /* 这将隐藏默认的时间、网址等页眉页脚 */
-            }
-            body { margin: 0; background: white; }
+            @page { size: A4; margin: 15mm; }
+            body { background: white !important; color: black !important; }
             body * { visibility: hidden; }
-            #reportExportTemplate, #reportExportTemplate * { visibility: visible; color: black !important; }
-            #reportExportTemplate { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 210mm; /* A4 宽度 */
-                min-height: 297mm; /* A4 高度 */
-                display: block !important; 
-                padding: 20mm; /* 打印页边距 */
-                box-sizing: border-box;
+            #printContainer, #printContainer * { visibility: visible; }
+            #printContainer { 
+                position: absolute; left: 0; top: 0; width: 100%; 
+                display: block !important; background: white; 
             }
-            .rpt-table th { background: #eee !important; border: 1px solid black !important; }
-            .rpt-table td { border: 1px solid black !important; }
             .no-print { display: none !important; }
+            /* 关键：确保打印表格每页都包含 header 和 footer */
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid black !important; padding: 8px !important; color: black !important; background: transparent !important; }
         }
 
-        #reportExportTemplate { display: none; background: white; }
-        .rpt-header { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; }
-        .rpt-table { width: 100%; border-collapse: collapse; }
-        .rpt-table th, .rpt-table td { border: 1px solid black; padding: 8px; text-align: center; font-size: 12px; }
+        #printContainer { display: none; }
+        .print-header-content { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 15px; margin-bottom: 20px; }
+        .print-footer-content { margin-top: 30px; display: flex; justify-content: flex-end; }
     </style>
 </head>
 <body>
@@ -131,7 +124,9 @@
                     <option value="Ponteng Kelas">Ponteng Kelas</option>
                     <option value="Buli">Buli</option>
                     <option value="Bergaduh">Bergaduh</option>
+                    <option value="Diskriminasi">Diskriminasi</option>
                     <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
                     <option value="Isu Trafik">Isu Trafik</option>
                     <option value="Lain-lain">Lain-lain</option>
                 </select>
@@ -185,44 +180,63 @@
     </div>
 
     <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:30px;">
-        <span style="font-size:11px; color:#555">FILTER TARIKH LIST & PRINT:</span>
+        <span style="font-size:11px; color:#555">FILTER TARIKH:</span>
         <input type="date" id="reportDate" style="width:150px;">
         <button id="btnPrintDaily" style="background:#27ae60; color:white;">PRINT HARIAN</button>
         <button id="btnMasterReset" style="background:#440000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
 
-<div id="sebabModal" class="modal">
-    <div class="modal-content">
-        <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
-        <div class="sebab-grid" id="sebabButtons"></div>
-        <button id="btnCancelSebab" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
-    </div>
-</div>
-
-<div id="historyModal" class="modal">
-    <div class="modal-content">
-        <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
-        <div id="historyList"></div>
-        <button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
-    </div>
-</div>
-
-<div id="reportExportTemplate">
-    <div class="rpt-header">
-        <img src="semsira.png" style="height:60px; margin-right:20px;">
-        <div style="text-align:center; flex:1">
-            <h1 style="margin:0; font-size:22px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
-            <p id="rptMeta" style="margin:5px 0; font-size:14px;"></p>
-        </div>
-    </div>
-    <table class="rpt-table">
+<div id="printContainer">
+    <table>
         <thead>
-            <tr><th>Nama</th><th>Kelas</th><th>Kesalahan</th><th>Masa/Tarikh</th><th>Admin</th></tr>
+            <tr>
+                <th colspan="5" style="border:none !important; padding:0 !important;">
+                    <div class="print-header-content">
+                        <img src="semsira.png" style="height:70px; margin-right:20px;">
+                        <div style="text-align:center; flex:1">
+                            <h1 style="margin:0; font-size:24px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
+                            <p id="rptMeta" style="margin:5px 0; font-size:16px; font-weight:bold;"></p>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th width="25%">Nama</th>
+                <th width="15%">Kelas</th>
+                <th width="25%">Kesalahan</th>
+                <th width="20%">Masa/Tarikh</th>
+                <th width="15%">Admin</th>
+            </tr>
         </thead>
-        <tbody id="reportTbody"></tbody>
+        <tbody id="printTbody"></tbody>
+        <tfoot>
+            <tr>
+                <th colspan="5" style="border:none !important; padding:0 !important;">
+                    <div class="print-footer-content">
+                        <div style="text-align:center;">
+                            <p style="margin-bottom:60px;">Disahkan Oleh:</p>
+                            <p>___________________________</p>
+                            <p style="font-weight:bold;">(Pegawai Bertugas)</p>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </tfoot>
     </table>
 </div>
+
+<div id="sebabModal" class="modal"><div class="modal-content">
+    <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
+    <div class="sebab-grid" id="sebabButtons"></div>
+    <button id="btnCancelSebab" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
+</div></div>
+
+<div id="historyModal" class="modal"><div class="modal-content">
+    <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
+    <div id="historyList"></div>
+    <button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
+</div></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -250,18 +264,13 @@
     let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // 初始化界面
+    // Init UI
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('keyinDate').valueAsDate = new Date();
     document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
     document.getElementById('sortType').value = localStorage.getItem('bdp_sort') || 'name';
-    
-    // 设置录入 Masa 为当前 Masa
-    const now = new Date();
-    const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('violationTime').value = currentTime;
+    document.getElementById('violationTime').value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
 
-    // 日期解析工具
     const parseTime = (str) => {
         try {
             const [dStr, tStr] = str.split(', ');
@@ -271,7 +280,7 @@
         } catch(e) { return 0; }
     };
 
-    // RTDB 名单加载
+    // Load RTDB
     onValue(ref(rtdb, "/"), (snap) => {
         rtdbData = snap.val() || {};
         const selClass = document.getElementById('selClass');
@@ -306,7 +315,7 @@
         if(!manual) document.getElementById('stuName').value = e.target.value;
     };
 
-    // 录入逻辑
+    // DB Operations
     const executeSubmit = async (name, cls, type, time) => {
         const kDate = new Date(document.getElementById('keyinDate').value);
         const dateStr = kDate.toLocaleDateString('en-GB');
@@ -326,7 +335,7 @@
             await addDoc(colRef, { name: name.toUpperCase(), class: cls.toUpperCase(), offences: [entry], counts: 1 });
         }
         await addDoc(logRef, { msg: `TAMBAH: ${type} - ${name}`, admin: currentAdmin, timestamp: serverTimestamp() });
-        alert("Berjaya!");
+        alert("Berjaya Disimpan!");
         location.reload();
     };
 
@@ -341,7 +350,7 @@
         } else { executeSubmit(name, cls, type, time); }
     };
 
-    const sebabList = ["Bangun Lewat", "Masalah Kenderaan", "Sakit/Kecemasan", "Masalah Trafik"];
+    const sebabList = ["Bangun Lewat", "Masalah Kenderaan", "Sakit Perut", "Masalah Trafik", "Masalah Keluarga"];
     document.getElementById('sebabButtons').innerHTML = sebabList.map(s => `<button class="sebab-btn">${s}</button>`).join('');
     document.querySelectorAll('.sebab-btn').forEach(btn => {
         btn.onclick = () => {
@@ -352,7 +361,6 @@
         };
     });
 
-    // 监听 Firestore 数据
     onSnapshot(colRef, (snap) => {
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
@@ -369,21 +377,15 @@
         document.getElementById('logDisplay').innerHTML = html;
     });
 
-    // 核心渲染逻辑
     function render() {
         const search = document.getElementById('searchBox').value.toUpperCase();
         const filterDateInput = document.getElementById('reportDate').value;
         const targetDate = filterDateInput ? new Date(filterDateInput).toLocaleDateString('en-GB') : null;
         const sortBy = document.getElementById('sortType').value;
 
-        // 1. 过滤
         let filtered = allData.filter(s => s.name.includes(search) || s.class.includes(search));
-        
-        if(targetDate) {
-            filtered = filtered.filter(s => s.offences?.some(o => o.time.includes(targetDate)));
-        }
+        if(targetDate) filtered = filtered.filter(s => s.offences?.some(o => o.time.includes(targetDate)));
 
-        // 2. 排序
         filtered.sort((a, b) => {
             if(sortBy === 'name') return a.name.localeCompare(b.name);
             if(sortBy === 'counts') return b.counts - a.counts;
@@ -392,7 +394,6 @@
             return sortBy === 'dateNew' ? timeB - timeA : timeA - timeB;
         });
 
-        // 3. 按钮状态
         const btnRep = document.getElementById('btnStudentReport');
         if(search.length > 2 && filtered.length === 1) {
             selectedStudent = filtered[0];
@@ -400,7 +401,6 @@
             btnRep.innerText = `PRINT REKOD: ${selectedStudent.name}`;
         } else { btnRep.style.display = 'none'; }
 
-        // 4. 生成 HTML
         let html = "";
         filtered.forEach(s => {
             const sortedOff = [...(s.offences || [])].sort((a,b) => parseTime(b.time) - parseTime(a.time));
@@ -412,7 +412,7 @@
 
             let tags = "";
             for (const [type, count] of Object.entries(grouped)) {
-                let cls = type === "Lewat" ? "tag-late" : (type === "Buli" ? "tag-bad" : "tag-other");
+                let cls = type === "Lewat" ? "tag-late" : (["Buli", "Bergaduh", "Diskriminasi"].includes(type) ? "tag-bad" : "tag-other");
                 tags += `<span class="offence-tag ${cls}" onclick="window.openHist('${s.id}', '${type}')">${type} ${count>1?'x'+count:''}</span>`;
             }
 
@@ -426,7 +426,6 @@
         document.getElementById('recordBody').innerHTML = html;
     }
 
-    // 全局函数绑定
     window.openHist = (id, type) => {
         const s = allData.find(x => x.id === id);
         const list = s.offences.filter(o => o.type.startsWith(type)).sort((a,b) => parseTime(b.time) - parseTime(a.time));
@@ -468,13 +467,12 @@
                 stats[base] = (stats[base] || 0) + 1;
             }
         }));
-        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Isu Trafik"];
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik"];
         document.getElementById('statsDisplay').innerHTML = types.map(t => `<div class="stat-card"><span class="stat-val">${stats[t]||0}</span><span class="stat-lbl">${t}</span></div>`).join('');
     };
 
-    // 打印逻辑
     const doPrint = (title, records) => {
-        const tbody = document.getElementById('reportTbody');
+        const tbody = document.getElementById('printTbody');
         tbody.innerHTML = records.map(r => `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`).join('');
         document.getElementById('rptMeta').innerText = title;
         window.print();
@@ -489,7 +487,7 @@
             if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o });
         }));
         if(res.length === 0) return alert("Tiada data.");
-        doPrint(`LAPORAN DISIPLIN HARIAN (${target})`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
+        doPrint(`LAPORAN DISIPLIN HARIAN - ${target}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
     };
 
     document.getElementById('btnPrintMonthly').onclick = () => {
@@ -500,7 +498,7 @@
         allData.forEach(s => s.offences.forEach(o => {
             if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o });
         }));
-        doPrint(`LAPORAN DISIPLIN BULANAN (${m}/${y})`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
+        doPrint(`LAPORAN DISIPLIN BULANAN - ${m}/${y}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
     };
 
     document.getElementById('btnStudentReport').onclick = () => {
@@ -508,7 +506,6 @@
         doPrint(`REKOD DISIPLIN INDIVIDU: ${selectedStudent.name}`, selectedStudent.offences);
     };
 
-    // 其他事件
     document.getElementById('searchBox').onkeyup = render;
     document.getElementById('reportDate').onchange = render;
     document.getElementById('sortType').onchange = (e) => {
@@ -520,7 +517,6 @@
         document.getElementById('selClass').dispatchEvent(new Event('change'));
     };
     document.getElementById('btnCancelSebab').onclick = () => document.getElementById('sebabModal').style.display = 'none';
-    
     document.getElementById('btnMasterReset').onclick = async () => {
         if(confirm("AWAS! Padam SEMUA data tahunan?") && prompt("Taip 'PADAM2026' untuk sahkan:") === "PADAM2026") {
             const qs = await getDocs(colRef);
