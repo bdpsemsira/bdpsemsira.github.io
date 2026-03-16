@@ -39,7 +39,7 @@
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         th { color: #666; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; }
-        td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; }
+        td { background: #1a1a1a; padding: 15px; border-top: 1px solid #282828; border-bottom: 1px solid #282828; word-wrap: break-word; }
         .highlight-row td { background: #2c0a0a !important; border-color: #5a1010 !important; }
 
         .offence-tag { display: inline-block; padding: 4px 8px; margin: 3px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; border-left: 3px solid #555; background: #222; }
@@ -66,20 +66,32 @@
 
         /* PRINT CONFIGURATION */
         @media print {
-            @page { size: A4; margin: 15mm; }
-            body { background: white !important; color: black !important; }
+            @page { 
+                size: A4; 
+                margin: 0; /* 彻底移除页眉页脚（时间、网址、页码） */
+            }
+            body { background: white !important; color: black !important; margin: 0; }
             body * { visibility: hidden; }
             #printContainer, #printContainer * { visibility: visible; }
             #printContainer { 
                 position: absolute; left: 0; top: 0; width: 100%; 
                 display: block !important; background: white; 
+                padding: 15mm; /* 在容器内部设置边距代替页边距 */
+                box-sizing: border-box;
             }
             .no-print { display: none !important; }
-            /* 关键：确保打印表格每页都包含 header 和 footer */
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid black !important; padding: 8px !important; color: black !important; background: transparent !important; }
+            table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+            th, td { 
+                border: 1px solid black !important; 
+                padding: 8px !important; 
+                color: black !important; 
+                background: transparent !important; 
+                word-wrap: break-word; /* 强制名字过长时换行 */
+                white-space: normal !important; 
+                overflow: hidden;
+            }
         }
 
         #printContainer { display: none; }
@@ -203,9 +215,9 @@
             </tr>
             <tr>
                 <th width="25%">Nama</th>
-                <th width="15%">Kelas</th>
+                <th width="20%">Kelas</th>
                 <th width="25%">Kesalahan</th>
-                <th width="20%">Masa/Tarikh</th>
+                <th width="15%">Masa/Tarikh</th>
                 <th width="15%">Admin</th>
             </tr>
         </thead>
@@ -264,7 +276,6 @@
     let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // Init UI
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('keyinDate').valueAsDate = new Date();
     document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
@@ -280,7 +291,6 @@
         } catch(e) { return 0; }
     };
 
-    // Load RTDB
     onValue(ref(rtdb, "/"), (snap) => {
         rtdbData = snap.val() || {};
         const selClass = document.getElementById('selClass');
@@ -315,7 +325,6 @@
         if(!manual) document.getElementById('stuName').value = e.target.value;
     };
 
-    // DB Operations
     const executeSubmit = async (name, cls, type, time) => {
         const kDate = new Date(document.getElementById('keyinDate').value);
         const dateStr = kDate.toLocaleDateString('en-GB');
@@ -417,7 +426,7 @@
             }
 
             html += `<tr class="${s.counts >= 3 ? 'highlight-row' : ''}">
-                <td><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
+                <td style="word-wrap:break-word;"><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
                 <td>${tags}</td>
                 <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
                 <td><button class="delete-btn" onclick="window.delStu('${s.id}')">Hapus</button></td>
