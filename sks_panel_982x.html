@@ -66,12 +66,12 @@
 
         /* PRINT CONFIGURATION */
         @media print {
-            /* 1. 隐藏页眉页脚的关键：margin 设置为 0 */
+            /* 强制隐藏浏览器默认页眉页脚 (时间、网址、页码) */
             @page { 
                 size: A4; 
                 margin: 0; 
             }
-            body { background: white !important; color: black !important; margin: 0; }
+            body { background: white !important; color: black !important; margin: 0; padding: 0; }
             body * { visibility: hidden; }
             #printContainer, #printContainer * { visibility: visible; }
             
@@ -82,30 +82,29 @@
                 width: 100%; 
                 display: block !important; 
                 background: white; 
-                /* 增加内边距代替页面边距，确保内容不被切断 */
-                padding: 10mm 15mm; 
-                box-sizing: border-box;
             }
 
             .no-print { display: none !important; }
             
-            /* 分页容器 */
+            /* 分页容器样式：控制每一页的边距和内容 */
             .print-page-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                break-after: page; /* 2. 强制每组数据后换页 */
-                padding-top: 10mm;
+                width: 210mm;
+                height: 297mm;
+                padding: 15mm; /* 手动设置页面边距 */
+                box-sizing: border-box;
+                break-after: page;
+                position: relative;
+                overflow: hidden;
             }
 
             .print-summary-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-                margin-top: 30px;
+                gap: 15px;
+                margin-top: 20px;
             }
-            .summary-box { border: 2px solid black; padding: 20px; text-align: center; }
-            .summary-box h2 { font-size: 40px; margin: 10px 0; }
+            .summary-box { border: 2px solid black; padding: 15px; text-align: center; }
+            .summary-box h2 { font-size: 35px; margin: 5px 0; }
 
             table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-top: 10px; }
             th, td { 
@@ -118,9 +117,7 @@
             }
 
             .print-footer-content { 
-                margin-top: auto; /* 将签名框推到底部 */
-                padding-top: 40px; 
-                padding-bottom: 20mm;
+                margin-top: 30px;
                 display: flex; 
                 justify-content: flex-end; 
                 width: 100%; 
@@ -128,7 +125,7 @@
         }
 
         #printContainer { display: none; }
-        .print-header-content { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 15px; margin-bottom: 20px; }
+        .print-header-content { display: flex; align-items: center; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -231,8 +228,7 @@
     </div>
 </div>
 
-<div id="printContainer">
-    </div>
+<div id="printContainer"></div>
 
 <div id="sebabModal" class="modal"><div class="modal-content">
     <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
@@ -479,42 +475,40 @@
     // --- 修改后的打印函数 ---
     const doPrint = (title, records) => {
         const container = document.getElementById('printContainer');
-        container.innerHTML = ""; // 清空旧内容
+        container.innerHTML = ""; 
 
-        // 1. 增加汇总页 (第一页)
+        // 1. 汇总页
         const stats = {};
         records.forEach(r => {
             const base = r.type.split(' (')[0];
             stats[base] = (stats[base] || 0) + 1;
         });
         const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik", "Lain-lain"];
-        
         let summaryBoxes = "";
         types.forEach(t => {
             if(stats[t]) summaryBoxes += `<div class="summary-box"><p>${t.toUpperCase()}</p><h2>${stats[t]}</h2></div>`;
         });
 
-        const summaryPage = `
+        container.innerHTML += `
             <div class="print-page-wrapper">
                 <div class="print-header-content">
-                    <img src="semsira.png" style="height:80px; margin-right:20px;">
-                    <div style="text-align:center; flex:1">
-                        <h1 style="margin:0; font-size:28px;">RINGKASAN KESALAHAN</h1>
-                        <p style="font-size:18px; font-weight:bold;">${title}</p>
+                    <img src="semsira.png" style="height:60px; margin-right:15px;">
+                    <div style="flex:1">
+                        <h1 style="margin:0; font-size:22px;">RINGKASAN KESALAHAN</h1>
+                        <p style="margin:0; font-size:14px; font-weight:bold;">${title}</p>
                     </div>
                 </div>
                 <div class="print-summary-grid">${summaryBoxes}</div>
                 <div class="print-footer-content">
                     <div style="text-align:center;">
-                        <p style="margin-bottom:60px;">Disahkan Oleh:</p>
+                        <p style="margin-bottom:50px;">Disahkan Oleh:</p>
                         <p>___________________________</p>
                         <p style="font-weight:bold;">(Pegawai Bertugas)</p>
                     </div>
                 </div>
             </div>`;
-        container.innerHTML += summaryPage;
 
-        // 2. 增加详情页 (每 10 条数据一页)
+        // 2. 详情页 (每10条一组)
         const chunkSize = 10;
         for (let i = 0; i < records.length; i += chunkSize) {
             const chunk = records.slice(i, i + chunkSize);
@@ -527,13 +521,13 @@
                     <td>${r.by}</td>
                 </tr>`).join('');
 
-            const detailPage = `
+            container.innerHTML += `
                 <div class="print-page-wrapper">
                     <div class="print-header-content">
-                        <img src="semsira.png" style="height:60px; margin-right:20px;">
-                        <div style="text-align:center; flex:1">
-                            <h1 style="margin:0; font-size:22px;">SENARAI TERPERINCI KESALAHAN</h1>
-                            <p style="font-size:14px;">${title} (Bahagian ${Math.floor(i/chunkSize) + 1})</p>
+                        <img src="semsira.png" style="height:50px; margin-right:15px;">
+                        <div style="flex:1">
+                            <h1 style="margin:0; font-size:18px;">SENARAI TERPERINCI KESALAHAN</h1>
+                            <p style="margin:0; font-size:12px;">${title} (${Math.floor(i/chunkSize) + 1})</p>
                         </div>
                     </div>
                     <table>
@@ -550,13 +544,12 @@
                     </table>
                     <div class="print-footer-content">
                         <div style="text-align:center;">
-                            <p style="margin-bottom:60px;">Disahkan Oleh:</p>
+                            <p style="margin-bottom:50px;">Disahkan Oleh:</p>
                             <p>___________________________</p>
                             <p style="font-weight:bold;">(Pegawai Bertugas)</p>
                         </div>
                     </div>
                 </div>`;
-            container.innerHTML += detailPage;
         }
 
         window.print();
