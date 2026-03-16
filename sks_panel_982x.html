@@ -66,61 +66,65 @@
 
         /* PRINT CONFIGURATION */
         @media print {
-            /* 关键点：设置 margin: 0 隐藏默认页眉页脚 */
-            @page { size: A4; margin: 0; }
-            body { background: white !important; color: black !important; margin: 0; -webkit-print-color-adjust: exact; }
-            
+            @page { 
+                size: A4; 
+                margin: 0; /* 强制移除页眉页脚的关键 */
+            }
+            body { background: white !important; color: black !important; margin: 0; }
             body * { visibility: hidden; }
             #printContainer, #printContainer * { visibility: visible; }
             
             #printContainer { 
                 position: absolute; left: 0; top: 0; width: 100%; 
                 display: block !important; background: white; 
-                padding: 10mm; box-sizing: border-box;
+                padding: 0; /* 内部填充由分页容器控制 */
             }
             .no-print { display: none !important; }
-            
-            /* 每页容器 */
-            .print-page { 
-                height: 285mm; /* 留一点缓冲距离 */
-                break-after: page; 
+
+            /* 每一页的容器样式 */
+            .print-page {
+                width: 210mm;
+                height: 297mm;
+                padding: 10mm 15mm;
+                box-sizing: border-box;
+                break-after: page;
                 position: relative;
                 display: flex;
                 flex-direction: column;
             }
 
             .print-header-content { 
-                display: flex; align-items: center; 
+                display: flex; 
+                align-items: center; 
                 border-bottom: 3px solid black; 
-                padding-bottom: 10px; margin-bottom: 15px; 
+                padding-bottom: 10px; 
+                margin-bottom: 15px; 
             }
 
             .print-summary-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
+                gap: 15px;
                 margin-top: 20px;
             }
-            .summary-box { border: 2px solid black; padding: 20px; text-align: center; }
-            .summary-box h2 { font-size: 40px; margin: 5px 0; }
+            .summary-box { border: 2px solid black; padding: 15px; text-align: center; }
+            .summary-box h2 { font-size: 32px; margin: 5px 0; }
 
-            table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-top: 5px; }
+            table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-top: 10px; }
             th, td { 
                 border: 1px solid black !important; 
                 padding: 8px !important; 
                 color: black !important; 
-                word-wrap: break-word; 
-                font-size: 10px;
+                font-size: 11px;
+                background: transparent !important;
             }
-            th { background: #f2f2f2 !important; }
+            th { background: #f0f0f0 !important; }
 
-            /* 签名框置于每页底部 */
             .print-footer-signature {
-                margin-top: auto;
-                padding-top: 20px;
+                margin-top: auto; /* 始终推到底部 */
                 display: flex;
                 justify-content: flex-end;
-                width: 100%;
+                padding-bottom: 10mm;
             }
         }
 
@@ -141,63 +145,107 @@
     <div class="card">
         <h3>1. REKOD KEMASUKAN BARU</h3>
         <div class="input-group">
-            <div style="flex:0.8"><label style="font-size:10px; color:var(--accent)">TARIKH</label><input type="date" id="keyinDate"></div>
-            <div style="flex:0.6"><label style="font-size:10px; color:var(--accent)">PILIH KELAS</label><select id="selClass"><option value="">Memuatkan...</option></select><input type="text" id="stuClass" style="display:none; margin-top:5px;"></div>
-            <div style="flex:1.2"><label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label><select id="selName"><option value="">Pilih Kelas...</option></select><input type="text" id="stuName" style="display:none; margin-top:5px;"></div>
+            <div style="flex:0.8">
+                <label style="font-size:10px; color:var(--accent)">TARIKH</label>
+                <input type="date" id="keyinDate">
+            </div>
+            <div style="flex:0.6">
+                <label style="font-size:10px; color:var(--accent)">PILIH KELAS</label>
+                <select id="selClass"><option value="">Memuatkan...</option></select>
+                <input type="text" id="stuClass" placeholder="Manual Kelas" style="display:none; margin-top:5px;">
+            </div>
+            <div style="flex:1.2">
+                <label style="font-size:10px; color:var(--accent)">NAMA PELAJAR</label>
+                <select id="selName"><option value="">Pilih Kelas...</option></select>
+                <input type="text" id="stuName" placeholder="Manual Nama" style="display:none; margin-top:5px;">
+            </div>
             <div style="flex:0.4"><label style="font-size:10px; color:var(--accent)">MASA</label><input type="time" id="violationTime"></div>
-            <div style="flex:1"><label style="font-size:10px; color:var(--accent)">KESALAHAN</label><select id="violation"><option value="" disabled selected>Pilih...</option><option value="Lewat">Lewat</option><option value="Ponteng Kelas">Ponteng Kelas</option><option value="Buli">Buli</option><option value="Bergaduh">Bergaduh</option><option value="Diskriminasi">Diskriminasi</option><option value="Barang Larangan">Barang Larangan</option><option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option><option value="Isu Trafik">Isu Trafik</option><option value="Lain-lain">Lain-lain</option></select></div>
+            <div style="flex:1">
+                <label style="font-size:10px; color:var(--accent)">KESALAHAN</label>
+                <select id="violation">
+                    <option value="" disabled selected>Pilih...</option>
+                    <option value="Lewat">Lewat</option>
+                    <option value="Ponteng Kelas">Ponteng Kelas</option>
+                    <option value="Buli">Buli</option>
+                    <option value="Bergaduh">Bergaduh</option>
+                    <option value="Diskriminasi">Diskriminasi</option>
+                    <option value="Barang Larangan">Barang Larangan</option>
+                    <option value="Salah Guna Dadah/Merokok">Salah Guna Dadah/Merokok</option>
+                    <option value="Isu Trafik">Isu Trafik</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                </select>
+            </div>
             <button id="btnSubmit">SIMPAN</button>
         </div>
         <small style="color:#555; cursor:pointer" id="manualToggle">* Input manual</small>
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap:10px;">
             <h3>2. ANALISIS KESALAHAN BULANAN</h3>
-            <input type="month" id="statsMonth" style="width:160px;">
-            <button id="btnPrintMonthly" style="background:#2980b9; color:white; font-size:11px;">PRINT BULANAN</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="month" id="statsMonth" style="width:160px;">
+                <button id="btnPrintMonthly" style="background:#2980b9; color:white; font-size:11px;">PRINT BULANAN</button>
+            </div>
         </div>
         <div class="stats-grid" id="statsDisplay"></div>
     </div>
 
     <div class="card">
         <h3>3. LOG AKTIVITI</h3>
-        <div class="log-panel" id="logDisplay">Memuatkan...</div>
+        <div class="log-panel" id="logDisplay">Memuatkan log...</div>
     </div>
 
     <div class="card" style="background:transparent; border:none; padding:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h3>4. SENARAI DISIPLIN</h3>
             <div style="display:flex; gap:10px;">
                 <select id="sortType" style="width:150px; font-size:11px;">
                     <option value="name">Susun: A-Z</option>
-                    <option value="counts">Susun: Jumlah Kes</option>
-                    <option value="dateNew">Susun: Tarikh (New)</option>
+                    <option value="counts">Susun: Jumlah Kes (Banyak)</option>
+                    <option value="dateNew">Susun: Tarikh (Terbaharu)</option>
+                    <option value="dateOld">Susun: Tarikh (Terlama)</option>
                 </select>
-                <button id="btnStudentReport" style="background:var(--tag-other); color:white; font-size:10px; display:none;">PRINT INDIVIDU</button>
+                <button id="btnStudentReport" style="background:var(--tag-other); color:white; font-size:10px; display:none;">PRINT REKOD INDIVIDU</button>
             </div>
         </div>
-        <input type="text" id="searchBox" placeholder="Cari nama...">
+        <input type="text" id="searchBox" placeholder="Cari nama atau kelas...">
         <table>
-            <thead><tr><th width="25%">Identiti</th><th width="45%">Kesalahan</th><th width="15%">Jumlah</th><th width="15%">Aksi</th></tr></thead>
+            <thead>
+                <tr>
+                    <th width="25%">Identiti</th>
+                    <th width="45%">Kesalahan (Klik Urus)</th>
+                    <th width="15%" style="text-align:center">Jumlah</th>
+                    <th width="15%">Aksi</th>
+                </tr>
+            </thead>
             <tbody id="recordBody"></tbody>
         </table>
     </div>
 
     <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; margin-top:30px;">
+        <span style="font-size:11px; color:#555">FILTER TARIKH:</span>
         <input type="date" id="reportDate" style="width:150px;">
         <button id="btnPrintDaily" style="background:#27ae60; color:white;">PRINT HARIAN</button>
-        <button id="btnMasterReset" style="background:#440000; color:#ff4d4d;">RESET TAHUNAN</button>
+        <button id="btnMasterReset" style="background:#440000; color:#ff4d4d; border:1px solid #442222; font-size:10px;">RESET TAHUNAN</button>
     </div>
 </div>
 
 <div id="printContainer"></div>
 
-<div id="sebabModal" class="modal"><div class="modal-content"><h4 style="color:var(--accent)">SILA PILIH SEBAB LEWAT</h4><div class="sebab-grid" id="sebabButtons"></div><button id="btnCancelSebab" style="width:100%; margin-top:15px;">BATAL</button></div></div>
-<div id="historyModal" class="modal"><div class="modal-content"><h4 id="modalTitle" style="color:var(--accent)">Sejarah</h4><div id="historyList"></div><button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:15px;">TUTUP</button></div></div>
+<div id="sebabModal" class="modal"><div class="modal-content">
+    <h4 style="margin-top:0; color:var(--accent)">SILA PILIH SEBAB LEWAT</h4>
+    <div class="sebab-grid" id="sebabButtons"></div>
+    <button id="btnCancelSebab" style="width:100%; margin-top:15px; background:#444; color:white;">BATAL</button>
+</div></div>
+
+<div id="historyModal" class="modal"><div class="modal-content">
+    <h4 id="modalTitle" style="margin-top:0; color:var(--accent)">Sejarah</h4>
+    <div id="historyList"></div>
+    <button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:15px; background:#444; color:white;">TUTUP</button>
+</div></div>
 
 <script type="module">
-    // Firebase & Global Init (与您之前的一致)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs, increment, orderBy, limit, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -220,15 +268,15 @@
 
     let allData = [];
     let rtdbData = {};
+    let selectedStudent = null;
     const currentAdmin = (sessionStorage.getItem('admin_name') || "ADMIN").split('@')[0].toUpperCase();
 
-    // 初始化表单和逻辑
     document.getElementById('displayAdmin').innerText = currentAdmin;
     document.getElementById('keyinDate').valueAsDate = new Date();
     document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
+    document.getElementById('sortType').value = localStorage.getItem('bdp_sort') || 'name';
     document.getElementById('violationTime').value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
 
-    // 辅助函数：解析时间
     const parseTime = (str) => {
         try {
             const [dStr, tStr] = str.split(', ');
@@ -238,8 +286,7 @@
         } catch(e) { return 0; }
     };
 
-    // Firebase 实时监听
-    onValue(ref(rtdb, "/"), snap => {
+    onValue(ref(rtdb, "/"), (snap) => {
         rtdbData = snap.val() || {};
         const selClass = document.getElementById('selClass');
         let html = '<option value="">Pilih...</option>';
@@ -252,132 +299,315 @@
         const val = e.target.value;
         const selName = document.getElementById('selName');
         const stuClass = document.getElementById('stuClass');
-        if(val === "MANUAL") { stuClass.style.display='block'; selName.innerHTML='<option value="MANUAL">-- MANUAL --</option>'; document.getElementById('stuName').style.display='block'; }
-        else { stuClass.style.display='none'; stuClass.value=val; const students=rtdbData[val]||[]; let h='<option value="">Pilih...</option>'; students.sort().forEach(n => h+=`<option value="${n}">${n}</option>`); h+='<option value="MANUAL">-- BARU --</option>'; selName.innerHTML=h; }
+        if(val === "MANUAL") {
+            stuClass.style.display = 'block';
+            selName.innerHTML = '<option value="MANUAL">-- MANUAL --</option>';
+            document.getElementById('stuName').style.display = 'block';
+        } else {
+            stuClass.style.display = 'none';
+            stuClass.value = val;
+            const students = rtdbData[val] || [];
+            let html = '<option value="">Pilih Pelajar...</option>';
+            students.sort().forEach(n => html += `<option value="${n}">${n}</option>`);
+            html += '<option value="MANUAL">-- Pelajar Baru --</option>';
+            selName.innerHTML = html;
+        }
     };
-    document.getElementById('selName').onchange = (e) => { document.getElementById('stuName').style.display = (e.target.value==="MANUAL")?'block':'none'; if(e.target.value!=="MANUAL") document.getElementById('stuName').value=e.target.value; };
 
-    onSnapshot(colRef, (snap) => { allData = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); updateStats(); });
+    document.getElementById('selName').onchange = (e) => {
+        const manual = e.target.value === "MANUAL";
+        document.getElementById('stuName').style.display = manual ? 'block' : 'none';
+        if(!manual) document.getElementById('stuName').value = e.target.value;
+    };
 
-    // 核心打印逻辑优化：自动分页
-    const doPrint = (title, records) => {
-        const printContainer = document.getElementById('printContainer');
-        printContainer.innerHTML = ""; // 清空
+    const executeSubmit = async (name, cls, type, time) => {
+        const kDate = new Date(document.getElementById('keyinDate').value);
+        const dateStr = kDate.toLocaleDateString('en-GB');
+        const fullTime = `${dateStr}, ${time}`;
+        const entry = { type, time: fullTime, by: currentAdmin };
+        const q = query(colRef, where("name", "==", name.toUpperCase()), where("class", "==", cls.toUpperCase()));
+        const snap = await getDocs(q);
+        if(!snap.empty) {
+            const d = snap.docs[0];
+            await updateDoc(doc(db, "students", d.id), {
+                offences: [entry, ...(d.data().offences || [])],
+                counts: increment(1)
+            });
+        } else {
+            await addDoc(colRef, { name: name.toUpperCase(), class: cls.toUpperCase(), offences: [entry], counts: 1 });
+        }
+        await addDoc(logRef, { msg: `TAMBAH: ${type} - ${name}`, admin: currentAdmin, timestamp: serverTimestamp() });
+        alert("Berjaya Disimpan!");
+        location.reload();
+    };
 
-        // 每页显示的名单行数
-        const ITEMS_PER_PAGE = 25; 
-        const pagesCount = Math.ceil(records.length / ITEMS_PER_PAGE) || 1;
+    document.getElementById('btnSubmit').onclick = () => {
+        const name = document.getElementById('stuName').value.trim();
+        const cls = document.getElementById('stuClass').value.trim();
+        const type = document.getElementById('violation').value;
+        const time = document.getElementById('violationTime').value;
+        if(!name || !cls || !type || !time) return alert("Sila lengkapkan!");
+        if(type === "Lewat") {
+            document.getElementById('sebabModal').style.display = 'flex';
+        } else { executeSubmit(name, cls, type, time); }
+    };
 
-        // 生成统计摘要页（第一页）
+    const sebabList = ["Bangun Lewat", "Masalah Kenderaan", "Sakit Perut", "Masalah Trafik", "Masalah Keluarga"];
+    document.getElementById('sebabButtons').innerHTML = sebabList.map(s => `<button class="sebab-btn">${s}</button>`).join('');
+    document.querySelectorAll('.sebab-btn').forEach(btn => {
+        btn.onclick = () => {
+            const name = document.getElementById('stuName').value;
+            const cls = document.getElementById('stuClass').value;
+            const time = document.getElementById('violationTime').value;
+            executeSubmit(name, cls, `Lewat (${btn.innerText})`, time);
+        };
+    });
+
+    onSnapshot(colRef, (snap) => {
+        allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+        updateStats();
+    });
+
+    onSnapshot(query(logRef, orderBy("timestamp", "desc"), limit(10)), (snap) => {
+        let html = "";
+        snap.forEach(d => {
+            const data = d.data();
+            const t = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : "...";
+            html += `<div class="log-entry"><span>[${t}]</span><span class="log-msg">${data.msg}</span><span class="log-admin">@${data.admin}</span></div>`;
+        });
+        document.getElementById('logDisplay').innerHTML = html;
+    });
+
+    function render() {
+        const search = document.getElementById('searchBox').value.toUpperCase();
+        const filterDateInput = document.getElementById('reportDate').value;
+        const targetDate = filterDateInput ? new Date(filterDateInput).toLocaleDateString('en-GB') : null;
+        const sortBy = document.getElementById('sortType').value;
+        let filtered = allData.filter(s => s.name.includes(search) || s.class.includes(search));
+        if(targetDate) filtered = filtered.filter(s => s.offences?.some(o => o.time.includes(targetDate)));
+        filtered.sort((a, b) => {
+            if(sortBy === 'name') return a.name.localeCompare(b.name);
+            if(sortBy === 'counts') return b.counts - a.counts;
+            const timeA = a.offences ? parseTime(a.offences[0].time) : 0;
+            const timeB = b.offences ? parseTime(b.offences[0].time) : 0;
+            return sortBy === 'dateNew' ? timeB - timeA : timeA - timeB;
+        });
+        const btnRep = document.getElementById('btnStudentReport');
+        if(search.length > 2 && filtered.length === 1) {
+            selectedStudent = filtered[0];
+            btnRep.style.display = 'block';
+            btnRep.innerText = `PRINT REKOD: ${selectedStudent.name}`;
+        } else { btnRep.style.display = 'none'; }
+        let html = "";
+        filtered.forEach(s => {
+            const sortedOff = [...(s.offences || [])].sort((a,b) => parseTime(b.time) - parseTime(a.time));
+            const grouped = sortedOff.reduce((acc, curr) => {
+                const base = curr.type.split(' (')[0];
+                acc[base] = (acc[base] || 0) + 1;
+                return acc;
+            }, {});
+            let tags = "";
+            for (const [type, count] of Object.entries(grouped)) {
+                let cls = type === "Lewat" ? "tag-late" : (["Buli", "Bergaduh", "Diskriminasi"].includes(type) ? "tag-bad" : "tag-other");
+                tags += `<span class="offence-tag ${cls}" onclick="window.openHist('${s.id}', '${type}')">${type} ${count>1?'x'+count:''}</span>`;
+            }
+            html += `<tr class="${s.counts >= 3 ? 'highlight-row' : ''}">
+                <td style="word-wrap:break-word;"><b>${s.name}</b><br><small style="color:var(--accent)">${s.class}</small></td>
+                <td>${tags}</td>
+                <td style="text-align:center"><span class="count-badge">${s.counts}</span></td>
+                <td><button class="delete-btn" onclick="window.delStu('${s.id}')">Hapus</button></td>
+            </tr>`;
+        });
+        document.getElementById('recordBody').innerHTML = html;
+    }
+
+    window.openHist = (id, type) => {
+        const s = allData.find(x => x.id === id);
+        const list = s.offences.filter(o => o.type.startsWith(type)).sort((a,b) => parseTime(b.time) - parseTime(a.time));
+        document.getElementById('modalTitle').innerText = type;
+        document.getElementById('historyList').innerHTML = list.map(i => `
+            <div class="history-item">
+                <span>${i.time}<br><small>Oleh: ${i.by}</small></span>
+                <button class="delete-btn" onclick="window.delOne('${id}', '${i.time}')">PADAM</button>
+            </div>`).join('');
+        document.getElementById('historyModal').style.display = 'flex';
+    };
+
+    window.delStu = async (id) => {
+        const s = allData.find(x => x.id === id);
+        if(confirm(`Hapus SEMUA rekod ${s.name}?`)) {
+            await deleteDoc(doc(db, "students", id));
+            await addDoc(logRef, { msg: `PADAM PELAJAR: ${s.name}`, admin: currentAdmin, timestamp: serverTimestamp() });
+        }
+    };
+
+    window.delOne = async (id, time) => {
+        const s = allData.find(x => x.id === id);
+        const newArr = s.offences.filter(o => o.time !== time);
+        if(newArr.length === 0) await deleteDoc(doc(db, "students", id));
+        else await updateDoc(doc(db, "students", id), { offences: newArr, counts: newArr.length });
+        await addDoc(logRef, { msg: `PADAM REKOD: ${s.name} (${time})`, admin: currentAdmin, timestamp: serverTimestamp() });
+        document.getElementById('historyModal').style.display = 'none';
+    };
+
+    const updateStats = () => {
+        const sel = document.getElementById('statsMonth').value;
+        if(!sel) return;
+        const [y, m] = sel.split('-');
+        const target = `/${m}/${y}`;
         const stats = {};
-        records.forEach(r => { const base = r.type.split(' (')[0]; stats[base] = (stats[base] || 0) + 1; });
-        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik", "Lain-lain"];
+        allData.forEach(s => s.offences?.forEach(o => {
+            if(o.time.includes(target)) {
+                const base = o.type.split(' (')[0];
+                stats[base] = (stats[base] || 0) + 1;
+            }
+        }));
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik"];
+        document.getElementById('statsDisplay').innerHTML = types.map(t => `<div class="stat-card"><span class="stat-val">${stats[t]||0}</span><span class="stat-lbl">${t}</span></div>`).join('');
+    };
 
-        let summaryHtml = `<div class="print-page">
+    // 重构后的打印函数：支持每页 15 条自动分页，每页都有签名和模板
+    const doPrint = (title, records) => {
+        const container = document.getElementById('printContainer');
+        container.innerHTML = ""; // 清空旧数据
+
+        // 计算统计数据（用于首页汇总）
+        const stats = {};
+        records.forEach(r => {
+            const base = r.type.split(' (')[0];
+            stats[base] = (stats[base] || 0) + 1;
+        });
+
+        // 1. 生成汇总页
+        const summaryPage = document.createElement('div');
+        summaryPage.className = 'print-page';
+        let summaryBoxes = "";
+        ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik", "Lain-lain"].forEach(t => {
+            if(stats[t]) summaryBoxes += `<div class="summary-box"><p>${t.toUpperCase()}</p><h2>${stats[t]}</h2></div>`;
+        });
+        
+        summaryPage.innerHTML = `
             <div class="print-header-content">
                 <img src="semsira.png" style="height:70px; margin-right:20px;">
-                <div style="text-align:center; flex:1"><h1 style="margin:0;">RINGKASAN KESALAHAN</h1><p style="font-weight:bold;">${title}</p></div>
+                <div style="text-align:center; flex:1">
+                    <h1 style="margin:0; font-size:24px;">RINGKASAN KESALAHAN</h1>
+                    <p style="font-size:16px; font-weight:bold;">${title}</p>
+                </div>
             </div>
-            <div class="print-summary-grid">`;
-        types.forEach(t => { if(stats[t]) summaryHtml += `<div class="summary-box"><p>${t.toUpperCase()}</p><h2>${stats[t]}</h2></div>`; });
-        summaryHtml += `</div><div class="print-footer-signature">
-                <div style="text-align:center;"><p style="margin-bottom:50px;">Disahkan Oleh:</p><p>_______________________</p><p>(Pegawai Bertugas)</p></div>
-            </div></div>`;
-        
-        printContainer.innerHTML += summaryHtml;
+            <div class="print-summary-grid">${summaryBoxes}</div>
+            <div class="print-footer-signature">
+                <div style="text-align:center;">
+                    <p style="margin-bottom:50px;">Disahkan Oleh:</p>
+                    <p>___________________________</p>
+                    <p style="font-weight:bold;">(Pegawai Bertugas)</p>
+                </div>
+            </div>
+        `;
+        container.appendChild(summaryPage);
 
-        // 生成详细名单页
-        for (let i = 0; i < pagesCount; i++) {
-            const start = i * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            const currentRecords = records.slice(start, end);
+        // 2. 分页生成数据详情页 (每页 15 条)
+        const ITEMS_PER_PAGE = 15;
+        for (let i = 0; i < records.length; i += ITEMS_PER_PAGE) {
+            const pageData = records.slice(i, i + ITEMS_PER_PAGE);
+            const detailPage = document.createElement('div');
+            detailPage.className = 'print-page';
+            
+            let rows = pageData.map(r => `
+                <tr>
+                    <td>${r.name}</td>
+                    <td>${r.class}</td>
+                    <td>${r.type}</td>
+                    <td>${r.time}</td>
+                    <td>${r.by}</td>
+                </tr>
+            `).join('');
 
-            let pageHtml = `<div class="print-page">
+            detailPage.innerHTML = `
                 <div class="print-header-content">
                     <img src="semsira.png" style="height:50px; margin-right:20px;">
-                    <div style="text-align:center; flex:1"><h2 style="margin:0;">SENARAI TERPERINCI KESALAHAN</h2><p>${title} (Halaman ${i+1}/${pagesCount})</p></div>
+                    <div style="text-align:center; flex:1">
+                        <h1 style="margin:0; font-size:20px;">SENARAI TERPERINCI KESALAHAN</h1>
+                        <p style="font-size:12px;">${title} (Halaman ${Math.floor(i/ITEMS_PER_PAGE)+1})</p>
+                    </div>
                 </div>
                 <table>
                     <thead>
-                        <tr><th width="25%">Nama</th><th width="25%">Kelas</th><th width="25%">Kesalahan</th><th width="10%">Masa</th><th width="15%">Admin</th></tr>
+                        <tr>
+                            <th width="25%">Nama</th>
+                            <th width="20%">Kelas</th>     
+                            <th width="25%">Kesalahan</th>
+                            <th width="15%">Masa/Tarikh</th>      
+                            <th width="15%">Admin</th>
+                        </tr>
                     </thead>
-                    <tbody>`;
-            
-            currentRecords.forEach(r => {
-                pageHtml += `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
-            });
-
-            pageHtml += `</tbody></table>
+                    <tbody>${rows}</tbody>
+                </table>
                 <div class="print-footer-signature">
-                    <div style="text-align:center;"><p style="margin-bottom:50px;">Disahkan Oleh:</p><p>_______________________</p><p>(Pegawai Bertugas)</p></div>
+                    <div style="text-align:center;">
+                        <p style="margin-bottom:40px;">Disahkan Oleh:</p>
+                        <p>___________________________</p>
+                        <p style="font-weight:bold;">(Pegawai Bertugas)</p>
+                    </div>
                 </div>
-            </div>`;
-            
-            printContainer.innerHTML += pageHtml;
+            `;
+            container.appendChild(detailPage);
         }
 
-        setTimeout(() => { window.print(); }, 500);
+        // 调用打印
+        window.print();
     };
 
-    // 事件绑定与原有逻辑整合
     document.getElementById('btnPrintDaily').onclick = () => {
         const dInput = document.getElementById('reportDate').value;
-        if(!dInput) return alert("Sila pilih tarikh!");
+        if(!dInput) return alert("Pilih tarikh!");
         const target = new Date(dInput).toLocaleDateString('en-GB');
-        const res = [];
-        allData.forEach(s => s.offences.forEach(o => { if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o }); }));
+        let res = [];
+        allData.forEach(s => s.offences.forEach(o => {
+            if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o });
+        }));
         if(res.length === 0) return alert("Tiada data.");
-        doPrint(`LAPORAN HARIAN - ${target}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
+        doPrint(`LAPORAN DISIPLIN HARIAN - ${target}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
     };
 
     document.getElementById('btnPrintMonthly').onclick = () => {
         const sel = document.getElementById('statsMonth').value;
         const [y, m] = sel.split('-');
         const target = `/${m}/${y}`;
-        const res = [];
-        allData.forEach(s => s.offences.forEach(o => { if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o }); }));
-        doPrint(`LAPORAN BULANAN - ${m}/${y}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
+        let res = [];
+        allData.forEach(s => s.offences.forEach(o => {
+            if(o.time.includes(target)) res.push({ name: s.name, class: s.class, ...o });
+        }));
+        if(res.length === 0) return alert("Tiada data.");
+        doPrint(`LAPORAN DISIPLIN BULANAN - ${m}/${y}`, res.sort((a,b) => parseTime(b.time) - parseTime(a.time)));
     };
 
-    // 其他原有函数（render, delStu, executeSubmit 等）请保持不变以确保 Firebase 正常运作...
-    // 此处仅展示修改后的核心
-    function render() {
-        const search = document.getElementById('searchBox').value.toUpperCase();
-        const sortBy = document.getElementById('sortType').value;
-        let filtered = allData.filter(s => s.name.includes(search) || s.class.includes(search));
-        filtered.sort((a, b) => (sortBy === 'name') ? a.name.localeCompare(b.name) : b.counts - a.counts);
+    document.getElementById('btnStudentReport').onclick = () => {
+        if(!selectedStudent) return;
+        doPrint(`REKOD DISIPLIN INDIVIDU: ${selectedStudent.name}`, selectedStudent.offences);
+    };
 
-        let h = "";
-        filtered.forEach(s => {
-            h += `<tr><td><b>${s.name}</b><br><small>${s.class}</small></td><td>${s.offences[0].type}...</td><td>${s.counts}</td><td><button class="delete-btn" onclick="window.delStu('${s.id}')">Padam</button></td></tr>`;
-        });
-        document.getElementById('recordBody').innerHTML = h;
-    }
-
-    const executeSubmit = async (name, cls, type, time) => {
-        const kDate = new Date(document.getElementById('keyinDate').value).toLocaleDateString('en-GB');
-        const fullTime = `${kDate}, ${time}`;
-        const q = query(colRef, where("name","==",name.toUpperCase()), where("class","==",cls.toUpperCase()));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            const d = snap.docs[0];
-            await updateDoc(doc(db, "students", d.id), { offences: [{type, time:fullTime, by:currentAdmin}, ...d.data().offences], counts: increment(1) });
-        } else {
-            await addDoc(colRef, { name: name.toUpperCase(), class: cls.toUpperCase(), offences: [{type, time:fullTime, by:currentAdmin}], counts: 1 });
+    document.getElementById('searchBox').onkeyup = render;
+    document.getElementById('reportDate').onchange = render;
+    document.getElementById('sortType').onchange = (e) => {
+        localStorage.setItem('bdp_sort', e.target.value);
+        render();
+    };
+    document.getElementById('manualToggle').onclick = () => {
+        document.getElementById('selClass').value = "MANUAL";
+        document.getElementById('selClass').dispatchEvent(new Event('change'));
+    };
+    document.getElementById('btnCancelSebab').onclick = () => document.getElementById('sebabModal').style.display = 'none';
+    document.getElementById('btnMasterReset').onclick = async () => {
+        if(confirm("AWAS! Padam SEMUA data tahunan?") && prompt("Taip 'PADAM2026' untuk sahkan:") === "PADAM2026") {
+            const qs = await getDocs(colRef);
+            const batch = writeBatch(db);
+            qs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            alert("Data dikosongkan.");
+            location.reload();
         }
-        location.reload();
     };
-
-    document.getElementById('btnSubmit').onclick = () => {
-        const n=document.getElementById('stuName').value;
-        const c=document.getElementById('stuClass').value;
-        const t=document.getElementById('violation').value;
-        const m=document.getElementById('violationTime').value;
-        if(n&&c&&t&&m) executeSubmit(n,c,t,m);
-    };
-
-    window.delStu = async (id) => { if(confirm("Hapus?")) await deleteDoc(doc(db, "students", id)); };
-    const updateStats = () => { /* 统计分析更新逻辑 */ };
 </script>
 </body>
 </html>
