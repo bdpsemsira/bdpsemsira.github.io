@@ -64,16 +64,31 @@
         .sebab-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 15px; }
         .sebab-btn { background: #222; color: #fff; text-align: left; padding: 12px; border: 1px solid #333; border-radius: 8px; font-size: 13px; cursor: pointer; }
 
-        /* 打印样式优化 */
+        /* 打印样式优化 - 强制 A4 并去除浏览器页眉页脚 */
         @media print {
+            @page {
+                size: A4;
+                margin: 0; /* 这将隐藏默认的时间、网址等页眉页脚 */
+            }
+            body { margin: 0; background: white; }
             body * { visibility: hidden; }
             #reportExportTemplate, #reportExportTemplate * { visibility: visible; color: black !important; }
-            #reportExportTemplate { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-            .rpt-table th { background: #eee !important; }
+            #reportExportTemplate { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 210mm; /* A4 宽度 */
+                min-height: 297mm; /* A4 高度 */
+                display: block !important; 
+                padding: 20mm; /* 打印页边距 */
+                box-sizing: border-box;
+            }
+            .rpt-table th { background: #eee !important; border: 1px solid black !important; }
+            .rpt-table td { border: 1px solid black !important; }
             .no-print { display: none !important; }
         }
 
-        #reportExportTemplate { display: none; padding: 40px; background: white; }
+        #reportExportTemplate { display: none; background: white; }
         .rpt-header { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; }
         .rpt-table { width: 100%; border-collapse: collapse; }
         .rpt-table th, .rpt-table td { border: 1px solid black; padding: 8px; text-align: center; font-size: 12px; }
@@ -240,6 +255,11 @@
     document.getElementById('keyinDate').valueAsDate = new Date();
     document.getElementById('statsMonth').value = new Date().toISOString().slice(0, 7);
     document.getElementById('sortType').value = localStorage.getItem('bdp_sort') || 'name';
+    
+    // 设置录入 Masa 为当前 Masa
+    const now = new Date();
+    const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('violationTime').value = currentTime;
 
     // 日期解析工具
     const parseTime = (str) => {
@@ -314,8 +334,8 @@
         const name = document.getElementById('stuName').value.trim();
         const cls = document.getElementById('stuClass').value.trim();
         const type = document.getElementById('violation').value;
-        const time = document.getElementById('violationTime').value || "08:00";
-        if(!name || !cls || !type) return alert("Sila lengkapkan!");
+        const time = document.getElementById('violationTime').value;
+        if(!name || !cls || !type || !time) return alert("Sila lengkapkan!");
         if(type === "Lewat") {
             document.getElementById('sebabModal').style.display = 'flex';
         } else { executeSubmit(name, cls, type, time); }
@@ -327,7 +347,7 @@
         btn.onclick = () => {
             const name = document.getElementById('stuName').value;
             const cls = document.getElementById('stuClass').value;
-            const time = document.getElementById('violationTime').value || "08:00";
+            const time = document.getElementById('violationTime').value;
             executeSubmit(name, cls, `Lewat (${btn.innerText})`, time);
         };
     });
