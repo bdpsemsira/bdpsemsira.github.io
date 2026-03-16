@@ -46,7 +46,6 @@
       --text-muted: #cccccc;
     }
 
-    /* 优化手机端：禁止左右滑动 */
     html, body {
       max-width: 100%;
       overflow-x: hidden;
@@ -126,15 +125,14 @@
     #statsList b { color: var(--accent); }
     footer { background: #080a12; color: #666; padding: 40px 10px; text-align: center; font-size: 0.9rem; border-top: 1px solid #222; }
 
-    /* 核心美化：Back to Top 按钮 */
     #backToTopBtn {
       position: fixed;
       bottom: 25px;
       right: 25px;
       width: 50px;
       height: 50px;
-      background: rgba(255, 204, 0, 0.85); /* 半透明主色 */
-      backdrop-filter: blur(8px); /* 毛玻璃效果 */
+      background: rgba(255, 204, 0, 0.85);
+      backdrop-filter: blur(8px);
       color: #000;
       border: 2px solid rgba(255, 255, 255, 0.2);
       border-radius: 50%;
@@ -224,39 +222,6 @@
       <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/farhaney.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">NIK NUR FARHANEY</h5><p class="member-role">Timbalan Presiden 1</p></div></div>
       <div class="col-md-3" data-aos="fade-up"><div class="card p-3 mpp-member"><img src="/image/mikhail.png" class="rounded-circle" onerror="this.src='https://via.placeholder.com/130'"><h5 class="member-name">MUHAMMAD MIKHAIL RIZKY</h5><p class="member-role">Timbalan Presiden 2</p></div></div>
     </div>
-
-    <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/rifqah.png" class="rounded-circle mx-auto"><h6 class="member-name">NUR RIFQAH UMAIRAH</h6><small class="member-role">Setiausaha</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/lee.png" class="rounded-circle mx-auto"><h6 class="member-name">LEE ZHI HUI</h6><small class="member-role">Pen. Setiausaha</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/tan.png" class="rounded-circle mx-auto"><h6 class="member-name">TAN QIAN YU</h6><small class="member-role">Bendahari</small></div></div>
-      <div class="col-6 col-md-2" data-aos="fade-up"><div class="card p-2 mpp-member small"><img src="/image/cik.png" class="rounded-circle mx-auto"><h6 class="member-name">CIK ANIS FARISHA</h6><small class="member-role">Pen. Bendahari</small></div></div>
-    </div>
-
-    <h4 class="biro-title">BIRO PENGURUSAN MAJLIS</h4>
-    <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syed.png" class="rounded-circle mx-auto"><small class="member-name">Syed Ashraff Ali</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/airil.png" class="rounded-circle mx-auto"><small class="member-name">M. Airil Wafie</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/qasdina.png" class="rounded-circle mx-auto"><small class="member-name">Umairah Qasdina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazrila.png" class="rounded-circle mx-auto"><small class="member-name">N. Syazrila Hafifah</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syauqina.png" class="rounded-circle mx-auto"><small class="member-name">Nur Syauqina</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/ruthriswary.png" class="rounded-circle mx-auto"><small class="member-name">Ruthriswary</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/athirah.png" class="rounded-circle mx-auto"><small class="member-name">S. Amni Athirah</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/syazwan.png" class="rounded-circle mx-auto"><small class="member-name">M. Syazwan</small></div></div>
-    </div>
-
-    <h4 class="biro-title">BIRO MULTIMEDIA DAN SIAR RAYA</h4>
-    <div class="row g-3 justify-content-center mb-5">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/suwan.png" class="rounded-circle mx-auto"><small class="member-name">Suwannarid</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/kong.png" class="rounded-circle mx-auto"><small class="member-name">Kong Zi Jun</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/norhafiz.png" class="rounded-circle mx-auto"><small class="member-name">M. Norhafiz</small></div></div>
-    </div>
-
-    <h4 class="biro-title">BIRO KEAGAMAAN DAN KEROHANIAN</h4>
-    <div class="row g-3 justify-content-center">
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/adam.png" class="rounded-circle mx-auto"><small class="member-name">Adam Tijani Adam</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/faris.png" class="rounded-circle mx-auto"><small class="member-name">Iman Faris</small></div></div>
-      <div class="col-6 col-md-2"><div class="card p-2 mpp-member small"><img src="/image/aiman.png" class="rounded-circle mx-auto"><small class="member-name">Farish Aiman</small></div></div>
-    </div>
   </div>
 </section>
 
@@ -289,78 +254,6 @@
   </div>
 </section>
 
-<section id="about" style="background: #080a12;">
-
-  <h2 class="section-title">🏢 MENGENAI KAMI</h2>
-
-  <div class="container">
-
-    <div class="row g-4">
-
-      <div class="col-md-7" data-aos="fade-right">
-
-        <div class="card p-2" style="overflow: hidden; min-height: 400px; background: #000;">
-
-          <iframe 
-
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.5986293035917!2d100.23942199999999!3d6.44555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304c98684cb5f589%3A0x1f291ecb72c29c7c!2sSMK%20Syed%20Sirajuddin!5e0!3m2!1sen!2smy!4v1770915304523!5m2!1sen!2smy" 
-
-            width="100%" 
-
-            height="400" 
-
-            style="border:0; border-radius: 12px;" 
-
-            allowfullscreen="" 
-
-            loading="lazy" 
-
-            referrerpolicy="no-referrer-when-downgrade">
-
-          </iframe>
-
-        </div>
-
-      </div>
-
-      <div class="col-md-5" data-aos="fade-left">
-
-        <div class="card p-4">
-
-          <h5 class="fw-bold text-warning mb-4">Maklumat Hubungan</h5>
-
-          <div class="about-info">
-
-            <p><i class="fas fa-school"></i> <strong>SMK Syed Sirajuddin</strong></p>
-
-            <p><i class="fas fa-map-marker-alt"></i> Jejawi, 02600, Arau,<br>Perlis, Malaysia</p>
-
-            <p><i class="fas fa-phone-alt"></i> 6049760161</p>
-
-            <p><i class="fas fa-fax"></i> 6049776604</p>
-
-            <p><i class="fas fa-envelope"></i> <a href="mailto:bdpsemsira@gmail.com" class="map-link">bdpsemsira@gmail.com</a></p>
-
-            <hr style="border-color: #333; margin: 20px 0;">
-
-            <a href="https://www.google.com/maps/place/SMK+Syed+Sirajuddin/@6.44555,100.239422,17z/data=!3m1!4b1!4m6!3m5!1s0x304c98684cb5f589:0x1f291ecb72c29c7c!8m2!3d6.44555!4d100.239422!16s%2Fg%2F121m876m?entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-main w-100 text-center" style="font-size: 13px;">
-
-              <i class="fas fa-external-link-alt"></i> Buka Google Maps Penuh
-
-            </a>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-  
 <footer><p>© 2026 Badan Disiplin Pelajar SEMSIRA. Developed by K.A.</p></footer>
 
 <button id="backToTopBtn" title="Back to Top">
@@ -382,14 +275,12 @@
   let currentSlide = 0;
   let slides = [];
 
-  // --- POSTER LOGIC ---
   async function fetchPosters() {
       const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/issues?labels=poster`;
       try {
           const response = await fetch(url);
           const issues = await response.json();
           const imgRegex = /(?:!\[.*?\]\(|<img.*?src=")(.*?)[\)"]/;
-          
           const urls = issues.map(issue => {
               const match = issue.body ? issue.body.match(imgRegex) : null;
               return match ? match[1] : null;
@@ -416,16 +307,39 @@
       slides[currentSlide].classList.add('active');
   }
 
-  // --- FIREBASE LOGIC ---
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   let myChart;
-  const colorMap = { "Lewat": "#f1c40f", "Ponteng Kelas": "#e67e22", "Buli": "#e74c3c", "Diskriminasi": "#e74c3c", "Barang Haram": "#9b59b6", "Penyalahguna Dadah / Merokok": "#8e44ad", "Memecut laju": "#000000", "Isu Numbor Kenderaan": "#2C3E50", "Isu Roadtax": "#566573", "Isu Lesen Kenderaan": "#808B96", "Lain-lain": "#3498db" };
+
+  // 定义不同类型的颜色
+  const colorMap = { 
+    "Lewat": "#f1c40f", 
+    "Lewat (Masalah Kenderaan)": "#e67e22", 
+    "Lewat (Sakit Perut)": "#2ecc71", 
+    "Lewat (Bangun Lewat)": "#9b59b6", 
+    "Lewat (Masalah Pengangkutan)": "#3498db", 
+    "Lewat (Masalah Keluarga)": "#1abc9c",
+    "Ponteng Kelas": "#d35400", 
+    "Buli": "#e74c3c", 
+    "Diskriminasi": "#c0392b"
+  };
 
   onSnapshot(collection(db, "students"), (snap) => {
       const stats = {};
-      snap.docs.forEach(doc => doc.data().offences?.forEach(off => { stats[off.type] = (stats[off.type] || 0) + 1; }));
-      const labels = Object.keys(stats), dataValues = Object.values(stats);
+      snap.docs.forEach(doc => doc.data().offences?.forEach(off => { 
+          let type = off.type;
+          
+          // 逻辑归类：将所有包含 "Lain-lain" 的项映射为 "Lewat"
+          // 如果类型不在 colorMap 中，默认也归类为 "Lewat"
+          if (type.includes("Lain-lain") || !colorMap[type]) {
+            type = "Lewat";
+          }
+          
+          stats[type] = (stats[type] || 0) + 1; 
+      }));
+
+      const labels = Object.keys(stats);
+      const dataValues = Object.values(stats);
       const bgColors = labels.map(l => colorMap[l] || "#D5D8DC");
 
       let listHtml = "";
@@ -438,9 +352,23 @@
       if (myChart) {
           myChart.data.labels = labels;
           myChart.data.datasets[0].data = dataValues;
+          myChart.data.datasets[0].backgroundColor = bgColors;
           myChart.update();
       } else {
-          myChart = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: dataValues, backgroundColor: bgColors }] }, options: { responsive: true, maintainAspectRatio: false } });
+          myChart = new Chart(ctx, { 
+            type: 'pie', 
+            data: { 
+              labels, 
+              datasets: [{ data: dataValues, backgroundColor: bgColors }] 
+            }, 
+            options: { 
+              responsive: true, 
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false } // 在饼图旁已有列表，隐藏图例更整洁
+              }
+            } 
+          });
       }
   });
 
@@ -448,17 +376,12 @@
   setInterval(() => window.changeSlide(1), 5000);
   AOS.init({ duration: 1000, once: true });
 
-  // 优化后的 Back to Top 控制
   const btt = document.getElementById("backToTopBtn");
   window.onscroll = () => {
-    if (window.scrollY > 400) {
-      btt.classList.add("show");
-    } else {
-      btt.classList.remove("show");
-    }
+    if (window.scrollY > 400) btt.classList.add("show");
+    else btt.classList.remove("show");
   };
   btt.onclick = () => window.scrollTo({top: 0, behavior: "smooth"});
 </script>
-
 </body>
 </html>
