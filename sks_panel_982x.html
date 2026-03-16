@@ -66,37 +66,49 @@
 
         /* PRINT CONFIGURATION */
         @media print {
-            @page { 
-                size: A4; 
-                margin: 0; /* 彻底移除页眉页脚（时间、网址、页码） */
-            }
+            @page { size: A4; margin: 0; }
             body { background: white !important; color: black !important; margin: 0; }
             body * { visibility: hidden; }
             #printContainer, #printContainer * { visibility: visible; }
             #printContainer { 
                 position: absolute; left: 0; top: 0; width: 100%; 
                 display: block !important; background: white; 
-                padding: 15mm; /* 在容器内部设置边距代替页边距 */
-                box-sizing: border-box;
+                padding: 15mm; box-sizing: border-box;
             }
             .no-print { display: none !important; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
-            table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+            
+            /* 第一页统计网格样式 */
+            .print-summary-page { 
+                break-after: page; 
+                text-align: center; 
+                padding-top: 20mm;
+            }
+            .print-summary-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin-top: 30px;
+            }
+            .summary-box {
+                border: 2px solid black;
+                padding: 20px;
+            }
+            .summary-box h2 { font-size: 40px; margin: 10px 0; }
+
+            /* 表格样式 */
+            table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-top: 20px; }
             th, td { 
                 border: 1px solid black !important; 
-                padding: 8px !important; 
+                padding: 6px !important; 
                 color: black !important; 
-                background: transparent !important; 
-                word-wrap: break-word; /* 强制名字过长时换行 */
-                white-space: normal !important; 
-                overflow: hidden;
+                word-wrap: break-word; 
+                font-size: 12px;
             }
+            thead { display: table-header-group; }
         }
 
         #printContainer { display: none; }
         .print-header-content { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 15px; margin-bottom: 20px; }
-        .print-footer-content { margin-top: 30px; display: flex; justify-content: flex-end; }
     </style>
 </head>
 <body>
@@ -200,42 +212,36 @@
 </div>
 
 <div id="printContainer">
-    <table>
-        <thead>
-            <tr>
-                <th colspan="5" style="border:none !important; padding:0 !important;">
-                    <div class="print-header-content">
-                        <img src="semsira.png" style="height:70px; margin-right:20px;">
-                        <div style="text-align:center; flex:1">
-                            <h1 style="margin:0; font-size:24px;">LAPORAN DISIPLIN SEMSIRA BDP</h1>
-                            <p id="rptMeta" style="margin:5px 0; font-size:16px; font-weight:bold;"></p>
-                        </div>
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th width="25%">Nama</th>
-                <th width="20%">Kelas</th>
-                <th width="25%">Kesalahan</th>
-                <th width="15%">Masa/Tarikh</th>
-                <th width="15%">Admin</th>
-            </tr>
-        </thead>
-        <tbody id="printTbody"></tbody>
-        <tfoot>
-            <tr>
-                <th colspan="5" style="border:none !important; padding:0 !important;">
-                    <div class="print-footer-content">
-                        <div style="text-align:center;">
-                            <p style="margin-bottom:60px;">Disahkan Oleh:</p>
-                            <p>___________________________</p>
-                            <p style="font-weight:bold;">(Pegawai Bertugas)</p>
-                        </div>
-                    </div>
-                </th>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="print-summary-page">
+        <div class="print-header-content">
+            <img src="semsira.png" style="height:80px; margin-right:20px;">
+            <div style="text-align:center; flex:1">
+                <h1 style="margin:0; font-size:28px;">RINGKASAN KESALAHAN</h1>
+                <p id="rptSummaryTitle" style="font-size:18px; font-weight:bold;"></p>
+            </div>
+        </div>
+        <div id="printSummaryBody" class="print-summary-grid"></div>
+    </div>
+
+    <div class="print-detail-page">
+        <div class="print-header-content">
+            <img src="semsira.png" style="height:60px; margin-right:20px;">
+            <div style="text-align:center; flex:1">
+                <h1 style="margin:0; font-size:22px;">SENARAI TERPERINCI KESALAHAN</h1>
+                <p id="rptDetailTitle" style="font-size:14px;"></p>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th width="25%">Nama</th>
+                    <th width="30%">Kelas</th> <th width="25%">Kesalahan</th>
+                    <th width="5%">Masa</th> <th width="15%">Admin</th>
+                </tr>
+            </thead>
+            <tbody id="printTbody"></tbody>
+        </table>
+    </div>
 </div>
 
 <div id="sebabModal" class="modal"><div class="modal-content">
@@ -480,10 +486,34 @@
         document.getElementById('statsDisplay').innerHTML = types.map(t => `<div class="stat-card"><span class="stat-val">${stats[t]||0}</span><span class="stat-lbl">${t}</span></div>`).join('');
     };
 
+    // 核心打印功能优化
     const doPrint = (title, records) => {
+        document.getElementById('rptSummaryTitle').innerText = title;
+        document.getElementById('rptDetailTitle').innerText = title;
+
+        // 统计第一页数据
+        const stats = {};
+        records.forEach(r => {
+            const base = r.type.split(' (')[0];
+            stats[base] = (stats[base] || 0) + 1;
+        });
+
+        const types = ["Lewat", "Ponteng Kelas", "Buli", "Bergaduh", "Barang Larangan", "Salah Guna Dadah/Merokok", "Isu Trafik", "Lain-lain"];
+        let summaryHtml = "";
+        types.forEach(t => {
+            if(stats[t]) {
+                summaryHtml += `<div class="summary-box"><p>${t.toUpperCase()}</p><h2>${stats[t]}</h2></div>`;
+            }
+        });
+        document.getElementById('printSummaryBody').innerHTML = summaryHtml;
+
+        // 填充第二页详细表格
         const tbody = document.getElementById('printTbody');
-        tbody.innerHTML = records.map(r => `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`).join('');
-        document.getElementById('rptMeta').innerText = title;
+        tbody.innerHTML = records.map(r => {
+            const displayTime = r.time.split(', ')[1] || r.time; // 只显示时间
+            return `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${displayTime}</td><td>${r.by}</td></tr>`;
+        }).join('');
+
         window.print();
     };
 
