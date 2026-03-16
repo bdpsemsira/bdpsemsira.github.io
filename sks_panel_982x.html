@@ -235,8 +235,8 @@
             <thead>
                 <tr>
                     <th width="25%">Nama</th>
-                    <th width="30%">Kelas</th> <th width="25%">Kesalahan</th>
-                    <th width="5%">Masa</th> <th width="15%">Admin</th>
+                    <th width="25%">Kelas</th>     <th width="25%">Kesalahan</th>
+                    <th width="10%">Masa</th>      <th width="15%">Admin</th>
                 </tr>
             </thead>
             <tbody id="printTbody"></tbody>
@@ -486,12 +486,10 @@
         document.getElementById('statsDisplay').innerHTML = types.map(t => `<div class="stat-card"><span class="stat-val">${stats[t]||0}</span><span class="stat-lbl">${t}</span></div>`).join('');
     };
 
-    // 核心打印功能优化
     const doPrint = (title, records) => {
         document.getElementById('rptSummaryTitle').innerText = title;
         document.getElementById('rptDetailTitle').innerText = title;
 
-        // 统计第一页数据
         const stats = {};
         records.forEach(r => {
             const base = r.type.split(' (')[0];
@@ -507,10 +505,9 @@
         });
         document.getElementById('printSummaryBody').innerHTML = summaryHtml;
 
-        // 填充第二页详细表格
         const tbody = document.getElementById('printTbody');
         tbody.innerHTML = records.map(r => {
-            const displayTime = r.time.split(', ')[1] || r.time; // 只显示时间
+            const displayTime = r.time.split(', ')[1] || r.time; 
             return `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${displayTime}</td><td>${r.by}</td></tr>`;
         }).join('');
 
