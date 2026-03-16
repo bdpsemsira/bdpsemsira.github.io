@@ -77,7 +77,6 @@
             }
             .no-print { display: none !important; }
             
-            /* 第一页统计网格样式 */
             .print-summary-page { 
                 break-after: page; 
                 text-align: center; 
@@ -95,16 +94,17 @@
             }
             .summary-box h2 { font-size: 40px; margin: 10px 0; }
 
-            /* 表格样式 */
             table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-top: 20px; }
             th, td { 
                 border: 1px solid black !important; 
                 padding: 6px !important; 
                 color: black !important; 
                 word-wrap: break-word; 
-                font-size: 12px;
+                font-size: 11px;
             }
             thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            .print-footer-content { margin-top: 40px; display: flex; justify-content: flex-end; width: 100%; }
         }
 
         #printContainer { display: none; }
@@ -235,11 +235,26 @@
             <thead>
                 <tr>
                     <th width="25%">Nama</th>
-                    <th width="25%">Kelas</th>     <th width="25%">Kesalahan</th>
-                    <th width="10%">Masa</th>      <th width="15%">Admin</th>
+                    <th width="25%">Kelas</th>     
+                    <th width="25%">Kesalahan</th>
+                    <th width="10%">Masa/Tarikh</th>      
+                    <th width="15%">Admin</th>
                 </tr>
             </thead>
             <tbody id="printTbody"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="border:none !important; padding:0 !important;">
+                        <div class="print-footer-content">
+                            <div style="text-align:center;">
+                                <p style="margin-bottom:60px;">Disahkan Oleh:</p>
+                                <p>___________________________</p>
+                                <p style="font-weight:bold;">(Pegawai Bertugas)</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -506,9 +521,9 @@
         document.getElementById('printSummaryBody').innerHTML = summaryHtml;
 
         const tbody = document.getElementById('printTbody');
+        // 修复点：直接使用 r.time 显示完整日期和时间
         tbody.innerHTML = records.map(r => {
-            const displayTime = r.time.split(', ')[1] || r.time; 
-            return `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${displayTime}</td><td>${r.by}</td></tr>`;
+            return `<tr><td>${r.name}</td><td>${r.class}</td><td>${r.type}</td><td>${r.time}</td><td>${r.by}</td></tr>`;
         }).join('');
 
         window.print();
